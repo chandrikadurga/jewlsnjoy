@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Truck, RotateCcw, Star, Check, ExternalLink, ShieldCheck } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
-import heroImg from '../../assets/products/1/1.jpeg';
-import storyMainImg from '../../assets/products/3/1.jpeg';
+import heroImg from '../../assets/products/1/3.jpeg';
+import storyMainImg from '../../assets/products/3/2.jpeg';
 import storyAccentImg from '../../assets/products/4/1.jpeg';
 import './Home.css';
 
@@ -11,30 +11,37 @@ import './Home.css';
 function Hero() {
   return (
     <section className="hero" aria-label="Hero">
-      <div className="hero__media">
-        <img
-          src={heroImg}
-          alt="Emerald Luxe Tennis Necklace"
-          className="hero__img"
-        />
-        <div className="hero__overlay" />
-      </div>
-      <div className="container hero__content">
-        <span className="eyebrow hero__eyebrow">Handcrafted Elegance</span>
-        <h1 className="hero__title">
-          Jewellery That Tells<br /><em>Your</em> Story
-        </h1>
-        <p className="hero__subtitle">
-          Timeless, anti-tarnish pieces thoughtfully designed to elevate your everyday moments.
-        </p>
-        <div className="hero__cta-group">
-          <Link to="/shop" className="btn btn-primary btn-lg" id="hero-shop-btn">
-            Explore Collection
-            <ArrowRight size={16} strokeWidth={2} />
-          </Link>
-          <Link to="/shop?category=Necklaces" className="btn btn-secondary btn-lg" id="hero-categories-btn">
-            View Necklaces
-          </Link>
+      <div className="container">
+        <div className="hero__inner">
+          <div className="hero__content">
+            <span className="eyebrow hero__eyebrow">Handcrafted Elegance</span>
+            <h1 className="hero__heading">
+              Jewellery That Tells<br className="hero__br" /><em>Your</em> Story
+            </h1>
+            <p className="hero__desc">
+              Timeless, anti-tarnish pieces thoughtfully designed to elevate your everyday moments.
+            </p>
+            <div className="hero__cta">
+              <Link to="/shop" className="btn btn-primary btn-lg" id="hero-shop-btn">
+                Explore Collection
+                <ArrowRight size={16} strokeWidth={2} />
+              </Link>
+              <Link to="/shop?category=Necklaces" className="btn btn-secondary btn-lg" id="hero-categories-btn">
+                View Necklaces
+              </Link>
+            </div>
+          </div>
+
+          <div className="hero__image-wrap">
+            <img
+              src={heroImg}
+              alt="Emerald Luxe Tennis Necklace - Jewels 'n' Joys"
+              className="hero__image"
+            />
+            <div className="hero__image-badge">
+              <span>Anti-Tarnish • 18K Gold Plated</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -130,7 +137,7 @@ const HOME_REVIEWS = [
     comment: 'I bought the Emerald Luxe Tennis Necklace for daily styling. The 18K gold finish is warm and lustrous, and the emerald stones sparkle subtly in the sun. Truly waterproof!',
     productId: 1,
     productName: 'Emerald Luxe Tennis Necklace',
-    productImage: '/products/1/1.jpeg',
+    productImage: '/products/1/3.jpeg',
     price: '₹799',
   },
   {
@@ -142,7 +149,7 @@ const HOME_REVIEWS = [
     comment: 'The Rainbow Bloom Ring is easily adjustable and fits comfortably without pinching. The colors are vivid and pair seamlessly with Indian and Western outfits.',
     productId: 8,
     productName: 'Rainbow Bloom Marquise Crystal Ring',
-    productImage: '/products/8/1.jpeg',
+    productImage: '/products/8/2.jpeg',
     price: '₹499',
   },
   {

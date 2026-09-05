@@ -13,26 +13,50 @@ import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
-// Product image map — maps placeholder API paths to public assets
-const PRODUCT_IMAGE_MAP = {
-  '/api/placeholder/product_1': '/products/1/1.jpeg',
-  '/api/placeholder/product_2': '/products/2/1.jpeg',
-  '/api/placeholder/product_3': '/products/3/1.jpeg',
-  '/api/placeholder/product_4': '/products/4/1.jpeg',
-  '/api/placeholder/product_5': '/products/5/1.jpeg',
-  '/api/placeholder/product_6': '/products/6/1.jpeg',
-  '/api/placeholder/product_7': '/products/7/1.jpeg',
+// Map products whose angle 1 was a mobile screenshot to their clean 1080x1080 square photo
+const COVER_OVERRIDE = {
+  1: '3', // Emerald Luxe Tennis Necklace in luxury presentation box
+  2: '2',
+  3: '2',
+  5: '2',
+  6: '2',
+  7: '2',
+  8: '2',
+  10: '2',
+  12: '2',
+  16: '2',
+  17: '2',
+  23: '2',
+  26: '2',
+  28: '2',
 };
 
-function resolveProductImage(imagePath) {
+function resolveProductImage(imagePath, isCover = false) {
   if (!imagePath) return imagePath;
-  if (PRODUCT_IMAGE_MAP[imagePath]) return PRODUCT_IMAGE_MAP[imagePath];
+
   const match = String(imagePath).match(/\/api\/placeholder\/product_(\d+)(?:\/(\d+))?/);
   if (match) {
-    const id = match[1];
-    const angle = match[2] || '1';
+    const id = Number(match[1]);
+    let angle = match[2];
+    if (isCover && (!angle || angle === '1') && COVER_OVERRIDE[id]) {
+      angle = COVER_OVERRIDE[id];
+    } else if (!angle) {
+      angle = '1';
+    }
     return `/products/${id}/${angle}.jpeg`;
   }
+
+  // Handle direct file paths like /products/1/1.jpeg
+  if (isCover) {
+    const directMatch = String(imagePath).match(/^\/?products\/(\d+)\/1\.jpeg$/);
+    if (directMatch) {
+      const id = Number(directMatch[1]);
+      if (COVER_OVERRIDE[id]) {
+        return `/products/${id}/${COVER_OVERRIDE[id]}.jpeg`;
+      }
+    }
+  }
+
   return imagePath;
 }
 
@@ -40,9 +64,9 @@ function resolveProductImages(product) {
   if (!product) return product;
   return {
     ...product,
-    image: resolveProductImage(product.image),
-    thumbnail: resolveProductImage(product.thumbnail),
-    images: product.images ? product.images.map(resolveProductImage) : [],
+    image: resolveProductImage(product.image, true),
+    thumbnail: resolveProductImage(product.thumbnail, true),
+    images: product.images ? product.images.map((img) => resolveProductImage(img, false)) : [],
   };
 }
 

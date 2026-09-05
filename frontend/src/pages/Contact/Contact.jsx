@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, Check } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Check, Clock, ShieldCheck } from 'lucide-react';
 import './Contact.css';
 
 export default function Contact() {
@@ -23,7 +23,7 @@ export default function Contact() {
     e.preventDefault();
     setState((prev) => ({ ...prev, submitting: true }));
 
-    // Console log only as requested
+    // Console log as requested
     console.log('Form submitted:', {
       name: state.name,
       email: state.email,
@@ -40,77 +40,88 @@ export default function Contact() {
   };
 
   return (
-    <div className="contact-section-wrapper">
-      <section className="contact-container w-full max-w-screen-md px-2">
-        <h2 className="contact-title mt-4 mb-5 bg-gradient-to-br from-gray-300 via-blue-300 to-gray-700 bg-clip-text text-center text-4xl font-bold text-transparent md:text-6xl">
-          Let&apos;s Get in Touch
-        </h2>
-        <p className="contact-subtitle text-muted-foreground mb-6 text-center">
-          Fill out the form below and we&apos;ll get back to you as soon as possible.
+    <div className="contact-theme-wrapper">
+      <section className="contact-theme-container">
+        <span className="eyebrow contact-theme-eyebrow">Personal Concierge</span>
+        <h1 className="contact-theme-title">
+          Let&apos;s Get in <em>Touch</em>
+        </h1>
+        <p className="contact-theme-subtitle">
+          Fill out the form below and our customer care team will respond within 24–48 hours.
         </p>
-        <div
-          className="contact-card bg-opacity-10 mx-auto mb-6 grid w-full items-start gap-12 rounded-lg border bg-white px-4 pt-10 pb-6 shadow shadow-slate-800 md:grid-cols-2 lg:px-12"
-          style={{
-            backgroundImage:
-              'radial-gradient(164.75% 100% at 50% 0,#272f3c 0,#0b1224 48.73%)',
-          }}
-        >
+
+        <div className="contact-theme-card">
           {state.submitted ? (
-            <div className="contact-submitted-box">
-              <div className="contact-submitted-icon">
-                <Check className="h-8 w-8 text-emerald-400" />
+            <div className="contact-theme-success">
+              <div className="contact-theme-success-icon">
+                <Check size={28} strokeWidth={2.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">Message Sent!</h3>
-              <p className="text-slate-300 text-sm mb-6">
-                Thank you for reaching out. We will review your message and respond within 24–48 hours.
+              <h3 className="contact-theme-success-title">Message Received</h3>
+              <p className="contact-theme-success-text">
+                Thank you for reaching out to Jewels &apos;n&apos; Joys. We have received your note and will review your inquiry with care.
               </p>
               <button
                 type="button"
-                className="contact-btn"
-                onClick={() => setState({ name: '', email: '', message: '', errors: {}, submitting: false, submitted: false })}
+                className="btn btn-primary"
+                onClick={() =>
+                  setState({
+                    name: '',
+                    email: '',
+                    message: '',
+                    errors: {},
+                    submitting: false,
+                    submitted: false,
+                  })
+                }
               >
                 Send Another Message
               </button>
             </div>
           ) : (
-            <form className="space-y-8 text-slate-300" onSubmit={handleSubmit}>
-              <div className="space-y-4 text-lg form-group">
-                <label htmlFor="name">Name</label>
+            <form className="contact-theme-form" onSubmit={handleSubmit}>
+              <div className="contact-field-group">
+                <label htmlFor="name" className="contact-field-label">
+                  Your Name
+                </label>
                 <input
                   id="name"
                   type="text"
                   required
                   value={state.name}
                   onChange={handleChange}
-                  className="bg-background flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm shadow-inner shadow-slate-800 outline-none hover:border-slate-600 hover:transition-all hover:outline-none focus:border-slate-500 focus:outline-none"
-                  placeholder="Enter your name"
+                  className="contact-field-input"
+                  placeholder="e.g. Ananya Sharma"
                   name="name"
                 />
               </div>
 
-              <div className="space-y-4 text-lg form-group">
-                <label htmlFor="email">Email</label>
+              <div className="contact-field-group">
+                <label htmlFor="email" className="contact-field-label">
+                  Email Address
+                </label>
                 <input
                   id="email"
-                  placeholder="Enter your email"
+                  placeholder="e.g. ananya@example.com"
                   type="email"
                   value={state.email}
                   onChange={handleChange}
-                  className="hover:transition-al bg-background placeholder:text-muted-foreground flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm shadow-inner shadow-slate-800 outline-none file:text-sm file:font-medium hover:border-slate-400 hover:outline-none focus:border-slate-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  className="contact-field-input"
                   name="email"
                   required
                 />
                 {state.errors && state.errors.email && (
-                  <p className="mt-1 text-sm text-red-500">{state.errors.email}</p>
+                  <p className="contact-field-error">{state.errors.email}</p>
                 )}
               </div>
 
-              <div className="space-y-4 text-lg form-group">
-                <label htmlFor="message">Message</label>
+              <div className="contact-field-group">
+                <label htmlFor="message" className="contact-field-label">
+                  Message
+                </label>
                 <textarea
-                  className="bg-background ring-offset-background placeholder:text-muted-foreground mb-5 flex min-h-[100px] w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white shadow-inner shadow-slate-800 outline-none hover:border-slate-400 hover:transition-all hover:outline-none focus:border-slate-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  className="contact-field-input contact-field-textarea"
                   id="message"
-                  placeholder="Enter your message"
+                  placeholder="How can we assist you today? Ask about collections, orders, or styling advice..."
                   name="message"
                   rows={4}
                   value={state.message}
@@ -118,73 +129,89 @@ export default function Contact() {
                   required
                 />
                 {state.errors && state.errors.message && (
-                  <p className="mt-1 text-sm text-red-500">{state.errors.message}</p>
+                  <p className="contact-field-error">{state.errors.message}</p>
                 )}
               </div>
 
               <button
-                className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-slate-800 to-slate-700 py-2 text-center font-medium text-white shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] transition-all duration-300 ease-in-out hover:from-slate-700 hover:to-slate-800 hover:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] contact-btn"
+                className="btn btn-primary contact-submit-btn"
                 type="submit"
                 disabled={state.submitting}
               >
-                {state.submitting ? 'Sending...' : 'Send'}
-                <Send className="mx-2 inline h-4" />
+                {state.submitting ? 'Sending Message...' : 'Send Message'}
+                <Send size={15} strokeWidth={2} />
               </button>
             </form>
           )}
 
-          <div className="contact-info-panel">
-            <h3 className="mb-10 text-2xl font-semibold text-slate-300">
-              Connect with Us
-            </h3>
-            
-            <div className="mb-12 flex gap-8 contact-item">
-              <a
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600 shadow-inner shadow-gray-800 hover:shadow-md hover:shadow-slate-500 hover:transition hover:duration-300 hover:ease-in-out icon-circle"
-                href="mailto:jewelsnjoy25@gmail.com"
-                aria-label="Email"
-              >
-                <Mail className="h-5 w-5 text-white" />
-              </a>
-              <div className="text-md text-slate-300">
-                <p className="contact-label">Email to us at </p>
-                <a href="mailto:jewelsnjoy25@gmail.com" className="contact-val">
-                  jewelsnjoy25@gmail.com
+          <div className="contact-theme-info">
+            <h2 className="contact-theme-info-title">Connect with Us</h2>
+            <p className="contact-theme-info-intro">
+              Whether you need help tracking an order, styling advice, or assistance with a replacement, we are always here.
+            </p>
+
+            <div className="contact-info-list">
+              <div className="contact-info-row">
+                <a
+                  className="contact-icon-pill"
+                  href="mailto:jewelsnjoy25@gmail.com"
+                  aria-label="Email"
+                >
+                  <Mail size={18} />
                 </a>
+                <div className="contact-info-text">
+                  <span className="contact-info-label">Email to us at</span>
+                  <a href="mailto:jewelsnjoy25@gmail.com" className="contact-info-value">
+                    jewelsnjoy25@gmail.com
+                  </a>
+                </div>
               </div>
-            </div>
 
-            <div className="mb-12 flex gap-8 contact-item">
-              <a
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600 shadow-inner shadow-gray-800 hover:shadow-md hover:shadow-slate-500 hover:transition hover:duration-300 hover:ease-in-out icon-circle"
-                href="tel:7251070150"
-                aria-label="Phone"
-              >
-                <Phone className="h-5 w-5 text-white" />
-              </a>
-              <div className="text-md text-slate-300">
-                <p className="contact-label">Call us at </p>
-                <a href="tel:7251070150" className="contact-val">
-                  +91 7251070150
+              <div className="contact-info-row">
+                <a
+                  className="contact-icon-pill"
+                  href="https://wa.me/917251070150"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Phone & WhatsApp"
+                >
+                  <Phone size={18} />
                 </a>
+                <div className="contact-info-text">
+                  <span className="contact-info-label">Call &amp; WhatsApp</span>
+                  <a href="tel:7251070150" className="contact-info-value">
+                    +91 7251070150
+                  </a>
+                </div>
+              </div>
+
+              <div className="contact-info-row">
+                <div className="contact-icon-pill" aria-label="Location">
+                  <MapPin size={18} />
+                </div>
+                <div className="contact-info-text">
+                  <span className="contact-info-label">Location at</span>
+                  <p className="contact-info-value">Techno Main Salt Lake, Sector-V, Kolkata-700091</p>
+                </div>
               </div>
             </div>
 
-            <div className="mb-12 flex gap-8 contact-item">
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600 px-2 shadow-inner shadow-gray-800 hover:shadow-md hover:shadow-slate-500 hover:transition hover:duration-300 hover:ease-in-out icon-circle"
-              >
-                <MapPin className="h-5 w-5 text-white" />
+            {/* Reassurance Callout */}
+            <div className="contact-theme-reassurance">
+              <div className="contact-reassurance-item">
+                <Clock size={15} className="reassurance-icon" />
+                <span>Response Time: 24–48 Hours</span>
               </div>
-              <div className="text-md text-slate-300">
-                <p className="contact-label">Location at </p>
-                <p className="contact-val">Techno Main Salt Lake, Sector-V, Kolkata-700091</p>
+              <div className="contact-reassurance-item">
+                <ShieldCheck size={15} className="reassurance-icon" />
+                <span>100% Anti-Tarnish &amp; Waterproof Guarantee</span>
               </div>
             </div>
 
-            <div className="flex space-x-12 py-7 social-row">
+            {/* Social channels */}
+            <div className="contact-social-row">
               <a
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600 bg-gray-800 hover:shadow-md hover:shadow-slate-500 hover:transition hover:duration-300 hover:ease-in-out icon-circle"
+                className="contact-social-circle"
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -195,7 +222,7 @@ export default function Contact() {
                 </svg>
               </a>
               <a
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600 bg-gray-800 hover:shadow-md hover:shadow-slate-500 hover:transition hover:duration-300 hover:ease-in-out icon-circle"
+                className="contact-social-circle"
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -206,7 +233,7 @@ export default function Contact() {
                 </svg>
               </a>
               <a
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-gray-800 hover:shadow-md hover:shadow-slate-500 hover:transition hover:duration-300 hover:ease-in-out icon-circle"
+                className="contact-social-circle"
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -219,7 +246,7 @@ export default function Contact() {
                 </svg>
               </a>
               <a
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-gray-800 hover:shadow-md hover:shadow-slate-500 hover:transition hover:duration-300 hover:ease-in-out icon-circle"
+                className="contact-social-circle"
                 href="https://github.com/chandrikadurga/jewlsnjoy"
                 target="_blank"
                 rel="noopener noreferrer"

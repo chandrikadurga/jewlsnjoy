@@ -1,99 +1,120 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, Layers, ShieldCheck, Gem } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Gem, Layers, Sparkles } from 'lucide-react';
 import './Collections.css';
 
-const CURATED_COLLECTIONS = [
+const SIGNATURE_COLLECTIONS = [
   {
-    id: 'anti-tarnish-luxe',
-    title: 'Anti-Tarnish Everyday Luxe',
-    tagline: '18K Gold PVD • Waterproof • Titanium Steel',
-    description: 'Our signature liquid-gold herringbone and flat snake chains designed to withstand water, sweat, and daily life without ever fading.',
-    coverImage: '/products/1/3.jpeg',
-    badge: 'Signature Bestseller',
-    route: '/shop?category=Necklaces',
-    itemCount: '24 Pieces',
-    highlights: [
-      { id: 1, name: 'Emerald Luxe Tennis Necklace', price: '₹799', img: '/products/1/3.jpeg' },
-      { id: 21, name: 'Dual Symphony Herringbone', price: '₹899', img: '/products/21/1.jpeg' },
-      { id: 4, name: 'Onyx Solitaire Medallion', price: '₹699', img: '/products/4/1.jpeg' },
-    ],
+    id: 'necklaces',
+    name: 'Necklaces & Chains',
+    tagline: '18K Gold PVD • Waterproof',
+    desc: 'Liquid gold herringbone, statement pendants, chokers & solitaires.',
+    count: '45+ Styles',
+    image: '/products/1/3.jpeg',
+    link: '/shop?category=Necklaces',
+    featuredTag: 'Bestseller Edit',
   },
   {
-    id: 'royal-crown-hearts',
-    title: 'The Royal Crown & Heart Series',
-    tagline: 'Faceted Zircons • Regal Motifs • Romantic Accents',
-    description: 'Enchanting crown pendants and faceted heart zircons crafted for fairytale moments, romantic dates, and regal elegance.',
-    coverImage: '/products/3/2.jpeg',
-    badge: 'Editorial Favorite',
-    route: '/shop?style=Romantic',
-    itemCount: '16 Pieces',
-    highlights: [
-      { id: 3, name: 'Royal Crown Pink Crystal', price: '₹649', img: '/products/3/2.jpeg' },
-      { id: 2, name: 'Midnight Heart Pendant', price: '₹599', img: '/products/2/2.jpeg' },
-      { id: 15, name: 'Hollow Heart Studs', price: '₹449', img: '/products/15/1.jpeg' },
-    ],
+    id: 'earrings',
+    name: 'Statement & Daily Earrings',
+    tagline: 'Hypoallergenic • Titanium Steel',
+    desc: 'Hollow heart silhouettes, four-leaf clovers, huggies & drops.',
+    count: '15+ Styles',
+    image: '/products/15/1.jpeg',
+    link: '/shop?category=Earrings',
+    featuredTag: 'Sensitive Skin Safe',
   },
   {
-    id: 'emerald-solitaire',
-    title: 'The Emerald & Solitaire Edit',
-    tagline: 'Vivid Gemstones • High-Gloss Crystals • Opulence',
-    description: 'Deep royal emerald greens and sparkling solitaires set against polished warm gold. The ultimate tribute to classic high jewellery.',
-    coverImage: '/products/6/2.jpeg',
-    badge: 'Luxury Edit',
-    route: '/shop?style=Luxury',
-    itemCount: '18 Pieces',
-    highlights: [
-      { id: 6, name: 'Emerald Statement Choker', price: '₹849', img: '/products/6/2.jpeg' },
-      { id: 1, name: 'Emerald Luxe Tennis Necklace', price: '₹799', img: '/products/1/3.jpeg' },
-      { id: 9, name: 'Princess Cut Solitaire Set', price: '₹749', img: '/products/9/1.jpeg' },
-    ],
+    id: 'rings',
+    name: 'Cocktail & Crystal Rings',
+    tagline: 'Adjustable Comfort Fit',
+    desc: 'Marquise-cut rainbow crystals, solitaire bands & cocktail rings.',
+    count: '12+ Styles',
+    image: '/products/8/2.jpeg',
+    link: '/shop?category=Rings',
+    featuredTag: 'Trending Now',
   },
   {
-    id: 'crystal-rings',
-    title: 'Marquise & Cocktail Rings',
-    tagline: 'Adjustable Comfort • Multi-Color Crystals • Statement Bands',
-    description: 'Sculpted bands crowned with marquise-cut rainbow crystals and delicate solitaire crowns. Designed to fit effortlessly with adjustable sizing.',
-    coverImage: '/products/8/2.jpeg',
-    badge: 'New Arrivals',
-    route: '/shop?category=Rings',
-    itemCount: '12 Pieces',
-    highlights: [
-      { id: 8, name: 'Rainbow Bloom Marquise Ring', price: '₹499', img: '/products/8/2.jpeg' },
-      { id: 18, name: 'Emerald Halo Cocktail Ring', price: '₹549', img: '/products/18/1.jpeg' },
-      { id: 24, name: 'Twisted Gold Solitaire Band', price: '₹479', img: '/products/24/1.jpeg' },
-    ],
-  },
-  {
-    id: 'earrings-gallery',
-    title: 'Hypoallergenic Studs & Drops',
-    tagline: 'Featherlight • Sensitive Skin Safe • Everyday Charm',
-    description: 'Irritation-free titanium studs, elegant drops, and minimalist huggies. Crafted for sensitive ears and round-the-clock comfort.',
-    coverImage: '/products/15/1.jpeg',
-    badge: 'Daily Essentials',
-    route: '/shop?category=Earrings',
-    itemCount: '15 Pieces',
-    highlights: [
-      { id: 15, name: 'Hollow Heart Silhouette Studs', price: '₹449', img: '/products/15/1.jpeg' },
-      { id: 14, name: 'Clover Bloom Drop Earrings', price: '₹499', img: '/products/14/1.jpeg' },
-      { id: 13, name: 'Solitaire Crystal Huggies', price: '₹429', img: '/products/13/1.jpeg' },
-    ],
+    id: 'layered',
+    name: 'Royal Crown & Layered Sets',
+    tagline: 'Fairytale Crystals & Layering',
+    desc: 'Regal crown heart zircons, dual-strand herringbone & medallion sets.',
+    count: '20+ Styles',
+    image: '/products/6/2.jpeg',
+    link: '/shop?style=Luxury',
+    featuredTag: 'Curated Sets',
   },
 ];
 
-const CATEGORY_SHORTCUTS = [
-  { name: 'All Necklaces', desc: 'Chains, pendants & chokers', link: '/shop?category=Necklaces', count: '45+ styles' },
-  { name: 'Statement Earrings', desc: 'Studs, huggies & danglers', link: '/shop?category=Earrings', count: '15+ styles' },
-  { name: 'Cocktail Rings', desc: 'Adjustable crystal rings', link: '/shop?category=Rings', count: '12+ styles' },
-  { name: 'Bracelets & Bangles', desc: 'Liquid gold herringbone', link: '/shop?category=Bracelets', count: '8+ styles' },
+const CURATED_LOOKS = [
+  {
+    id: 1,
+    title: 'Emerald Luxe Tennis Necklace',
+    price: '₹799',
+    collection: 'Necklaces & Chains',
+    image: '/products/1/3.jpeg',
+    badge: '18K Gold Plated',
+    link: '/products/1',
+  },
+  {
+    id: 3,
+    title: 'Royal Crown Pink Crystal Necklace',
+    price: '₹649',
+    collection: 'Royal Crown Series',
+    image: '/products/3/2.jpeg',
+    badge: 'Faceted Zircon',
+    link: '/products/3',
+  },
+  {
+    id: 8,
+    title: 'Rainbow Bloom Marquise Crystal Ring',
+    price: '₹499',
+    collection: 'Cocktail Rings',
+    image: '/products/8/2.jpeg',
+    badge: 'Adjustable Band',
+    link: '/products/8',
+  },
+  {
+    id: 6,
+    title: 'Emerald Solitaire Herringbone Set',
+    price: '₹849',
+    collection: 'Layered Sets',
+    image: '/products/6/2.jpeg',
+    badge: 'Dual Chain',
+    link: '/products/6',
+  },
+  {
+    id: 15,
+    title: 'Minimalist Hollow Heart Studs',
+    price: '₹449',
+    collection: 'Daily Earrings',
+    image: '/products/15/1.jpeg',
+    badge: 'Featherlight',
+    link: '/products/15',
+  },
+  {
+    id: 2,
+    title: 'Midnight Heart Pendant Necklace',
+    price: '₹599',
+    collection: 'Romantic Edits',
+    image: '/products/2/2.jpeg',
+    badge: 'Onyx Heart',
+    link: '/products/2',
+  },
 ];
 
 export default function Collections() {
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [selectedFilter, setSelectedFilter] = useState('all');
 
-  const filteredCollections = activeFilter === 'all'
-    ? CURATED_COLLECTIONS
-    : CURATED_COLLECTIONS.filter(c => c.id === activeFilter);
+  const displayedLooks = selectedFilter === 'all'
+    ? CURATED_LOOKS
+    : CURATED_LOOKS.filter(item => {
+        if (selectedFilter === 'necklaces') return item.collection.includes('Necklaces') || item.collection.includes('Romantic');
+        if (selectedFilter === 'earrings') return item.collection.includes('Earrings');
+        if (selectedFilter === 'rings') return item.collection.includes('Rings');
+        if (selectedFilter === 'sets') return item.collection.includes('Royal') || item.collection.includes('Layered');
+        return true;
+      });
 
   return (
     <div className="collections-page">
@@ -105,136 +126,139 @@ export default function Collections() {
             Explore Signature<br /><em>Collections</em>
           </h1>
           <p className="collections-hero__subtitle">
-            Thoughtfully assembled edits created to inspire your style — from waterproof 18K gold daily staples to fairytale crown crystal statements.
+            Thoughtfully designed jewellery edits created to inspire your style — from waterproof 18K gold daily staples to fairytale crown crystal statements.
           </p>
-
-          <div className="collections-hero__filter-chips">
-            <button
-              type="button"
-              className={`collections-chip ${activeFilter === 'all' ? 'active' : ''}`}
-              onClick={() => setActiveFilter('all')}
-            >
-              All Edits ({CURATED_COLLECTIONS.length})
-            </button>
-            {CURATED_COLLECTIONS.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                className={`collections-chip ${activeFilter === c.id ? 'active' : ''}`}
-                onClick={() => setActiveFilter(c.id)}
-              >
-                {c.title}
-              </button>
-            ))}
-          </div>
         </div>
       </section>
 
-      {/* Main Collections Grid */}
-      <section className="collections-grid-section">
-        <div className="container">
-          <div className="collections-list">
-            {filteredCollections.map((col, idx) => (
-              <article key={col.id} className={`collection-card ${idx % 2 !== 0 ? 'collection-card--reversed' : ''}`}>
-                <div className="collection-card__media">
-                  <img
-                    src={col.coverImage}
-                    alt={col.title}
-                    className="collection-card__cover"
-                    loading="lazy"
-                  />
-                  <span className="collection-card__badge">{col.badge}</span>
-                  <span className="collection-card__count">{col.itemCount}</span>
-                </div>
-
-                <div className="collection-card__content">
-                  <span className="collection-card__tagline">{col.tagline}</span>
-                  <h2 className="collection-card__title">{col.title}</h2>
-                  <p className="collection-card__desc">{col.description}</p>
-
-                  {/* Highlights Mini Grid */}
-                  <div className="collection-card__highlights">
-                    <span className="collection-highlights__label">Featured in this edit:</span>
-                    <div className="collection-highlights__grid">
-                      {col.highlights.map((item) => (
-                        <Link
-                          key={item.id}
-                          to={`/products/${item.id}`}
-                          className="collection-highlight-item"
-                          title={`View ${item.name}`}
-                        >
-                          <img
-                            src={item.img}
-                            alt={item.name}
-                            className="collection-highlight-item__img"
-                          />
-                          <div className="collection-highlight-item__meta">
-                            <span className="collection-highlight-item__name">{item.name}</span>
-                            <span className="collection-highlight-item__price">{item.price}</span>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="collection-card__actions">
-                    <Link to={col.route} className="btn btn-primary btn-lg">
-                      Explore Full Collection
-                      <ArrowRight size={16} strokeWidth={2} />
-                    </Link>
-                    <Link to="/shop" className="btn btn-secondary btn-lg">
-                      View All Jewellery
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Category Fast Navigation */}
-      <section className="collections-categories-section section--beige">
+      {/* Signature Collection Cards with Luxury Photos */}
+      <section className="collections-categories-section">
         <div className="container">
           <div className="section-header">
-            <span className="eyebrow">Category Directory</span>
-            <h2 className="section-title">Shop by Category</h2>
+            <span className="eyebrow">Signature Edits</span>
+            <h2 className="section-title">Shop by Collection</h2>
             <p className="section-desc">
-              Looking for a specific piece? Dive straight into our full catalogues.
+              Explore our themed edits crafted with long-lasting PVD plating and timeless elegance.
             </p>
           </div>
 
           <div className="collections-category-grid">
-            {CATEGORY_SHORTCUTS.map((cat) => (
-              <Link key={cat.name} to={cat.link} className="collections-cat-card">
-                <div className="collections-cat-card__info">
-                  <h3 className="collections-cat-card__title">{cat.name}</h3>
-                  <p className="collections-cat-card__desc">{cat.desc}</p>
-                  <span className="collections-cat-card__count">{cat.count}</span>
+            {SIGNATURE_COLLECTIONS.map((col) => (
+              <Link key={col.id} to={col.link} className="collections-cat-card">
+                <div className="collections-cat-card__media">
+                  <img
+                    src={col.image}
+                    alt={col.name}
+                    className="collections-cat-card__img"
+                    loading="lazy"
+                  />
+                  <span className="collections-cat-card__badge">{col.featuredTag}</span>
+                  <span className="collections-cat-card__count">{col.count}</span>
                 </div>
-                <span className="collections-cat-card__arrow">
-                  <ArrowRight size={18} />
-                </span>
+                <div className="collections-cat-card__info">
+                  <span className="collections-cat-card__tagline">{col.tagline}</span>
+                  <h3 className="collections-cat-card__title">{col.name}</h3>
+                  <p className="collections-cat-card__desc">{col.desc}</p>
+                  <span className="collections-cat-card__action">
+                    Explore Collection <ArrowRight size={15} />
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Assurance Footer Bar */}
+      {/* Curated Highlights Showcase */}
+      <section className="collections-showcase-section">
+        <div className="container">
+          <div className="collections-showcase-header">
+            <div>
+              <span className="eyebrow">Curated Pieces</span>
+              <h2 className="section-title">Collection Highlights</h2>
+            </div>
+
+            <div className="collections-filter-tabs">
+              <button
+                type="button"
+                className={`collections-filter-tab ${selectedFilter === 'all' ? 'active' : ''}`}
+                onClick={() => setSelectedFilter('all')}
+              >
+                All Highlights
+              </button>
+              <button
+                type="button"
+                className={`collections-filter-tab ${selectedFilter === 'necklaces' ? 'active' : ''}`}
+                onClick={() => setSelectedFilter('necklaces')}
+              >
+                Necklaces
+              </button>
+              <button
+                type="button"
+                className={`collections-filter-tab ${selectedFilter === 'earrings' ? 'active' : ''}`}
+                onClick={() => setSelectedFilter('earrings')}
+              >
+                Earrings
+              </button>
+              <button
+                type="button"
+                className={`collections-filter-tab ${selectedFilter === 'rings' ? 'active' : ''}`}
+                onClick={() => setSelectedFilter('rings')}
+              >
+                Rings
+              </button>
+              <button
+                type="button"
+                className={`collections-filter-tab ${selectedFilter === 'sets' ? 'active' : ''}`}
+                onClick={() => setSelectedFilter('sets')}
+              >
+                Royal &amp; Sets
+              </button>
+            </div>
+          </div>
+
+          <div className="collections-looks-grid">
+            {displayedLooks.map((item) => (
+              <Link key={item.id} to={item.link} className="collections-look-card">
+                <div className="collections-look-card__media">
+                  <img src={item.image} alt={item.title} className="collections-look-card__img" />
+                  <span className="collections-look-card__badge">{item.badge}</span>
+                </div>
+                <div className="collections-look-card__meta">
+                  <span className="collections-look-card__collection">{item.collection}</span>
+                  <h4 className="collections-look-card__title">{item.title}</h4>
+                  <div className="collections-look-card__footer">
+                    <span className="collections-look-card__price">{item.price}</span>
+                    <span className="collections-look-card__cta">View Piece &rarr;</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="collections-bottom-cta">
+            <Link to="/shop" className="btn btn-primary btn-lg">
+              View All 80+ Pieces in Shop
+              <ArrowRight size={16} strokeWidth={2} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Assurance Footer Bar - Fixed Text Contrast & Spacing */}
       <section className="collections-assurance-bar">
         <div className="container collections-assurance-inner">
           <div className="collections-assurance-item">
             <ShieldCheck size={20} className="assurance-icon" />
-            <span>Anti-Tarnish &amp; Waterproof PVD Plated</span>
+            <span className="assurance-text">Anti-Tarnish &amp; Waterproof PVD Plated</span>
           </div>
           <div className="collections-assurance-item">
             <Gem size={20} className="assurance-icon" />
-            <span>18K Gold Plated Titanium Stainless Steel</span>
+            <span className="assurance-text">18K Gold Plated Titanium Stainless Steel</span>
           </div>
           <div className="collections-assurance-item">
             <Layers size={20} className="assurance-icon" />
-            <span>Dispatched in 1–3 Working Days</span>
+            <span className="assurance-text">Dispatched in 1–3 Working Days</span>
           </div>
         </div>
       </section>

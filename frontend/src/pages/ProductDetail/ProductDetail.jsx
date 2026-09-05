@@ -225,7 +225,11 @@ export default function ProductDetail() {
     }
   };
 
-  const formatPrice = (p) => `₹${p.toLocaleString('en-IN')}`;
+  const formatPrice = (p) => {
+    if (p == null) return '';
+    const num = typeof p === 'number' ? p : parseFloat(String(p).replace(/[^0-9.]/g, ''));
+    return isNaN(num) ? `₹${p}` : `₹${Math.round(num).toLocaleString('en-IN')}`;
+  };
 
   if (loading) {
     return (
@@ -248,6 +252,49 @@ export default function ProductDetail() {
   const effectiveCount = Math.max(product.review_count || 0, reviews.length);
   const averageRating = product.rating || 4.9;
 
+  // Safe category string resolution
+  const categoryName = typeof product.category === 'string' && isNaN(Number(product.category))
+    ? product.category
+    : (product.category_name || (product.category && typeof product.category === 'object' && product.category.name) || 'Necklaces');
+
+  // Extract clean image URLs array (handling objects from Django or strings from fallback)
+  const galleryImages = (() => {
+    let list = [];
+    if (Array.isArray(product.image_urls) && product.image_urls.length > 0) {
+      list = product.image_urls;
+    } else if (Array.isArray(product.images) && product.images.length > 0) {
+      list = product.images.map((item) => {
+        if (typeof item === 'string') return item;
+        return item?.image_url || item?.url || item?.src || '';
+      }).filter(Boolean);
+    }
+    if (list.length === 0) {
+      const single = product.primary_image_url || product.image || product.thumbnail || `/products/${product.id}/1.jpeg`;
+      list = [single];
+    }
+    return list;
+  })();
+
+  const currentImage = galleryImages[selectedImage] || galleryImages[0] || `/products/${product.id}/1.jpeg`;
+
+  const features = product.features || product.details?.features || ['Anti-tarnish', 'Waterproof', 'PVD Plated', '18K Gold Plated'];
+  const specifications = product.specifications || product.details?.specifications || {
+    'Material': 'Titanium Stainless Steel',
+    'Finish': '18K Gold Color Plated',
+    'Plating': 'Long-lasting PVD Plated',
+    'Features': 'Anti-tarnish, Waterproof, Quality Guarantee'
+  };
+  const shippingInfo = product.shipping || product.details?.shipping || {
+    standard: '6 to 8 days',
+    express: '3 to 4 days',
+    free_threshold: 999
+  };
+  const careInstructions = product.care_instructions || product.details?.care_instructions || [
+    'Avoid direct contact with harsh perfumes and chemicals.',
+    'Store in the provided jewellery pouch when not in use.',
+    'Clean gently with a soft dry cloth.'
+  ];
+
   return (
     <div className="product-detail">
       <div className="container">
@@ -259,8 +306,8 @@ export default function ProductDetail() {
             Back to Shop
           </Link>
           <span className="pd-breadcrumb__sep">/</span>
-          <Link to={`/shop?category=${product.category}`} className="pd-breadcrumb__link">
-            {product.category}
+          <Link to={`/shop?category=${encodeURIComponent(categoryName)}`} className="pd-breadcrumb__link">
+            {categoryName}
           </Link>
           <span className="pd-breadcrumb__sep">/</span>
           <span className="pd-breadcrumb__current">{product.name}</span>
@@ -271,24 +318,39 @@ export default function ProductDetail() {
           <div className="pd-gallery">
             <div className="pd-gallery__main">
               <img
-                src={product.images[selectedImage] || product.image}
+                src={currentImage}
                 alt={product.name}
                 className="pd-gallery__main-img"
+                onError={(e) => {
+                  if (!e.target.dataset.triedFallback) {
+                    e.target.dataset.triedFallback = 'true';
+                    e.target.src = `/products/${product.id}/1.jpeg`;
+                  }
+                }}
               />
               {product.is_bestseller && (
                 <span className="badge badge-gold pd-gallery__badge">Bestseller</span>
               )}
             </div>
-            {product.images.length > 1 && (
+            {galleryImages.length > 1 && (
               <div className="pd-gallery__thumbs">
-                {product.images.map((img, i) => (
+                {galleryImages.map((imgUrl, i) => (
                   <button
                     key={i}
                     className={`pd-gallery__thumb${selectedImage === i ? ' pd-gallery__thumb--active' : ''}`}
                     onClick={() => setSelectedImage(i)}
                     aria-label={`View image ${i + 1}`}
                   >
-                    <img src={img} alt="" />
+                    <img
+                      src={imgUrl}
+                      alt=""
+                      onError={(e) => {
+                        if (!e.target.dataset.triedFallback) {
+                          e.target.dataset.triedFallback = 'true';
+                          e.target.src = `/products/${product.id}/${i + 1}.jpeg`;
+                        }
+                      }}
+                    />
                   </button>
                 ))}
               </div>
@@ -298,11 +360,11 @@ export default function ProductDetail() {
           {/* Info */}
           <div className="pd-info">
             <Link
-              to={`/shop?category=${product.category}`}
+              to={`/shop?category=${encodeURIComponent(categoryName)}`}
               className="pd-info__category-link"
-              title={`View all ${product.category}`}
+              title={`View all ${categoryName}`}
             >
-              {product.category} &rarr;
+              {categoryName} &rarr;
             </Link>
             <h1 className="pd-info__name">{product.name}</h1>
 
@@ -320,9 +382,9 @@ export default function ProductDetail() {
               {product.original_price && (
                 <span className="pd-info__original-price">{formatPrice(product.original_price)}</span>
               )}
-              {product.original_price && product.original_price > product.price && (
+              {product.original_price && Number(product.original_price) > Number(product.price) && (
                 <span className="badge badge-green pd-info__discount-badge">
-                  {Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
+                  {Math.round(((Number(product.original_price) - Number(product.price)) / Number(product.original_price)) * 100)}% OFF
                 </span>
               )}
             </div>
@@ -333,15 +395,14 @@ export default function ProductDetail() {
             {product.variants && product.variants.length > 0 && (
               <div className="pd-variants">
                 <p className="pd-variants__label">Style</p>
-                <div className="pd-variants__options">
+                <div className="pd-variants__list">
                   {product.variants.map((v) => (
                     <button
-                      key={v.id}
-                      className={`pd-variant-btn${selectedVariant?.id === v.id ? ' pd-variant-btn--active' : ''}`}
+                      key={v.id || v}
+                      className={`pd-variant-btn${(selectedVariant?.id || selectedVariant) === (v.id || v) ? ' pd-variant-btn--active' : ''}`}
                       onClick={() => setSelectedVariant(v)}
-                      disabled={!v.in_stock}
                     >
-                      {v.label}
+                      {v.name || v}
                     </button>
                   ))}
                 </div>
@@ -349,23 +410,26 @@ export default function ProductDetail() {
             )}
 
             {/* Quantity */}
-            <div className="pd-qty">
-              <p className="pd-qty__label">Quantity</p>
-              <div className="pd-qty__controls">
+            <div className="pd-quantity">
+              <p className="pd-quantity__label">Quantity</p>
+              <div className="quantity-selector">
                 <button
-                  className="pd-qty__btn"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="quantity-selector__btn"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  disabled={quantity <= 1}
                   aria-label="Decrease quantity"
+                  id="qty-minus"
                 >
-                  <Minus size={14} strokeWidth={2.5} />
+                  <Minus size={14} />
                 </button>
-                <span className="pd-qty__value">{quantity}</span>
+                <span className="quantity-selector__val">{quantity}</span>
                 <button
-                  className="pd-qty__btn"
-                  onClick={() => setQuantity(quantity + 1)}
+                  className="quantity-selector__btn"
+                  onClick={() => setQuantity((q) => q + 1)}
                   aria-label="Increase quantity"
+                  id="qty-plus"
                 >
-                  <Plus size={14} strokeWidth={2.5} />
+                  <Plus size={14} />
                 </button>
               </div>
             </div>
@@ -373,10 +437,10 @@ export default function ProductDetail() {
             {/* Actions */}
             <div className="pd-actions">
               <button
-                className={`btn btn-primary btn-lg pd-actions__add${added ? ' pd-actions__add--added' : ''}`}
+                className="btn btn-primary btn-lg pd-actions__add"
                 onClick={handleAddToCart}
                 disabled={!product.in_stock}
-                id="add-to-bag-btn"
+                id="add-to-cart-btn"
               >
                 {added ? (
                   <><Check size={16} strokeWidth={2.5} /> Added to Bag</>
@@ -402,9 +466,9 @@ export default function ProductDetail() {
             </div>
 
             {/* Features */}
-            {product.features && (
+            {features && features.length > 0 && (
               <div className="pd-features">
-                {product.features.map((f) => (
+                {features.map((f) => (
                   <span key={f} className="pd-feature-tag">{f}</span>
                 ))}
               </div>
@@ -421,7 +485,7 @@ export default function ProductDetail() {
 
               <AccordionItem title="Specifications">
                 <dl className="pd-specs">
-                  {Object.entries(product.specifications || {}).map(([key, val]) => (
+                  {Object.entries(specifications || {}).map(([key, val]) => (
                     <div key={key} className="pd-specs__row">
                       <dt className="pd-specs__key">{key}</dt>
                       <dd className="pd-specs__val">{val}</dd>
@@ -431,16 +495,16 @@ export default function ProductDetail() {
               </AccordionItem>
 
               <AccordionItem title="Shipping Information">
-                <p><strong>Standard shipping:</strong> {product.shipping?.standard || '6 to 8 days'}</p>
-                <p><strong>Express shipping:</strong> {product.shipping?.express || '3 to 4 days'}</p>
+                <p><strong>Standard shipping:</strong> {shippingInfo?.standard || '6 to 8 days'}</p>
+                <p><strong>Express shipping:</strong> {shippingInfo?.express || '3 to 4 days'}</p>
                 <p style={{ marginTop: '0.5rem' }}>
-                  Free standard shipping on orders above ₹{product.shipping?.free_threshold || 999}. 15-day hassle-free replacement or return guarantee.
+                  Free standard shipping on orders above ₹{shippingInfo?.free_threshold || 999}. 15-day hassle-free replacement or return guarantee.
                 </p>
               </AccordionItem>
 
               <AccordionItem title="Care Instructions">
                 <ul style={{ paddingLeft: '1rem', listStyle: 'disc' }}>
-                  {(product.care_instructions || []).map((c, i) => (
+                  {(careInstructions || []).map((c, i) => (
                     <li key={i} style={{ marginBottom: '0.4rem' }}>{c}</li>
                   ))}
                 </ul>

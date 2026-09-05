@@ -25,12 +25,18 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='category.name', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     discount_percent = serializers.IntegerField(read_only=True)
     image = serializers.CharField(source='primary_image_url', read_only=True)
     thumbnail = serializers.CharField(source='primary_image_url', read_only=True)
     style = serializers.JSONField(source='style_tags', read_only=True)
+    features = serializers.SerializerMethodField()
+    specifications = serializers.SerializerMethodField()
+    shipping = serializers.SerializerMethodField()
+    care_instructions = serializers.SerializerMethodField()
+    image_urls = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -38,10 +44,46 @@ class ProductSerializer(serializers.ModelSerializer):
             'id', 'name', 'slug', 'category', 'category_name',
             'price', 'original_price', 'discount_percent',
             'description', 'details', 'style_tags', 'style',
+            'features', 'specifications', 'shipping', 'care_instructions',
             'in_stock', 'stock_quantity', 'is_featured', 'is_bestseller',
-            'primary_image_url', 'image', 'thumbnail', 'images',
+            'primary_image_url', 'image', 'thumbnail', 'images', 'image_urls',
             'created_at', 'updated_at',
         ]
+
+    def get_features(self, obj):
+        if isinstance(obj.details, dict) and 'features' in obj.details:
+            return obj.details['features']
+        return ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"]
+
+    def get_specifications(self, obj):
+        if isinstance(obj.details, dict) and 'specifications' in obj.details:
+            return obj.details['specifications']
+        return {
+            "Material": "Titanium Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        }
+
+    def get_shipping(self, obj):
+        if isinstance(obj.details, dict) and 'shipping' in obj.details:
+            return obj.details['shipping']
+        return {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999}
+
+    def get_care_instructions(self, obj):
+        if isinstance(obj.details, dict) and 'care_instructions' in obj.details:
+            return obj.details['care_instructions']
+        return [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+
+    def get_image_urls(self, obj):
+        urls = [img.image_url for img in obj.images.all()]
+        if not urls:
+            urls = [obj.primary_image_url or f"/products/{obj.id}/1.jpeg"]
+        return urls
 
 
 class ProductListSerializer(serializers.ModelSerializer):

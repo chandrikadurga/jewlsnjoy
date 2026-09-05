@@ -45,19 +45,21 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductListSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='category.name', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     discount_percent = serializers.IntegerField(read_only=True)
     image = serializers.CharField(source='primary_image_url', read_only=True)
     thumbnail = serializers.CharField(source='primary_image_url', read_only=True)
+    images = ProductImageSerializer(many=True, read_only=True)
     style = serializers.JSONField(source='style_tags', read_only=True)
 
     class Meta:
         model = Product
         fields = [
-            'id', 'name', 'slug', 'category_name',
+            'id', 'name', 'slug', 'category', 'category_name',
             'price', 'original_price', 'discount_percent',
             'in_stock', 'stock_quantity', 'is_featured', 'is_bestseller',
-            'primary_image_url', 'image', 'thumbnail', 'style_tags', 'style',
+            'primary_image_url', 'image', 'thumbnail', 'images', 'style_tags', 'style',
         ]
 
 

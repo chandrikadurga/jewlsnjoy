@@ -29,3 +29,8 @@ jewlsnjoy/
 Thumbs.db
 .vscode/
 .idea/
+
+# Local scratches & raw backups
+scratch/
+products_raw_backup/
+

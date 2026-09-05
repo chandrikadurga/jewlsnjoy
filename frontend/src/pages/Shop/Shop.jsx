@@ -6,12 +6,13 @@ import { useProducts } from '../../hooks/useProducts';
 import { FALLBACK_PRODUCTS } from '../../data/products';
 import './Shop.css';
 
-const CATEGORIES = ['All', 'Necklaces'];
-const STYLES     = ['Minimal', 'Luxury', 'Romantic', 'Statement', 'Layered', 'Elegant'];
+const CATEGORIES = ['All', 'Necklaces', 'Earrings', 'Rings', 'Bracelets'];
+const STYLES     = ['Minimal', 'Luxury', 'Romantic', 'Floral', 'Everyday', 'Statement', 'Classic', 'Bridal', 'Vintage', 'Chic'];
 const PRICE_RANGES = [
-  { label: 'Under ₹700',   min: 0,    max: 700  },
-  { label: '₹700–₹900',   min: 700,  max: 900  },
-  { label: 'Above ₹900',  min: 900,  max: Infinity },
+  { label: 'Under ₹500',   min: 0,    max: 500  },
+  { label: '₹500–₹750',   min: 500,  max: 750  },
+  { label: '₹750–₹1,000', min: 750,  max: 1000 },
+  { label: 'Above ₹1,000', min: 1000, max: Infinity },
 ];
 const SORT_OPTIONS = [
   { value: 'featured',   label: 'Featured'         },

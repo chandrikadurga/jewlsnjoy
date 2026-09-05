@@ -1,6 +1,6 @@
 """
-Mock product data for Jewels N' Joys.
-7 real jewelry items with multi-angle photography.
+Mock product data for Jewels 'n' Joys.
+80 real jewelry items with multi-angle photography.
 """
 
 PRODUCTS = [
@@ -11,7 +11,10 @@ PRODUCTS = [
         "price": 799,
         "original_price": 999,
         "category": "Necklaces",
-        "style": ["Elegant", "Luxury"],
+        "style": [
+            "Elegant",
+            "Luxury"
+        ],
         "short_description": "A sophisticated gold-tone herringbone necklace accented with vivid square-cut green decorative stones.",
         "description": "A sophisticated gold-tone herringbone necklace accented with multiple vivid green square-cut decorative stones. The sleek flat chain combined with emerald-green accents creates an opulent statement suitable for both everyday styling and grand occasions.",
         "image": "/api/placeholder/product_1/1",
@@ -19,7 +22,7 @@ PRODUCTS = [
         "images": [
             "/api/placeholder/product_1/1",
             "/api/placeholder/product_1/2",
-            "/api/placeholder/product_1/3",
+            "/api/placeholder/product_1/3"
         ],
         "variants": [],
         "in_stock": True,
@@ -27,24 +30,29 @@ PRODUCTS = [
         "is_bestseller": True,
         "rating": 4.9,
         "review_count": 142,
-        "features": ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
         "specifications": {
             "Material": "Titanium Stainless Steel",
             "Finish": "18K Gold Color Plated",
             "Plating": "Long-lasting PVD Plated",
             "Stones": "Emerald-Green Decorative Stones",
-            "Features": "Anti-tarnish, Waterproof, Quality Guarantee",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3–5 business days",
-            "express": "1–2 business days",
-            "free_threshold": 999,
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
         },
         "care_instructions": [
             "Avoid direct contact with harsh perfumes and chemicals.",
             "Store in the provided jewellery pouch when not in use.",
-            "Clean gently with a soft dry cloth.",
-        ],
+            "Clean gently with a soft dry cloth."
+        ]
     },
     {
         "id": 2,
@@ -53,7 +61,10 @@ PRODUCTS = [
         "price": 599,
         "original_price": 749,
         "category": "Necklaces",
-        "style": ["Minimal", "Romantic"],
+        "style": [
+            "Minimal",
+            "Romantic"
+        ],
         "short_description": "A minimalist gold-tone heart necklace featuring a glossy black heart centerpiece framed by polished gold.",
         "description": "A minimalist gold-tone heart necklace featuring a glossy black heart centerpiece framed by a polished gold heart bezel. Its sleek silhouette makes it effortless to style with casual outfits, evening wear, and everyday looks.",
         "image": "/api/placeholder/product_2/1",
@@ -63,7 +74,7 @@ PRODUCTS = [
             "/api/placeholder/product_2/2",
             "/api/placeholder/product_2/3",
             "/api/placeholder/product_2/4",
-            "/api/placeholder/product_2/5",
+            "/api/placeholder/product_2/5"
         ],
         "variants": [],
         "in_stock": True,
@@ -71,24 +82,29 @@ PRODUCTS = [
         "is_bestseller": True,
         "rating": 4.8,
         "review_count": 98,
-        "features": ["Anti-tarnish", "Waterproof", "PVD Plated", "Glossy Onyx Heart"],
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "Glossy Onyx Heart"
+        ],
         "specifications": {
             "Material": "Titanium Stainless Steel",
             "Finish": "18K Gold Color Plated",
             "Plating": "Long-lasting PVD Plated",
             "Stones": "Glossy Black Onyx Heart",
-            "Features": "Anti-tarnish, Waterproof, Quality Guarantee",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3–5 business days",
-            "express": "1–2 business days",
-            "free_threshold": 999,
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
         },
         "care_instructions": [
             "Avoid direct contact with harsh perfumes and chemicals.",
             "Store in the provided jewellery pouch when not in use.",
-            "Clean gently with a soft dry cloth.",
-        ],
+            "Clean gently with a soft dry cloth."
+        ]
     },
     {
         "id": 3,
@@ -97,7 +113,10 @@ PRODUCTS = [
         "price": 649,
         "original_price": 799,
         "category": "Necklaces",
-        "style": ["Romantic", "Statement"],
+        "style": [
+            "Romantic",
+            "Statement"
+        ],
         "short_description": "An enchanting silver-tone necklace showcasing a regal crown perched atop a faceted pink heart zircon crystal.",
         "description": "An enchanting silver-tone necklace showcasing a regal crown accented with clear crystals perched atop a vivid faceted pink heart zircon. A delicate titanium steel chain ensures lasting brilliance and comfort for any royal occasion.",
         "image": "/api/placeholder/product_3/1",
@@ -107,7 +126,7 @@ PRODUCTS = [
             "/api/placeholder/product_3/2",
             "/api/placeholder/product_3/3",
             "/api/placeholder/product_3/4",
-            "/api/placeholder/product_3/5",
+            "/api/placeholder/product_3/5"
         ],
         "variants": [],
         "in_stock": True,
@@ -115,24 +134,29 @@ PRODUCTS = [
         "is_bestseller": False,
         "rating": 4.7,
         "review_count": 76,
-        "features": ["Anti-tarnish", "Waterproof", "Rhodium Plated", "Faceted Zircon"],
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "Rhodium Plated",
+            "Faceted Zircon"
+        ],
         "specifications": {
             "Material": "Titanium Stainless Steel Chain, Copper Pendant",
             "Finish": "Rhodium Color Plated",
             "Plating": "Long-lasting PVD Plated",
             "Stones": "High Quality Pink Zircon Crystal",
-            "Features": "Anti-tarnish, Waterproof, Quality Guarantee",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3–5 business days",
-            "express": "1–2 business days",
-            "free_threshold": 999,
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
         },
         "care_instructions": [
             "Avoid direct contact with harsh perfumes and chemicals.",
             "Store in the provided jewellery pouch when not in use.",
-            "Clean gently with a soft dry cloth.",
-        ],
+            "Clean gently with a soft dry cloth."
+        ]
     },
     {
         "id": 4,
@@ -141,7 +165,10 @@ PRODUCTS = [
         "price": 699,
         "original_price": 849,
         "category": "Necklaces",
-        "style": ["Vintage", "Classic"],
+        "style": [
+            "Vintage",
+            "Classic"
+        ],
         "short_description": "A vintage-inspired oval medallion necklace featuring a deep faceted onyx stone in a sunburst gold bezel setting.",
         "description": "A striking vintage-inspired oval medallion necklace featuring a deep faceted black stone set in an architectural sunburst gold bezel. Suspended on a durable gold cable chain with extender.",
         "image": "/api/placeholder/product_4/1",
@@ -151,7 +178,7 @@ PRODUCTS = [
             "/api/placeholder/product_4/2",
             "/api/placeholder/product_4/3",
             "/api/placeholder/product_4/4",
-            "/api/placeholder/product_4/5",
+            "/api/placeholder/product_4/5"
         ],
         "variants": [],
         "in_stock": True,
@@ -159,7 +186,12 @@ PRODUCTS = [
         "is_bestseller": False,
         "rating": 4.9,
         "review_count": 64,
-        "features": ["316L Steel", "Anti-tarnish", "Waterproof", "Faceted Onyx"],
+        "features": [
+            "316L Steel",
+            "Anti-tarnish",
+            "Waterproof",
+            "Faceted Onyx"
+        ],
         "specifications": {
             "Material": "316L Stainless Steel",
             "Weight": "3.6g",
@@ -167,18 +199,18 @@ PRODUCTS = [
             "PendantSize": "1.2cm",
             "Finish": "18K Gold Plated",
             "Stones": "Faceted Black Onyx Stone",
-            "Features": "Anti-tarnish, Waterproof",
+            "Features": "Anti-tarnish, Waterproof"
         },
         "shipping": {
-            "standard": "3–5 business days",
-            "express": "1–2 business days",
-            "free_threshold": 999,
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
         },
         "care_instructions": [
             "Avoid direct contact with harsh perfumes and chemicals.",
             "Store in the provided jewellery pouch when not in use.",
-            "Clean gently with a soft dry cloth.",
-        ],
+            "Clean gently with a soft dry cloth."
+        ]
     },
     {
         "id": 5,
@@ -187,9 +219,13 @@ PRODUCTS = [
         "price": 749,
         "original_price": 899,
         "category": "Necklaces",
-        "style": ["Modern", "Lucky", "Versatile"],
+        "style": [
+            "Modern",
+            "Lucky",
+            "Versatile"
+        ],
         "short_description": "An iconic four-leaf clover pendant necklace featuring a reversible design with onyx black on one side and mother-of-pearl white on the other.",
-        "description": "An iconic four-leaf clover pendant necklace featuring a reversible two-in-one design: onyx black on one side and iridescent mother-of-pearl white on the other, framed in a sparkling crystal pavé halo.",
+        "description": "An iconic four-leaf clover pendant necklace featuring a reversible two-in-one design: onyx black on one side and iridescent mother-of-pearl white on the other, framed in a sparkling crystal pav\u00e9 halo.",
         "image": "/api/placeholder/product_5/1",
         "thumbnail": "/api/placeholder/product_5/1",
         "images": [
@@ -197,7 +233,7 @@ PRODUCTS = [
             "/api/placeholder/product_5/2",
             "/api/placeholder/product_5/3",
             "/api/placeholder/product_5/4",
-            "/api/placeholder/product_5/5",
+            "/api/placeholder/product_5/5"
         ],
         "variants": [],
         "in_stock": True,
@@ -205,24 +241,29 @@ PRODUCTS = [
         "is_bestseller": True,
         "rating": 5.0,
         "review_count": 185,
-        "features": ["Reversible 2-in-1", "Anti-tarnish", "Waterproof", "Pavé Halo"],
+        "features": [
+            "Reversible 2-in-1",
+            "Anti-tarnish",
+            "Waterproof",
+            "Pav\u00e9 Halo"
+        ],
         "specifications": {
             "Material": "Titanium Stainless Steel",
             "Finish": "18K Gold Color Plated",
             "Plating": "Long-lasting PVD Plated",
-            "Stones": "Reversible Black/White Inlay & Pavé Zircons",
-            "Features": "Reversible 2-in-1, Anti-tarnish, Waterproof, Quality Guarantee",
+            "Stones": "Reversible Black/White Inlay & Pav\u00e9 Zircons",
+            "Features": "Reversible 2-in-1, Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3–5 business days",
-            "express": "1–2 business days",
-            "free_threshold": 999,
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
         },
         "care_instructions": [
             "Avoid direct contact with harsh perfumes and chemicals.",
             "Store in the provided jewellery pouch when not in use.",
-            "Clean gently with a soft dry cloth.",
-        ],
+            "Clean gently with a soft dry cloth."
+        ]
     },
     {
         "id": 6,
@@ -231,7 +272,10 @@ PRODUCTS = [
         "price": 849,
         "original_price": 1049,
         "category": "Necklaces",
-        "style": ["Layered", "Contemporary"],
+        "style": [
+            "Layered",
+            "Contemporary"
+        ],
         "short_description": "A curated two-strand necklace pairing a sleek herringbone chain with a crystal drop and a delicate cable chain holding an emerald halo pendant.",
         "description": "A perfectly curated two-strand necklace featuring a sleek herringbone chain accented with a round solitaire crystal, layered effortlessly with a delicate cable chain carrying a halo-framed square emerald pendant.",
         "image": "/api/placeholder/product_6/1",
@@ -241,7 +285,7 @@ PRODUCTS = [
             "/api/placeholder/product_6/2",
             "/api/placeholder/product_6/3",
             "/api/placeholder/product_6/4",
-            "/api/placeholder/product_6/5",
+            "/api/placeholder/product_6/5"
         ],
         "variants": [],
         "in_stock": True,
@@ -249,24 +293,29 @@ PRODUCTS = [
         "is_bestseller": True,
         "rating": 4.9,
         "review_count": 110,
-        "features": ["Double Layer Chain", "Anti-tarnish", "Waterproof", "Emerald Crystal"],
+        "features": [
+            "Double Layer Chain",
+            "Anti-tarnish",
+            "Waterproof",
+            "Emerald Crystal"
+        ],
         "specifications": {
             "Material": "316L Stainless Steel",
             "Finish": "18K Gold & Platinum Plated",
             "Plating": "Long-lasting PVD Plated",
             "Stones": "Square Cut Emerald Stone & Solitaire Crystal",
-            "Features": "Double Layer Chain, Anti-tarnish, Waterproof, Quality Guarantee",
+            "Features": "Double Layer Chain, Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3–5 business days",
-            "express": "1–2 business days",
-            "free_threshold": 999,
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
         },
         "care_instructions": [
             "Avoid direct contact with harsh perfumes and chemicals.",
             "Store in the provided jewellery pouch when not in use.",
-            "Clean gently with a soft dry cloth.",
-        ],
+            "Clean gently with a soft dry cloth."
+        ]
     },
     {
         "id": 7,
@@ -275,7 +324,10 @@ PRODUCTS = [
         "price": 899,
         "original_price": 1099,
         "category": "Necklaces",
-        "style": ["Luxury", "Statement"],
+        "style": [
+            "Luxury",
+            "Statement"
+        ],
         "short_description": "A statement flat herringbone chain choker centered with a lavish oval emerald stone set in ribbed gold caps.",
         "description": "A statement flat herringbone chain choker centered with a lavish oval emerald green gemstone hugged by sculpted, ribbed gold end-caps. Crafted to sit flawlessly along the collarbone with liquid-gold movement.",
         "image": "/api/placeholder/product_7/1",
@@ -284,7 +336,7 @@ PRODUCTS = [
             "/api/placeholder/product_7/1",
             "/api/placeholder/product_7/2",
             "/api/placeholder/product_7/3",
-            "/api/placeholder/product_7/4",
+            "/api/placeholder/product_7/4"
         ],
         "variants": [],
         "in_stock": True,
@@ -292,25 +344,3595 @@ PRODUCTS = [
         "is_bestseller": True,
         "rating": 4.9,
         "review_count": 135,
-        "features": ["Herringbone Choker", "Anti-tarnish", "Waterproof", "Oval Emerald Stone"],
+        "features": [
+            "Herringbone Choker",
+            "Anti-tarnish",
+            "Waterproof",
+            "Oval Emerald Stone"
+        ],
         "specifications": {
             "Material": "Titanium Stainless Steel",
             "Finish": "18K Gold Color Plated",
             "Plating": "Long-lasting PVD Plated",
             "Stones": "Oval Cut Emerald Stone",
-            "Features": "Anti-tarnish, Waterproof, Quality Guarantee",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3–5 business days",
-            "express": "1–2 business days",
-            "free_threshold": 999,
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
         },
         "care_instructions": [
             "Avoid direct contact with harsh perfumes and chemicals.",
             "Store in the provided jewellery pouch when not in use.",
-            "Clean gently with a soft dry cloth.",
-        ],
+            "Clean gently with a soft dry cloth."
+        ]
     },
+    {
+        "id": 8,
+        "name": "Rainbow Bloom Marquise Crystal Ring",
+        "slug": "rainbow-bloom-marquise-crystal-ring",
+        "price": 499,
+        "original_price": 699,
+        "category": "Rings",
+        "style": [
+            "Floral",
+            "Colorful",
+            "Chic"
+        ],
+        "short_description": "An open adjustable 18K gold-plated band crowned with vibrant marquise crystal petals.",
+        "description": "An open adjustable 18K gold-plated band crowned with vibrant marquise crystal petals in sapphire blue, rose pink, and ruby red hues. Engineered for comfort with an anti-tarnish waterproof finish.",
+        "image": "/api/placeholder/product_8/1",
+        "thumbnail": "/api/placeholder/product_8/1",
+        "images": [
+            "/api/placeholder/product_8/1",
+            "/api/placeholder/product_8/2"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 81,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Multicolor Marquise Cubic Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 9,
+        "name": "Gilded Fern Marquise Zircon Ring",
+        "slug": "gilded-fern-marquise-zircon-ring",
+        "price": 549,
+        "original_price": 749,
+        "category": "Rings",
+        "style": [
+            "Botanical",
+            "Minimalist"
+        ],
+        "short_description": "Botanical wrap ring featuring twin marquise-cut zircons mimicking delicate golden fern buds.",
+        "description": "Botanical wrap ring featuring twin marquise-cut zircons mimicking delicate golden fern buds on an organic curved band. Crafted in 316L stainless steel with 18K gold PVD plating.",
+        "image": "/api/placeholder/product_9/1",
+        "thumbnail": "/api/placeholder/product_9/1",
+        "images": [
+            "/api/placeholder/product_9/1",
+            "/api/placeholder/product_9/2"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 4.8,
+        "review_count": 88,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Marquise Cubic Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 10,
+        "name": "Tender Vine Gemstone Branch Ring",
+        "slug": "tender-vine-gemstone-branch-ring",
+        "price": 549,
+        "original_price": 749,
+        "category": "Rings",
+        "style": [
+            "Artisan",
+            "Colorful"
+        ],
+        "short_description": "Sculptural bypass ring adorned with colorful bezel-set pastel gemstones along a graceful branch.",
+        "description": "Sculptural bypass ring adorned with colorful bezel-set pastel gemstones along a graceful branch band. Lightweight, hypoallergenic, and water-resistant for all-day radiance.",
+        "image": "/api/placeholder/product_10/1",
+        "thumbnail": "/api/placeholder/product_10/1",
+        "images": [
+            "/api/placeholder/product_10/1",
+            "/api/placeholder/product_10/2"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 95,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Pastel Bezel Gemstones",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 11,
+        "name": "Meadow Flora Multi-Gem Wrap Ring",
+        "slug": "meadow-flora-multi-gem-wrap-ring",
+        "price": 599,
+        "original_price": 799,
+        "category": "Rings",
+        "style": [
+            "Bohemian",
+            "Luxury"
+        ],
+        "short_description": "Organic trailing branch motif studded with emerald, ruby pink, and citrine crystal blossoms.",
+        "description": "Organic trailing branch motif studded with emerald, ruby pink, and citrine crystal blossoms in radiant 18K gold plating. A statement piece that elevates any hand stack.",
+        "image": "/api/placeholder/product_11/1",
+        "thumbnail": "/api/placeholder/product_11/1",
+        "images": [
+            "/api/placeholder/product_11/1",
+            "/api/placeholder/product_11/2"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 102,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Multi-Color Crystal Blossoms",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 12,
+        "name": "Wildflower Cluster Zircon Open Ring",
+        "slug": "wildflower-cluster-zircon-open-ring",
+        "price": 549,
+        "original_price": 749,
+        "category": "Rings",
+        "style": [
+            "Romantic",
+            "Playful"
+        ],
+        "short_description": "Cheerful wildflower cluster featuring pink, orange, and emerald crystal petals on an open gold band.",
+        "description": "Cheerful wildflower cluster featuring pink, orange, and emerald crystal petals on a slim comfort-fit gold band. Designed to be smoothly adjustable for any finger size.",
+        "image": "/api/placeholder/product_12/1",
+        "thumbnail": "/api/placeholder/product_12/1",
+        "images": [
+            "/api/placeholder/product_12/1",
+            "/api/placeholder/product_12/2"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 109,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Multi-Colored Petal Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 13,
+        "name": "Laurel Wreath Golden Foliage Ring",
+        "slug": "laurel-wreath-golden-foliage-ring",
+        "price": 499,
+        "original_price": 699,
+        "category": "Rings",
+        "style": [
+            "Vintage",
+            "Royal"
+        ],
+        "short_description": "Embossed Roman laurel leaf wrap band in radiant matte-polish gold plating.",
+        "description": "Embossed Roman laurel leaf wrap band in radiant matte-polish gold plating symbolizing grace and triumph. Completely waterproof, sweatproof, and anti-tarnish.",
+        "image": "/api/placeholder/product_13/1",
+        "thumbnail": "/api/placeholder/product_13/1",
+        "images": [
+            "/api/placeholder/product_13/1",
+            "/api/placeholder/product_13/2"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 116,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Polished Gold Leaf Motifs",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 14,
+        "name": "Whimsical Pav\u00e9 Butterfly Double-Band Ring",
+        "slug": "whimsical-pave-butterfly-double-band-ring",
+        "price": 649,
+        "original_price": 899,
+        "category": "Rings",
+        "style": [
+            "Romantic",
+            "Statement"
+        ],
+        "short_description": "Twin fluttering pav\u00e9 butterflies set along an open multi-tier gold bypass band.",
+        "description": "Twin fluttering pav\u00e9 butterflies set along an open multi-tier gold bypass band. Embedded with micro-faceted cubic zirconia stones that shimmer in every lighting.",
+        "image": "/api/placeholder/product_14/1",
+        "thumbnail": "/api/placeholder/product_14/1",
+        "images": [
+            "/api/placeholder/product_14/1",
+            "/api/placeholder/product_14/2"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 123,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Pav\u00e9 Cubic Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 15,
+        "name": "Minimalist Hollow Heart Silhouette Studs",
+        "slug": "minimalist-hollow-heart-silhouette-studs",
+        "price": 449,
+        "original_price": 599,
+        "category": "Earrings",
+        "style": [
+            "Minimal",
+            "Contemporary"
+        ],
+        "short_description": "Contemporary open-heart wire silhouette stud earrings in lightweight hypoallergenic 18K gold.",
+        "description": "Contemporary open-heart wire silhouette stud earrings in lightweight hypoallergenic 18K gold-plated stainless steel. Effortlessly stylish for daily wear or gifting.",
+        "image": "/api/placeholder/product_15/1",
+        "thumbnail": "/api/placeholder/product_15/1",
+        "images": [
+            "/api/placeholder/product_15/1",
+            "/api/placeholder/product_15/2",
+            "/api/placeholder/product_15/3",
+            "/api/placeholder/product_15/4"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 130,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "None",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 16,
+        "name": "Golden Granule Beaded Heart Necklace",
+        "slug": "golden-granule-beaded-heart-necklace",
+        "price": 699,
+        "original_price": 949,
+        "category": "Necklaces",
+        "style": [
+            "Textured",
+            "Romantic"
+        ],
+        "short_description": "Tactile heart pendant formed from micro-beaded golden granules on a diamond-cut cable chain.",
+        "description": "Tactile heart pendant formed from micro-beaded golden granules on a diamond-cut cable chain. Crafted from premium 316L stainless steel with long-lasting PVD gold plating.",
+        "image": "/api/placeholder/product_16/1",
+        "thumbnail": "/api/placeholder/product_16/1",
+        "images": [
+            "/api/placeholder/product_16/1",
+            "/api/placeholder/product_16/2",
+            "/api/placeholder/product_16/3",
+            "/api/placeholder/product_16/4"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 4.7,
+        "review_count": 137,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Micro-Beaded Gold Granules",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 17,
+        "name": "Cherry Blossom Mother-of-Pearl Necklace",
+        "slug": "cherry-blossom-mother-of-pearl-necklace",
+        "price": 749,
+        "original_price": 999,
+        "category": "Necklaces",
+        "style": [
+            "Feminine",
+            "Floral"
+        ],
+        "short_description": "Rosy pink mother-of-pearl blossom pendant with gold bezel and center crystal bead.",
+        "description": "Rosy pink mother-of-pearl blossom pendant with gold bezel and center crystal bead. Natural iridescence ensures every petal reflects light with an ethereal soft glow.",
+        "image": "/api/placeholder/product_17/1",
+        "thumbnail": "/api/placeholder/product_17/1",
+        "images": [
+            "/api/placeholder/product_17/1",
+            "/api/placeholder/product_17/2"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 144,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Natural Pink Shell & Zircon",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 18,
+        "name": "Coastal Siren Seashell & Starfish Necklace",
+        "slug": "coastal-siren-seashell-and-starfish-necklace",
+        "price": 799,
+        "original_price": 1099,
+        "category": "Necklaces",
+        "style": [
+            "Vacation",
+            "Coastal"
+        ],
+        "short_description": "Sculpted scallop shell and starfish charms accented with miniature bezel cubic zirconia.",
+        "description": "Sculpted scallop shell and starfish charms accented with miniature bezel cubic zirconia on a seaside link chain. Waterproof and sweatproof for beach vacations and everyday summer bliss.",
+        "image": "/api/placeholder/product_18/1",
+        "thumbnail": "/api/placeholder/product_18/1",
+        "images": [
+            "/api/placeholder/product_18/1",
+            "/api/placeholder/product_18/2",
+            "/api/placeholder/product_18/3",
+            "/api/placeholder/product_18/4",
+            "/api/placeholder/product_18/5"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 151,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Bezel Solitaire Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 19,
+        "name": "Opalescent Heart Paperclip Link Necklace",
+        "slug": "opalescent-heart-paperclip-link-necklace",
+        "price": 749,
+        "original_price": 999,
+        "category": "Necklaces",
+        "style": [
+            "Trendy",
+            "Luxury"
+        ],
+        "short_description": "Radiant white shell heart pendant suspended from an asymmetric duo of paperclip chain and cable chain.",
+        "description": "Radiant white shell heart pendant suspended from an asymmetric duo of paperclip chain and sleek cable chain. High-polish 18K gold PVD plating prevents tarnishing.",
+        "image": "/api/placeholder/product_19/1",
+        "thumbnail": "/api/placeholder/product_19/1",
+        "images": [
+            "/api/placeholder/product_19/1",
+            "/api/placeholder/product_19/2",
+            "/api/placeholder/product_19/3",
+            "/api/placeholder/product_19/4"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 5.0,
+        "review_count": 158,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Natural White Mother-of-Pearl",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 20,
+        "name": "Verdant Emerald Solitaire Cushion Necklace",
+        "slug": "verdant-emerald-solitaire-cushion-necklace",
+        "price": 699,
+        "original_price": 949,
+        "category": "Necklaces",
+        "style": [
+            "Regal",
+            "Timeless"
+        ],
+        "short_description": "Rich emerald-green cushion-cut stone encased in a solid brushed gold bezel on a fine cable chain.",
+        "description": "Rich emerald-green cushion-cut stone encased in a solid brushed gold bezel on a fine cable chain. Adds a pop of royal green sophistication to any outfit.",
+        "image": "/api/placeholder/product_20/1",
+        "thumbnail": "/api/placeholder/product_20/1",
+        "images": [
+            "/api/placeholder/product_20/1",
+            "/api/placeholder/product_20/2",
+            "/api/placeholder/product_20/3",
+            "/api/placeholder/product_20/4",
+            "/api/placeholder/product_20/5"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 165,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Cushion-Cut Emerald Crystal",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 21,
+        "name": "Dual Symphony Layered Herringbone Necklace",
+        "slug": "dual-symphony-layered-herringbone-necklace",
+        "price": 899,
+        "original_price": 1249,
+        "category": "Necklaces",
+        "style": [
+            "Layered",
+            "Statement"
+        ],
+        "short_description": "Pre-layered double snake chains uniting a liquid gold herringbone strand with a pearl bead strand.",
+        "description": "Pre-layered double snake chains uniting a sleek liquid gold herringbone strand with a pearl bead accent strand. Fastened with a single secure clasp for instant effortless styling.",
+        "image": "/api/placeholder/product_21/1",
+        "thumbnail": "/api/placeholder/product_21/1",
+        "images": [
+            "/api/placeholder/product_21/1",
+            "/api/placeholder/product_21/2",
+            "/api/placeholder/product_21/3",
+            "/api/placeholder/product_21/4",
+            "/api/placeholder/product_21/5",
+            "/api/placeholder/product_21/6",
+            "/api/placeholder/product_21/7",
+            "/api/placeholder/product_21/8"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 172,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Lustrous Simulated Pearl Bead",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 22,
+        "name": "Onyx Bar & Golden Drop Y-Lariat Necklace",
+        "slug": "onyx-bar-and-golden-drop-y-lariat-necklace",
+        "price": 799,
+        "original_price": 1099,
+        "category": "Necklaces",
+        "style": [
+            "Modernist",
+            "Sleek"
+        ],
+        "short_description": "High-fashion architectural Y-necklace with deep black enamel bar and slender suspended gold drops.",
+        "description": "High-fashion architectural Y-necklace with deep black enamel bar and slender suspended gold drops. Flatters deep v-necks, collared shirts, and evening slip dresses.",
+        "image": "/api/placeholder/product_22/1",
+        "thumbnail": "/api/placeholder/product_22/1",
+        "images": [
+            "/api/placeholder/product_22/1",
+            "/api/placeholder/product_22/2",
+            "/api/placeholder/product_22/3",
+            "/api/placeholder/product_22/4",
+            "/api/placeholder/product_22/5",
+            "/api/placeholder/product_22/6",
+            "/api/placeholder/product_22/7"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 4.9,
+        "review_count": 29,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Glossy Black Enamel Bar",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 23,
+        "name": "Petite Golden Ribbon Bow Necklace",
+        "slug": "petite-golden-ribbon-bow-necklace",
+        "price": 599,
+        "original_price": 799,
+        "category": "Necklaces",
+        "style": [
+            "Coquette",
+            "Feminine"
+        ],
+        "short_description": "Flawlessly tied satin-finish golden ribbon pendant with flowing ribbon tails on a dainty chain.",
+        "description": "Flawlessly tied satin-finish golden ribbon pendant with flowing ribbon tails on a dainty link chain. An ultra-trendy coquette staple that stays lustrous year after year.",
+        "image": "/api/placeholder/product_23/1",
+        "thumbnail": "/api/placeholder/product_23/1",
+        "images": [
+            "/api/placeholder/product_23/1",
+            "/api/placeholder/product_23/2"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 36,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "None",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 24,
+        "name": "Golden Topaz Radiant Cut Pendant Necklace",
+        "slug": "golden-topaz-radiant-cut-pendant-necklace",
+        "price": 699,
+        "original_price": 949,
+        "category": "Necklaces",
+        "style": [
+            "Warm Glamour",
+            "Chic"
+        ],
+        "short_description": "Honey amber topaz crystal in an open bezel frame on a twisted rope chain catching sunlight.",
+        "description": "Honey amber topaz crystal in an open bezel frame on a twisted rope chain catching sunlight with every subtle turn. Completely anti-tarnish and nickel-free.",
+        "image": "/api/placeholder/product_24/1",
+        "thumbnail": "/api/placeholder/product_24/1",
+        "images": [
+            "/api/placeholder/product_24/1",
+            "/api/placeholder/product_24/2",
+            "/api/placeholder/product_24/3",
+            "/api/placeholder/product_24/4"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 43,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Radiant Honey Topaz Crystal",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 25,
+        "name": "Golden Papillon Butterfly Satellite Necklace",
+        "slug": "golden-papillon-butterfly-satellite-necklace",
+        "price": 749,
+        "original_price": 999,
+        "category": "Necklaces",
+        "style": [
+            "Playful",
+            "Romantic"
+        ],
+        "short_description": "Textured golden butterfly charm poised on a satellite bead chain symbolizing freedom and renewal.",
+        "description": "Textured golden butterfly charm poised on a satellite bead chain symbolizing freedom and renewal. Finished in rich 18K gold color plating over stainless steel.",
+        "image": "/api/placeholder/product_25/1",
+        "thumbnail": "/api/placeholder/product_25/1",
+        "images": [
+            "/api/placeholder/product_25/1",
+            "/api/placeholder/product_25/2",
+            "/api/placeholder/product_25/3",
+            "/api/placeholder/product_25/4",
+            "/api/placeholder/product_25/5",
+            "/api/placeholder/product_25/6"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 4.8,
+        "review_count": 50,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Textured Gold Butterfly Charm",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 26,
+        "name": "Kaleidoscope Prism Gemstone Station Choker",
+        "slug": "kaleidoscope-prism-gemstone-station-choker",
+        "price": 849,
+        "original_price": 1199,
+        "category": "Necklaces",
+        "style": [
+            "Festive",
+            "Colorful"
+        ],
+        "short_description": "Multi-color emerald, amethyst, sapphire, and ruby droplet crystals stationed along a choker chain.",
+        "description": "Multi-color emerald, amethyst, sapphire, and ruby droplet crystals stationed along a glimmering choker chain. Eye-catching, joyful, and impeccably finished.",
+        "image": "/api/placeholder/product_26/1",
+        "thumbnail": "/api/placeholder/product_26/1",
+        "images": [
+            "/api/placeholder/product_26/1",
+            "/api/placeholder/product_26/2",
+            "/api/placeholder/product_26/3",
+            "/api/placeholder/product_26/4",
+            "/api/placeholder/product_26/5",
+            "/api/placeholder/product_26/6"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 57,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Multicolor Droplet Crystals",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 27,
+        "name": "Celeste Freshwater Pearl & Crystal Choker Set",
+        "slug": "celeste-freshwater-pearl-and-crystal-choker-set",
+        "price": 849,
+        "original_price": 1199,
+        "category": "Necklaces",
+        "style": [
+            "Bridal",
+            "Classic"
+        ],
+        "short_description": "Multi-tiered choker necklace uniting luminous pearl beads with a sparkling diamond solitaire drop.",
+        "description": "Multi-tiered choker necklace uniting lustrous luminous pearl beads with a sparkling diamond solitaire drop. Perfect for weddings, formal dinners, and festive celebrations.",
+        "image": "/api/placeholder/product_27/1",
+        "thumbnail": "/api/placeholder/product_27/1",
+        "images": [
+            "/api/placeholder/product_27/1",
+            "/api/placeholder/product_27/2",
+            "/api/placeholder/product_27/3",
+            "/api/placeholder/product_27/4",
+            "/api/placeholder/product_27/5"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 64,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Luminous Pearls & Solitaire Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 28,
+        "name": "Sculpted Puffed Heart Molten Gold Studs",
+        "slug": "sculpted-puffed-heart-molten-gold-studs",
+        "price": 499,
+        "original_price": 699,
+        "category": "Earrings",
+        "style": [
+            "Bold",
+            "Trendy"
+        ],
+        "short_description": "Chunky 3D folded puffed heart studs in polished mirror-shine gold offering modern Parisian charm.",
+        "description": "Chunky 3D folded puffed heart studs in polished mirror-shine gold offering modern Parisian charm. Engineered hollow to remain ultra-light on earlobes all day.",
+        "image": "/api/placeholder/product_28/1",
+        "thumbnail": "/api/placeholder/product_28/1",
+        "images": [
+            "/api/placeholder/product_28/1",
+            "/api/placeholder/product_28/2",
+            "/api/placeholder/product_28/3",
+            "/api/placeholder/product_28/4",
+            "/api/placeholder/product_28/5"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 71,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Mirror Polish Folded Gold",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 29,
+        "name": "Butterfly & Letter Script Gold Necklace",
+        "slug": "butterfly-and-letter-script-gold-necklace",
+        "price": 699,
+        "original_price": 899,
+        "category": "Necklaces",
+        "style": [
+            "Romantic",
+            "Chic"
+        ],
+        "short_description": "Charming pendant with delicate butterfly and cursive lettering on a fine gold chain.",
+        "description": "Charming pendant featuring a delicate butterfly and cursive lettering on a fine gold chain. Waterproof and anti-tarnish.",
+        "image": "/api/placeholder/product_29/1",
+        "thumbnail": "/api/placeholder/product_29/1",
+        "images": [
+            "/api/placeholder/product_29/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 78,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Gold Script Charm",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 30,
+        "name": "Golden Rim Luminous Pearl Stud Earrings",
+        "slug": "golden-rim-luminous-pearl-stud-earrings",
+        "price": 449,
+        "original_price": 599,
+        "category": "Earrings",
+        "style": [
+            "Classic",
+            "Minimalist"
+        ],
+        "short_description": "Lustrous round pearls framed in a minimalist 18K gold bezel rim.",
+        "description": "Lustrous round pearls framed in a minimalist 18K gold bezel rim. Elegant everyday stud earrings with hypoallergenic surgical posts.",
+        "image": "/api/placeholder/product_30/1",
+        "thumbnail": "/api/placeholder/product_30/1",
+        "images": [
+            "/api/placeholder/product_30/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 85,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Lustrous Round Pearl",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 31,
+        "name": "Liquid Gold Herringbone Chain Bracelet",
+        "slug": "liquid-gold-herringbone-chain-bracelet",
+        "price": 549,
+        "original_price": 749,
+        "category": "Bracelets",
+        "style": [
+            "Sleek",
+            "Everyday"
+        ],
+        "short_description": "Silky flat herringbone chain bracelet with adjustable extender for a liquid gold drape.",
+        "description": "Silky flat herringbone chain bracelet with adjustable extender for a liquid gold drape. 18K gold PVD plated stainless steel.",
+        "image": "/api/placeholder/product_31/1",
+        "thumbnail": "/api/placeholder/product_31/1",
+        "images": [
+            "/api/placeholder/product_31/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 5.0,
+        "review_count": 92,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "None",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 32,
+        "name": "Siren Pearl Whale Tail Gold Necklace",
+        "slug": "siren-pearl-whale-tail-gold-necklace",
+        "price": 749,
+        "original_price": 999,
+        "category": "Necklaces",
+        "style": [
+            "Ocean",
+            "Graceful"
+        ],
+        "short_description": "Oceanic whale fluke pendant adorned with a luminous suspended pearl bead.",
+        "description": "Oceanic whale fluke pendant adorned with a luminous suspended pearl bead. Symbolizes freedom, good fortune, and oceanic grace.",
+        "image": "/api/placeholder/product_32/1",
+        "thumbnail": "/api/placeholder/product_32/1",
+        "images": [
+            "/api/placeholder/product_32/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 99,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Simulated Pearl Bead",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 33,
+        "name": "Lucky Four-Leaf Clover Gold Chain Bracelet",
+        "slug": "lucky-four-leaf-clover-gold-chain-bracelet",
+        "price": 599,
+        "original_price": 799,
+        "category": "Bracelets",
+        "style": [
+            "Lucky",
+            "Dainty"
+        ],
+        "short_description": "Four-leaf clover silhouette charm centered on a fine gold link bracelet.",
+        "description": "Four-leaf clover silhouette charm centered on a fine gold link bracelet. A gentle touch of luck for everyday wear.",
+        "image": "/api/placeholder/product_33/1",
+        "thumbnail": "/api/placeholder/product_33/1",
+        "images": [
+            "/api/placeholder/product_33/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 106,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Clover Silhouette Charm",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 34,
+        "name": "Emerald Baguette Inset Gold Bangle",
+        "slug": "emerald-baguette-inset-gold-bangle",
+        "price": 899,
+        "original_price": 1299,
+        "category": "Bracelets",
+        "style": [
+            "Luxury",
+            "Regal"
+        ],
+        "short_description": "Polished oval hinge bangle studded with square emerald green baguette stones.",
+        "description": "Polished oval hinge bangle studded with square emerald green baguette stones. Secure snap closure with high-gloss gold finish.",
+        "image": "/api/placeholder/product_34/1",
+        "thumbnail": "/api/placeholder/product_34/1",
+        "images": [
+            "/api/placeholder/product_34/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 113,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Emerald Baguette Stones",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 35,
+        "name": "Flutter Crystal Butterfly Silver Studs",
+        "slug": "flutter-crystal-butterfly-silver-studs",
+        "price": 499,
+        "original_price": 699,
+        "category": "Earrings",
+        "style": [
+            "Dainty",
+            "Whimsical"
+        ],
+        "short_description": "Sparkling butterfly silhouette stud earrings encrusted with micro cubic zirconia.",
+        "description": "Sparkling butterfly silhouette stud earrings encrusted with micro cubic zirconia. Crafted on sterling silver posts.",
+        "image": "/api/placeholder/product_35/1",
+        "thumbnail": "/api/placeholder/product_35/1",
+        "images": [
+            "/api/placeholder/product_35/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 120,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Cubic Zirconia Pav\u00e9",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 36,
+        "name": "Bamboo Segment Textured Cuff Bangle",
+        "slug": "bamboo-segment-textured-cuff-bangle",
+        "price": 799,
+        "original_price": 1099,
+        "category": "Bracelets",
+        "style": [
+            "Sculptural",
+            "Zen"
+        ],
+        "short_description": "Organic textured bamboo stalk segments formed into a stylish open gold cuff.",
+        "description": "Organic textured bamboo stalk segments formed into a stylish open gold cuff. Waterproof and resistant to scratches.",
+        "image": "/api/placeholder/product_36/1",
+        "thumbnail": "/api/placeholder/product_36/1",
+        "images": [
+            "/api/placeholder/product_36/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 127,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Sculpted Bamboo Knots",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 37,
+        "name": "Bold Initial 'D' Cuban Chain Necklace",
+        "slug": "bold-initial-d-cuban-chain-necklace",
+        "price": 749,
+        "original_price": 999,
+        "category": "Necklaces",
+        "style": [
+            "Statement",
+            "Monogram"
+        ],
+        "short_description": "Monogram 'D' initial pendant suspended from a chunky polished curb chain.",
+        "description": "Monogram 'D' initial pendant suspended from a chunky polished curb chain. Bold, modern typography in 18K gold finish.",
+        "image": "/api/placeholder/product_37/1",
+        "thumbnail": "/api/placeholder/product_37/1",
+        "images": [
+            "/api/placeholder/product_37/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 4.8,
+        "review_count": 134,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "None",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 38,
+        "name": "Two-Tone Sage Green & Gold Heart Drop Earrings",
+        "slug": "two-tone-sage-green-and-gold-heart-drop-earrings",
+        "price": 499,
+        "original_price": 699,
+        "category": "Earrings",
+        "style": [
+            "Chic",
+            "Color Pop"
+        ],
+        "short_description": "Sage green enamel heart connected to a radiant gold heart drop charm.",
+        "description": "Sage green enamel heart connected to a radiant gold heart drop charm. Light and eye-catching with push-back closures.",
+        "image": "/api/placeholder/product_38/1",
+        "thumbnail": "/api/placeholder/product_38/1",
+        "images": [
+            "/api/placeholder/product_38/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 141,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Sage Green Enamel",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 39,
+        "name": "Pav\u00e9 Zircon Eternity Band Ring",
+        "slug": "pave-zircon-eternity-band-ring",
+        "price": 549,
+        "original_price": 749,
+        "category": "Rings",
+        "style": [
+            "Timeless",
+            "Sparkle"
+        ],
+        "short_description": "Continuous channel of round brilliant cubic zirconia stones set in platinum-silver finish.",
+        "description": "Continuous channel of round brilliant cubic zirconia stones set in platinum-silver finish. Ideal for stacking or solo wear.",
+        "image": "/api/placeholder/product_39/1",
+        "thumbnail": "/api/placeholder/product_39/1",
+        "images": [
+            "/api/placeholder/product_39/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 148,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Round Brilliant Zircons",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 40,
+        "name": "Empress Emerald-Cut Double Drop Earrings",
+        "slug": "empress-emerald-cut-double-drop-earrings",
+        "price": 699,
+        "original_price": 949,
+        "category": "Earrings",
+        "style": [
+            "Glamour",
+            "Red Carpet"
+        ],
+        "short_description": "Cascading dual emerald-cut clear crystal gems framed in rich gold prong settings.",
+        "description": "Cascading dual emerald-cut clear crystal gems framed in rich gold prong settings. Creates breathtaking optical clarity.",
+        "image": "/api/placeholder/product_40/1",
+        "thumbnail": "/api/placeholder/product_40/1",
+        "images": [
+            "/api/placeholder/product_40/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 155,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Emerald-Cut Clear Crystals",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 41,
+        "name": "Noir Velvet Butterfly Ribbon Drop Earrings",
+        "slug": "noir-velvet-butterfly-ribbon-drop-earrings",
+        "price": 599,
+        "original_price": 799,
+        "category": "Earrings",
+        "style": [
+            "Gothic Romance",
+            "Evening"
+        ],
+        "short_description": "Jet-black crystal butterfly stud with hanging velvet bow drop ribbons.",
+        "description": "Jet-black crystal butterfly stud with hanging velvet bow drop ribbons. Adds drama and romance to any evening outfit.",
+        "image": "/api/placeholder/product_41/1",
+        "thumbnail": "/api/placeholder/product_41/1",
+        "images": [
+            "/api/placeholder/product_41/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 162,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Black Faceted Crystals",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 42,
+        "name": "Roman Numeral Engraved Band Ring - Silver",
+        "slug": "roman-numeral-engraved-band-ring-silver",
+        "price": 549,
+        "original_price": 749,
+        "category": "Rings",
+        "style": [
+            "Modernist",
+            "Heritage"
+        ],
+        "short_description": "Classic Roman numerals precision engraved along a smooth beveled platinum-steel band.",
+        "description": "Classic Roman numerals precision engraved along a smooth beveled platinum-steel band. Comfort-fit interior.",
+        "image": "/api/placeholder/product_42/1",
+        "thumbnail": "/api/placeholder/product_42/1",
+        "images": [
+            "/api/placeholder/product_42/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 169,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Engraved Numerals",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 43,
+        "name": "Roman Numeral Engraved Band Ring - Aureate Gold",
+        "slug": "roman-numeral-engraved-band-ring-aureate-gold",
+        "price": 549,
+        "original_price": 749,
+        "category": "Rings",
+        "style": [
+            "Modernist",
+            "Heritage"
+        ],
+        "short_description": "Classic Roman numerals precision engraved along a radiant 18K gold-plated band.",
+        "description": "Classic Roman numerals precision engraved along a radiant 18K gold-plated band. Timeless styling suitable for any occasion.",
+        "image": "/api/placeholder/product_43/1",
+        "thumbnail": "/api/placeholder/product_43/1",
+        "images": [
+            "/api/placeholder/product_43/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 5.0,
+        "review_count": 26,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Engraved Numerals",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 44,
+        "name": "Princess Crown Morganite Crystal Silver Necklace",
+        "slug": "princess-crown-morganite-crystal-silver-necklace",
+        "price": 699,
+        "original_price": 899,
+        "category": "Necklaces",
+        "style": [
+            "Fairytale",
+            "Sparkle"
+        ],
+        "short_description": "Delicate tiara crown perched over a pastel pink morganite heart crystal in sterling silver finish.",
+        "description": "Delicate tiara crown perched over a pastel pink morganite heart crystal in sterling silver finish. Anti-tarnish rhodium plated.",
+        "image": "/api/placeholder/product_44/1",
+        "thumbnail": "/api/placeholder/product_44/1",
+        "images": [
+            "/api/placeholder/product_44/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 33,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Pink Morganite Crystal",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 45,
+        "name": "Bezel Solitaire Crystal Rose Gold Bangle",
+        "slug": "bezel-solitaire-crystal-rose-gold-bangle",
+        "price": 799,
+        "original_price": 1099,
+        "category": "Bracelets",
+        "style": [
+            "Minimalist",
+            "Warm Rose"
+        ],
+        "short_description": "Rose gold oval cuff bangle punctuated by recessed bezel-set cubic zirconia stones.",
+        "description": "Rose gold oval cuff bangle punctuated by recessed bezel-set cubic zirconia stones. Hinge lock clasp for comfortable wear.",
+        "image": "/api/placeholder/product_45/1",
+        "thumbnail": "/api/placeholder/product_45/1",
+        "images": [
+            "/api/placeholder/product_45/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 40,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Bezel Solitaire Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 46,
+        "name": "Classic Round Pearl Ear Studs",
+        "slug": "classic-round-pearl-ear-studs",
+        "price": 399,
+        "original_price": 549,
+        "category": "Earrings",
+        "style": [
+            "Timeless",
+            "Office Chic"
+        ],
+        "short_description": "Pristine white round simulated pearls mounted on hypoallergenic surgical steel posts.",
+        "description": "Pristine white round simulated pearls mounted on hypoallergenic surgical steel posts. A foundational jewellery essential.",
+        "image": "/api/placeholder/product_46/1",
+        "thumbnail": "/api/placeholder/product_46/1",
+        "images": [
+            "/api/placeholder/product_46/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 47,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Round Pearl",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 47,
+        "name": "Interlocking Infinity Circles Gold Necklace",
+        "slug": "interlocking-infinity-circles-gold-necklace",
+        "price": 649,
+        "original_price": 849,
+        "category": "Necklaces",
+        "style": [
+            "Symbolic",
+            "Modern"
+        ],
+        "short_description": "Twin interlocking eternity rings symbolizing everlasting bond and love.",
+        "description": "Twin interlocking eternity rings symbolizing everlasting bond and love. Smooth mirror finish on fine cable chain.",
+        "image": "/api/placeholder/product_47/1",
+        "thumbnail": "/api/placeholder/product_47/1",
+        "images": [
+            "/api/placeholder/product_47/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 54,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "None",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 48,
+        "name": "Multi-Pastel Daisy Chain Floral Choker",
+        "slug": "multi-pastel-daisy-chain-floral-choker",
+        "price": 799,
+        "original_price": 1099,
+        "category": "Necklaces",
+        "style": [
+            "Floral",
+            "Whimsical"
+        ],
+        "short_description": "Enamel daisy blossoms in lavender, mint, and buttercup yellow along a delicate gold chain.",
+        "description": "Enamel daisy blossoms in lavender, mint, and buttercup yellow along a delicate gold chain. Cheerful and refreshing.",
+        "image": "/api/placeholder/product_48/1",
+        "thumbnail": "/api/placeholder/product_48/1",
+        "images": [
+            "/api/placeholder/product_48/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 61,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Multi-Color Enamel Daisies",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 49,
+        "name": "Entwined Eternal Rings Gold Pendant Necklace",
+        "slug": "entwined-eternal-rings-gold-pendant-necklace",
+        "price": 649,
+        "original_price": 849,
+        "category": "Necklaces",
+        "style": [
+            "Minimalist",
+            "Chic"
+        ],
+        "short_description": "Dual textured gold mini rings interlocking gracefully on a shimmering box chain.",
+        "description": "Dual textured gold mini rings interlocking gracefully on a shimmering box chain. 18K gold plated over stainless steel.",
+        "image": "/api/placeholder/product_49/1",
+        "thumbnail": "/api/placeholder/product_49/1",
+        "images": [
+            "/api/placeholder/product_49/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 68,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "None",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 50,
+        "name": "Ros\u00e9 Crystal Swan Majesty Gold Necklace",
+        "slug": "rose-crystal-swan-majesty-gold-necklace",
+        "price": 799,
+        "original_price": 1099,
+        "category": "Necklaces",
+        "style": [
+            "Graceful",
+            "Statement"
+        ],
+        "short_description": "Regal swan pendant pav\u00e9-set with iridescent rose and champagne pink crystals.",
+        "description": "Regal swan pendant pav\u00e9-set with iridescent rose and champagne pink crystals. Suspended gracefully on a fine chain.",
+        "image": "/api/placeholder/product_50/1",
+        "thumbnail": "/api/placeholder/product_50/1",
+        "images": [
+            "/api/placeholder/product_50/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 75,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Pav\u00e9 Rose Crystals",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 51,
+        "name": "Opaline Teardrop French Hook Earrings",
+        "slug": "opaline-teardrop-french-hook-earrings",
+        "price": 549,
+        "original_price": 749,
+        "category": "Earrings",
+        "style": [
+            "Vintage",
+            "Delicate"
+        ],
+        "short_description": "Smooth oval opaline stones glowing with soft moonlit luminescence on curved ear wires.",
+        "description": "Smooth oval opaline stones glowing with soft moonlit luminescence on curved ear wires. Lightweight and flattering.",
+        "image": "/api/placeholder/product_51/1",
+        "thumbnail": "/api/placeholder/product_51/1",
+        "images": [
+            "/api/placeholder/product_51/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 82,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Opaline Gemstone",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 52,
+        "name": "Linear Waterfall Butterfly Crystal Drop Earrings",
+        "slug": "linear-waterfall-butterfly-crystal-drop-earrings",
+        "price": 699,
+        "original_price": 949,
+        "category": "Earrings",
+        "style": [
+            "Dramatic",
+            "Party"
+        ],
+        "short_description": "Sculptural butterfly tops flowing into cascading fine crystal box chain waterfall tassels.",
+        "description": "Sculptural butterfly tops flowing into cascading fine crystal box chain waterfall tassels. Shimmers with every turn of the head.",
+        "image": "/api/placeholder/product_52/1",
+        "thumbnail": "/api/placeholder/product_52/1",
+        "images": [
+            "/api/placeholder/product_52/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 89,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Crystal Waterfall Strands",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 53,
+        "name": "Enamel Butterfly Choker Snake Chain Necklace",
+        "slug": "enamel-butterfly-choker-snake-chain-necklace",
+        "price": 799,
+        "original_price": 1099,
+        "category": "Necklaces",
+        "style": [
+            "Trendy",
+            "Chic"
+        ],
+        "short_description": "Pristine white enamel butterfly framed in gold on a thick flat herringbone snake chain.",
+        "description": "Pristine white enamel butterfly framed in gold on a thick flat herringbone snake chain. High impact modern elegance.",
+        "image": "/api/placeholder/product_53/1",
+        "thumbnail": "/api/placeholder/product_53/1",
+        "images": [
+            "/api/placeholder/product_53/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 4.8,
+        "review_count": 96,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "White Enamel Butterfly",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 54,
+        "name": "Sunburst Golden Pearl Halo Stud Earrings",
+        "slug": "sunburst-golden-pearl-halo-stud-earrings",
+        "price": 499,
+        "original_price": 699,
+        "category": "Earrings",
+        "style": [
+            "Royalty",
+            "Heritage"
+        ],
+        "short_description": "Cream pearl cabochon surrounded by an intricate golden sunburst beaded halo.",
+        "description": "Cream pearl cabochon surrounded by an intricate golden sunburst beaded halo. Regal finishing touch for traditional or western ensembles.",
+        "image": "/api/placeholder/product_54/1",
+        "thumbnail": "/api/placeholder/product_54/1",
+        "images": [
+            "/api/placeholder/product_54/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 103,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Cream Pearl & Beaded Gold",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 55,
+        "name": "Chandelier Blossom Teardrop Crystal Earrings",
+        "slug": "chandelier-blossom-teardrop-crystal-earrings",
+        "price": 799,
+        "original_price": 1099,
+        "category": "Earrings",
+        "style": [
+            "Bridal",
+            "Luxe"
+        ],
+        "short_description": "Triple-tiered floral crystal arrangement terminating in a dramatic faceted teardrop gem.",
+        "description": "Triple-tiered floral crystal arrangement terminating in a dramatic faceted teardrop gem. Premium bridal & gala chandelier earrings.",
+        "image": "/api/placeholder/product_55/1",
+        "thumbnail": "/api/placeholder/product_55/1",
+        "images": [
+            "/api/placeholder/product_55/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 110,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Faceted Teardrop Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 56,
+        "name": "Folded Love Heart Heavy Chain Necklace",
+        "slug": "folded-love-heart-heavy-chain-necklace",
+        "price": 749,
+        "original_price": 999,
+        "category": "Necklaces",
+        "style": [
+            "Bold",
+            "Romantic"
+        ],
+        "short_description": "Origami-inspired folded gold heart charm suspended from a textured curb link chain.",
+        "description": "Origami-inspired folded gold heart charm suspended from a textured curb link chain. Heavy gold look with featherlight feel.",
+        "image": "/api/placeholder/product_56/1",
+        "thumbnail": "/api/placeholder/product_56/1",
+        "images": [
+            "/api/placeholder/product_56/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 117,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Folded Gold Heart Charm",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 57,
+        "name": "Golden Beaded Mini Heart Charm Necklace",
+        "slug": "golden-beaded-mini-heart-charm-necklace",
+        "price": 649,
+        "original_price": 849,
+        "category": "Necklaces",
+        "style": [
+            "Dainty",
+            "Everyday"
+        ],
+        "short_description": "Petite solid heart charm stationed on a bead-accented satellite chain.",
+        "description": "Petite solid heart charm stationed on a bead-accented satellite chain. A subtle daily favorite that layers flawlessly.",
+        "image": "/api/placeholder/product_57/1",
+        "thumbnail": "/api/placeholder/product_57/1",
+        "images": [
+            "/api/placeholder/product_57/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 124,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Solid Heart Charm",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 58,
+        "name": "Malachite Emerald Station Gold Link Bracelet",
+        "slug": "malachite-emerald-station-gold-link-bracelet",
+        "price": 699,
+        "original_price": 949,
+        "category": "Bracelets",
+        "style": [
+            "Luxury",
+            "Vibrant"
+        ],
+        "short_description": "Square cut emerald green stone stations alternating with smooth paperclip chain links.",
+        "description": "Square cut emerald green stone stations alternating with smooth paperclip chain links. Adjustable lobster claw closure.",
+        "image": "/api/placeholder/product_58/1",
+        "thumbnail": "/api/placeholder/product_58/1",
+        "images": [
+            "/api/placeholder/product_58/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 131,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Emerald Green Crystals",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 59,
+        "name": "Inscribed 'With Warmth and Friendship' Silver Cuff",
+        "slug": "inscribed-with-warmth-and-friendship-silver-cuff",
+        "price": 649,
+        "original_price": 899,
+        "category": "Bracelets",
+        "style": [
+            "Inspirational",
+            "Gift"
+        ],
+        "short_description": "Meaningful cursive poem engraved into a gently domed polished silver bangle.",
+        "description": "Meaningful cursive poem engraved into a gently domed polished silver bangle. A touching keepsake for yourself or a best friend.",
+        "image": "/api/placeholder/product_59/1",
+        "thumbnail": "/api/placeholder/product_59/1",
+        "images": [
+            "/api/placeholder/product_59/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 138,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Cursive Engraved Poetry",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 60,
+        "name": "Solitaire Pear Crystal Droplet Pendant Necklace",
+        "slug": "solitaire-pear-crystal-droplet-pendant-necklace",
+        "price": 649,
+        "original_price": 849,
+        "category": "Necklaces",
+        "style": [
+            "Elegant",
+            "Dainty"
+        ],
+        "short_description": "Water-clear faceted pear crystal floating freely on a featherweight golden chain.",
+        "description": "Water-clear faceted pear crystal floating freely on a featherweight golden chain. Minimalist luxury at its finest.",
+        "image": "/api/placeholder/product_60/1",
+        "thumbnail": "/api/placeholder/product_60/1",
+        "images": [
+            "/api/placeholder/product_60/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 145,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Pear Cut Cubic Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 61,
+        "name": "Puffed Heart Pendant Herringbone Chain Necklace",
+        "slug": "puffed-heart-pendant-herringbone-chain-necklace",
+        "price": 799,
+        "original_price": 1099,
+        "category": "Necklaces",
+        "style": [
+            "Statement",
+            "Chic"
+        ],
+        "short_description": "High-polish 3D puffed heart sliding across a wide liquid herringbone snake chain.",
+        "description": "High-polish 3D puffed heart sliding across a wide liquid herringbone snake chain. Premium 18K gold color plating.",
+        "image": "/api/placeholder/product_61/1",
+        "thumbnail": "/api/placeholder/product_61/1",
+        "images": [
+            "/api/placeholder/product_61/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 152,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Puffed Gold Heart",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 62,
+        "name": "Reversible Onyx & Pearl Four-Leaf Clover Necklace",
+        "slug": "reversible-onyx-and-pearl-four-leaf-clover-necklace",
+        "price": 749,
+        "original_price": 999,
+        "category": "Necklaces",
+        "style": [
+            "Iconic",
+            "Versatile"
+        ],
+        "short_description": "Reversible clover motif featuring glossy black onyx on one side and mother-of-pearl on reverse.",
+        "description": "Reversible clover motif featuring glossy black onyx on one side and mother-of-pearl on the reverse side. Two iconic styles in one necklace.",
+        "image": "/api/placeholder/product_62/1",
+        "thumbnail": "/api/placeholder/product_62/1",
+        "images": [
+            "/api/placeholder/product_62/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 159,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Reversible Black & White Enamel",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 63,
+        "name": "Celestial Star Streamer Tassel Drop Earrings",
+        "slug": "celestial-star-streamer-tassel-drop-earrings",
+        "price": 649,
+        "original_price": 899,
+        "category": "Earrings",
+        "style": [
+            "Party",
+            "Celestial"
+        ],
+        "short_description": "Faceted eight-point star studs bearing ultra-fine streaming gold box chain tassels.",
+        "description": "Faceted eight-point star studs bearing ultra-fine streaming gold box chain tassels. Catches light with captivating rhythm.",
+        "image": "/api/placeholder/product_63/1",
+        "thumbnail": "/api/placeholder/product_63/1",
+        "images": [
+            "/api/placeholder/product_63/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 166,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Eight-Point Star Studs",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 64,
+        "name": "Forget-Me-Not Blue Enamel Heart Snake Necklace",
+        "slug": "forget-me-not-blue-enamel-heart-snake-necklace",
+        "price": 749,
+        "original_price": 999,
+        "category": "Necklaces",
+        "style": [
+            "Whimsical",
+            "Romantic"
+        ],
+        "short_description": "Sky-blue enamel heart pendant painted with miniature floral daisies on a snake chain.",
+        "description": "Sky-blue enamel heart pendant painted with miniature floral daisies on a snake chain. A nostalgic and charming aesthetic statement.",
+        "image": "/api/placeholder/product_64/1",
+        "thumbnail": "/api/placeholder/product_64/1",
+        "images": [
+            "/api/placeholder/product_64/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 173,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Hand-Painted Floral Enamel",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 65,
+        "name": "Sinuous Golden Wave Contour Collar Necklace",
+        "slug": "sinuous-golden-wave-contour-collar-necklace",
+        "price": 849,
+        "original_price": 1199,
+        "category": "Necklaces",
+        "style": [
+            "Architectural",
+            "Sculptural"
+        ],
+        "short_description": "Fluid undulating gold torque contour that nestles along the collarbones like liquid metal.",
+        "description": "Fluid undulating gold torque contour that nestles along the collarbones like liquid metal. Modern sculptural artistry at its peak.",
+        "image": "/api/placeholder/product_65/1",
+        "thumbnail": "/api/placeholder/product_65/1",
+        "images": [
+            "/api/placeholder/product_65/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 30,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "None",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 66,
+        "name": "Mother-of-Pearl Clover Motif Station Bracelet",
+        "slug": "mother-of-pearl-clover-motif-station-bracelet",
+        "price": 699,
+        "original_price": 949,
+        "category": "Bracelets",
+        "style": [
+            "Luxury",
+            "Classic"
+        ],
+        "short_description": "Four-leaf clover motifs inlaid with iridescent white mother-of-pearl on a gold chain.",
+        "description": "Four-leaf clover motifs inlaid with iridescent white mother-of-pearl on an adjustable gold chain. Beaded gold borders.",
+        "image": "/api/placeholder/product_66/1",
+        "thumbnail": "/api/placeholder/product_66/1",
+        "images": [
+            "/api/placeholder/product_66/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 4.9,
+        "review_count": 37,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Natural White Mother-of-Pearl",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 67,
+        "name": "Daisy Blossom Petal Gold Choker Necklace",
+        "slug": "daisy-blossom-petal-gold-choker-necklace",
+        "price": 799,
+        "original_price": 1099,
+        "category": "Necklaces",
+        "style": [
+            "Floral",
+            "Summer"
+        ],
+        "short_description": "Pure white enamel daisy petals with golden centers stationed around an open choker collar.",
+        "description": "Pure white enamel daisy petals with golden centers stationed around an open choker collar. Radiates youthful sunny energy.",
+        "image": "/api/placeholder/product_67/1",
+        "thumbnail": "/api/placeholder/product_67/1",
+        "images": [
+            "/api/placeholder/product_67/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 44,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "White Enamel Daisies",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 68,
+        "name": "Dual Crown Marquise Crystal Bypass Ring",
+        "slug": "dual-crown-marquise-crystal-bypass-ring",
+        "price": 599,
+        "original_price": 799,
+        "category": "Rings",
+        "style": [
+            "Regal",
+            "Bridal"
+        ],
+        "short_description": "Double split shank in warm rose-gold finish embracing twin prong-set crystal crowns.",
+        "description": "Double split shank in warm rose-gold finish embracing twin prong-set crystal crowns. A dramatic cocktail statement ring.",
+        "image": "/api/placeholder/product_68/1",
+        "thumbnail": "/api/placeholder/product_68/1",
+        "images": [
+            "/api/placeholder/product_68/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 51,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Faceted Round & Marquise Zircons",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 69,
+        "name": "Molten Liquid Gold Teardrop Button Studs",
+        "slug": "molten-liquid-gold-teardrop-button-studs",
+        "price": 449,
+        "original_price": 649,
+        "category": "Earrings",
+        "style": [
+            "Modernist",
+            "Chic"
+        ],
+        "short_description": "Organic molten golden drop nuggets featuring a reflective mirror sheen.",
+        "description": "Organic molten golden drop nuggets featuring a reflective mirror sheen. Ultra-lightweight and comfortable for all-day wear.",
+        "image": "/api/placeholder/product_69/1",
+        "thumbnail": "/api/placeholder/product_69/1",
+        "images": [
+            "/api/placeholder/product_69/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 58,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Molten Gold Cast",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 70,
+        "name": "Baguette Solitaire Spark Huggie Hoop Earrings",
+        "slug": "baguette-solitaire-spark-huggie-hoop-earrings",
+        "price": 549,
+        "original_price": 749,
+        "category": "Earrings",
+        "style": [
+            "Minimalist",
+            "Sparkle"
+        ],
+        "short_description": "Gold huggie hoops suspending a square-cut baguette diamond crystal.",
+        "description": "Gold huggie hoops suspending a square-cut baguette diamond crystal. Clicks shut securely with hinge clasps.",
+        "image": "/api/placeholder/product_70/1",
+        "thumbnail": "/api/placeholder/product_70/1",
+        "images": [
+            "/api/placeholder/product_70/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 65,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Baguette Cut Cubic Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 71,
+        "name": "Rose Quartz Blossom Waterfall Tassel Earrings",
+        "slug": "rose-quartz-blossom-waterfall-tassel-earrings",
+        "price": 699,
+        "original_price": 949,
+        "category": "Earrings",
+        "style": [
+            "Romantic",
+            "Bridal"
+        ],
+        "short_description": "Frosted rose quartz floral cluster with delicate dangling silver chain waterfalls.",
+        "description": "Frosted rose quartz floral cluster with delicate dangling silver chain waterfalls. Feminine grace in every gesture.",
+        "image": "/api/placeholder/product_71/1",
+        "thumbnail": "/api/placeholder/product_71/1",
+        "images": [
+            "/api/placeholder/product_71/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 72,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Frosted Rose Quartz Crystals",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 72,
+        "name": "Solitaire Star Diamond Hinge Bangle",
+        "slug": "solitaire-star-diamond-hinge-bangle",
+        "price": 849,
+        "original_price": 1199,
+        "category": "Bracelets",
+        "style": [
+            "Timeless",
+            "Luxury"
+        ],
+        "short_description": "Sleek heavy-gauge oval bangle inset with a star-burst engraved solitaire crystal.",
+        "description": "Sleek heavy-gauge oval bangle inset with a star-burst engraved solitaire crystal. Secure side push hinge clasp.",
+        "image": "/api/placeholder/product_72/1",
+        "thumbnail": "/api/placeholder/product_72/1",
+        "images": [
+            "/api/placeholder/product_72/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 79,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Star-Set Solitaire Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 73,
+        "name": "Dainty Bow Ribbon Station Necklace",
+        "slug": "dainty-bow-ribbon-station-necklace",
+        "price": 649,
+        "original_price": 849,
+        "category": "Necklaces",
+        "style": [
+            "Coquette",
+            "Sweet"
+        ],
+        "short_description": "Micro gold bow ribbon charm sitting sweetly at the center of an adjustable chain.",
+        "description": "Micro gold bow ribbon charm sitting sweetly at the center of an adjustable chain. Anti-tarnish and waterproof finish.",
+        "image": "/api/placeholder/product_73/1",
+        "thumbnail": "/api/placeholder/product_73/1",
+        "images": [
+            "/api/placeholder/product_73/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.8,
+        "review_count": 86,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Micro Bow Ribbon Charm",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 74,
+        "name": "Nocturne Midnight Butterfly Crystal Stud Earrings",
+        "slug": "nocturne-midnight-butterfly-crystal-stud-earrings",
+        "price": 499,
+        "original_price": 699,
+        "category": "Earrings",
+        "style": [
+            "Gothic Chic",
+            "Trendy"
+        ],
+        "short_description": "Inky black enamel butterfly studs accented with sparkling crystal dots.",
+        "description": "Inky black enamel butterfly studs accented with sparkling crystal dots. Hypoallergenic posts for sensitive ears.",
+        "image": "/api/placeholder/product_74/1",
+        "thumbnail": "/api/placeholder/product_74/1",
+        "images": [
+            "/api/placeholder/product_74/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 93,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Black Enamel & Micro Zircons",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 75,
+        "name": "Square Golden Cushion Solitaire Ear Studs",
+        "slug": "square-golden-cushion-solitaire-ear-studs",
+        "price": 449,
+        "original_price": 599,
+        "category": "Earrings",
+        "style": [
+            "Geometric",
+            "Everyday"
+        ],
+        "short_description": "Beveled square cushion gold buttons featuring a center sparkling diamond crystal.",
+        "description": "Beveled square cushion gold buttons featuring a center sparkling diamond crystal. A geometric twist on everyday studs.",
+        "image": "/api/placeholder/product_75/1",
+        "thumbnail": "/api/placeholder/product_75/1",
+        "images": [
+            "/api/placeholder/product_75/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 100,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Center Solitaire Zirconia",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 76,
+        "name": "Crescent Luna & North Star Pearl Gold Necklace",
+        "slug": "crescent-luna-and-north-star-pearl-gold-necklace",
+        "price": 749,
+        "original_price": 999,
+        "category": "Necklaces",
+        "style": [
+            "Celestial",
+            "Ethereal"
+        ],
+        "short_description": "Polished crescent moon holding a luminous pearl bead beneath a twinkling star charm.",
+        "description": "Polished crescent moon holding a luminous pearl bead beneath a twinkling star charm. Celestial beauty in 18K gold plating.",
+        "image": "/api/placeholder/product_76/1",
+        "thumbnail": "/api/placeholder/product_76/1",
+        "images": [
+            "/api/placeholder/product_76/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 107,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Luminous Pearl & Zircon Star",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 77,
+        "name": "Four-Leaf Emerald Clover Pav\u00e9 Statement Ring",
+        "slug": "four-leaf-emerald-clover-pave-statement-ring",
+        "price": 699,
+        "original_price": 949,
+        "category": "Rings",
+        "style": [
+            "Regal",
+            "Luxury"
+        ],
+        "short_description": "Lush emerald green clover centerpiece surrounded by micro-pav\u00e9 crystal borders on a gold band.",
+        "description": "Lush emerald green clover centerpiece surrounded by micro-pav\u00e9 crystal borders on a gold band. High glamour and fortune.",
+        "image": "/api/placeholder/product_77/1",
+        "thumbnail": "/api/placeholder/product_77/1",
+        "images": [
+            "/api/placeholder/product_77/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": True,
+        "rating": 4.8,
+        "review_count": 114,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Emerald Inlay & Pav\u00e9 Zircons",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 78,
+        "name": "Bold Cuban Curb Link Golden Bracelet",
+        "slug": "bold-cuban-curb-link-golden-bracelet",
+        "price": 699,
+        "original_price": 949,
+        "category": "Bracelets",
+        "style": [
+            "Bold",
+            "Street Luxe"
+        ],
+        "short_description": "High-shine interlocked Cuban curb links with sturdy lobster clasp and extension ring.",
+        "description": "High-shine interlocked Cuban curb links with sturdy lobster clasp and extension ring. Solid stainless steel with PVD 18K gold coating.",
+        "image": "/api/placeholder/product_78/1",
+        "thumbnail": "/api/placeholder/product_78/1",
+        "images": [
+            "/api/placeholder/product_78/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.9,
+        "review_count": 121,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "None",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 79,
+        "name": "Malachite Verdant Clover Station Gold Bracelet",
+        "slug": "malachite-verdant-clover-station-gold-bracelet",
+        "price": 749,
+        "original_price": 999,
+        "category": "Bracelets",
+        "style": [
+            "Luxury",
+            "Iconic"
+        ],
+        "short_description": "Series of striate malachite green four-leaf clover motifs joined by beaded gold links.",
+        "description": "Series of striate malachite green four-leaf clover motifs joined by beaded gold links. A worldwide jewelry luxury icon.",
+        "image": "/api/placeholder/product_79/1",
+        "thumbnail": "/api/placeholder/product_79/1",
+        "images": [
+            "/api/placeholder/product_79/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": True,
+        "is_bestseller": False,
+        "rating": 5.0,
+        "review_count": 128,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Malachite Green Motif Inlays",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    },
+    {
+        "id": 80,
+        "name": "Whimsical Cottage Charm Enamel Gold Pendant",
+        "slug": "whimsical-cottage-charm-enamel-gold-pendant",
+        "price": 699,
+        "original_price": 899,
+        "category": "Necklaces",
+        "style": [
+            "Storybook",
+            "Cute"
+        ],
+        "short_description": "Intricate storybook cottage medallion with vibrant hand-enameled garden details.",
+        "description": "Intricate storybook cottage medallion with vibrant hand-enameled garden details on an 18K gold chain. Distinctive and heartwarming.",
+        "image": "/api/placeholder/product_80/1",
+        "thumbnail": "/api/placeholder/product_80/1",
+        "images": [
+            "/api/placeholder/product_80/1"
+        ],
+        "variants": [],
+        "in_stock": True,
+        "is_featured": False,
+        "is_bestseller": False,
+        "rating": 4.7,
+        "review_count": 135,
+        "features": [
+            "Anti-tarnish",
+            "Waterproof",
+            "PVD Plated",
+            "18K Gold Plated"
+        ],
+        "specifications": {
+            "Material": "Titanium 316L Stainless Steel",
+            "Finish": "18K Gold Color Plated",
+            "Plating": "Long-lasting PVD Plated",
+            "Stones": "Hand-Painted Garden Enamel",
+            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
+        },
+        "shipping": {
+            "standard": "3\u20135 business days",
+            "express": "1\u20132 business days",
+            "free_threshold": 999
+        },
+        "care_instructions": [
+            "Avoid direct contact with harsh perfumes and chemicals.",
+            "Store in the provided jewellery pouch when not in use.",
+            "Clean gently with a soft dry cloth."
+        ]
+    }
 ]
 
 CATEGORIES = [
@@ -319,23 +3941,31 @@ CATEGORIES = [
         "name": "Necklaces",
         "slug": "necklaces",
         "description": "Handcrafted chains, chokers, and pendant necklaces designed to elevate your everyday elegance.",
-        "image": "/api/placeholder/product_1/1",
-        "product_count": 7,
+        "image": "/products/1/1.jpeg",
+        "product_count": 39
     },
     {
         "id": 2,
         "name": "Earrings",
         "slug": "earrings",
         "description": "Twist hoops, drop studs, and statement earrings crafted with durable PVD plating.",
-        "image": "/api/placeholder/product_3/1",
-        "product_count": 0,
+        "image": "/products/15/1.jpeg",
+        "product_count": 18
     },
     {
         "id": 3,
         "name": "Rings",
         "slug": "rings",
         "description": "Star-burst signets and minimalist stackable bands made for everyday wear.",
-        "image": "/api/placeholder/product_5/1",
-        "product_count": 0,
+        "image": "/products/8/1.jpeg",
+        "product_count": 12
     },
+    {
+        "id": 4,
+        "name": "Bracelets",
+        "slug": "bracelets",
+        "description": "Herringbone, Cuban link, and cuff bangles finished in waterproof 18K gold plating.",
+        "image": "/products/31/1.jpeg",
+        "product_count": 11
+    }
 ]

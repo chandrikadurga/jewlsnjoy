@@ -582,103 +582,143 @@ export default function ProductDetail() {
 
           {/* Review Submission Form */}
           {showReviewForm && (
-            <form className="pd-review-form glass-panel" onSubmit={handleSubmitReview}>
-              <h3 className="pd-review-form__title">Share Your Experience</h3>
-              <p className="pd-review-form__subtitle">
-                Help other jewelry lovers by sharing what you loved about this piece.
-              </p>
-
-              {reviewSuccess && (
-                <div className="pd-review-success">
-                  <Check size={18} strokeWidth={2.5} />
-                  <span>Thank you! Your verified review has been submitted and posted.</span>
+            <div className="pd-review-form-wrapper">
+              <form className="pd-review-form glass-panel" onSubmit={handleSubmitReview}>
+                <div className="pd-review-form__header">
+                  <span className="pd-review-form__badge">
+                    <Sparkles size={13} color="var(--color-gold)" />
+                    Verified Customer Feedback
+                  </span>
+                  <h3 className="pd-review-form__title">Share Your Experience</h3>
+                  <p className="pd-review-form__subtitle">
+                    Celebrate the craftsmanship. Tell fellow jewelry lovers about the fit, luster, and everyday wear.
+                  </p>
                 </div>
-              )}
 
-              {/* Star Picker */}
-              <div className="pd-form-group">
-                <label className="pd-form-label">Your Rating *</label>
-                <div className="pd-star-picker">
-                  {[1, 2, 3, 4, 5].map((starVal) => (
+                {reviewSuccess && (
+                  <div className="pd-review-success">
+                    <Check size={18} strokeWidth={2.5} />
+                    <span>Thank you! Your verified review has been published to the boutique.</span>
+                  </div>
+                )}
+
+                {/* Rating selection card */}
+                <div className="pd-form-group pd-form-group--rating">
+                  <label className="pd-form-label">
+                    Overall Rating <span className="pd-form-req">*</span>
+                  </label>
+                  <div className="pd-star-picker-card">
+                    <div className="pd-star-picker">
+                      {[1, 2, 3, 4, 5].map((starVal) => (
+                        <button
+                          type="button"
+                          key={starVal}
+                          className={`pd-star-picker__btn${(hoverRating || newRating) >= starVal ? ' pd-star-picker__btn--active' : ''}`}
+                          onClick={() => setNewRating(starVal)}
+                          onMouseEnter={() => setHoverRating(starVal)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          aria-label={`Rate ${starVal} star${starVal > 1 ? 's' : ''}`}
+                        >
+                          <Star
+                            size={28}
+                            fill={(hoverRating || newRating) >= starVal ? '#d4af37' : 'none'}
+                            color="#d4af37"
+                            strokeWidth={1.5}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                    <div className="pd-star-picker__descriptor">
+                      <span className="pd-star-picker__score">{(hoverRating || newRating)}.0 / 5.0</span>
+                      <span className="pd-star-picker__text">
+                        {(hoverRating || newRating) === 5 && 'Exceptional — Highly Recommended'}
+                        {(hoverRating || newRating) === 4 && 'Very Good — Beautiful Craftsmanship'}
+                        {(hoverRating || newRating) === 3 && 'Good — Met Expectations'}
+                        {(hoverRating || newRating) === 2 && 'Fair — Room for Improvement'}
+                        {(hoverRating || newRating) === 1 && 'Unsatisfactory'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pd-form-row">
+                  <div className="pd-form-group">
+                    <label className="pd-form-label" htmlFor="review-author">
+                      Your Full Name <span className="pd-form-req">*</span>
+                    </label>
+                    <div className="pd-input-wrap">
+                      <input
+                        id="review-author"
+                        type="text"
+                        className="pd-form-input"
+                        placeholder="e.g. Radhika Sharma"
+                        value={authorName}
+                        onChange={(e) => setAuthorName(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pd-form-group">
+                    <label className="pd-form-label" htmlFor="review-title">
+                      Review Headline
+                    </label>
+                    <div className="pd-input-wrap">
+                      <input
+                        id="review-title"
+                        type="text"
+                        className="pd-form-input"
+                        placeholder="e.g. Breathtaking luster & compliments every day!"
+                        value={reviewTitle}
+                        onChange={(e) => setReviewTitle(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pd-form-group">
+                  <label className="pd-form-label" htmlFor="review-comment">
+                    Detailed Review <span className="pd-form-req">*</span>
+                  </label>
+                  <div className="pd-input-wrap">
+                    <textarea
+                      id="review-comment"
+                      className="pd-form-input pd-form-textarea"
+                      rows={4}
+                      placeholder="Describe the fit, shine, waterproof durability, packaging, and compliments you received..."
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="pd-review-form__footer">
+                  <div className="pd-review-form__actions">
+                    <button
+                      type="submit"
+                      className="btn btn-primary pd-submit-btn"
+                      disabled={submittingReview || !authorName.trim() || !reviewComment.trim()}
+                    >
+                      <Sparkles size={15} strokeWidth={2} />
+                      {submittingReview ? 'Publishing…' : 'Submit Verified Review'}
+                    </button>
                     <button
                       type="button"
-                      key={starVal}
-                      className="pd-star-picker__btn"
-                      onClick={() => setNewRating(starVal)}
-                      onMouseEnter={() => setHoverRating(starVal)}
-                      onMouseLeave={() => setHoverRating(0)}
-                      aria-label={`Rate ${starVal} star${starVal > 1 ? 's' : ''}`}
+                      className="btn btn-secondary pd-cancel-btn"
+                      onClick={() => setShowReviewForm(false)}
                     >
-                      <Star
-                        size={26}
-                        fill={(hoverRating || newRating) >= starVal ? '#d4af37' : 'none'}
-                        color="#d4af37"
-                        strokeWidth={1.5}
-                      />
+                      Cancel
                     </button>
-                  ))}
-                  <span className="pd-star-picker__label">
-                    {hoverRating || newRating} / 5 Stars
-                  </span>
-                </div>
-              </div>
+                  </div>
 
-              <div className="pd-form-row">
-                <div className="pd-form-group">
-                  <label className="pd-form-label" htmlFor="review-author">Your Name *</label>
-                  <input
-                    id="review-author"
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. Radhika S."
-                    value={authorName}
-                    onChange={(e) => setAuthorName(e.target.value)}
-                    required
-                  />
+                  <div className="pd-review-form__security">
+                    <ShieldCheck size={14} color="var(--color-gold)" strokeWidth={2} />
+                    <span>Verified Buyer review badge will be displayed alongside your feedback.</span>
+                  </div>
                 </div>
-                <div className="pd-form-group">
-                  <label className="pd-form-label" htmlFor="review-title">Review Title</label>
-                  <input
-                    id="review-title"
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. Absolutely in love with the shine!"
-                    value={reviewTitle}
-                    onChange={(e) => setReviewTitle(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="pd-form-group">
-                <label className="pd-form-label" htmlFor="review-comment">Review Comments *</label>
-                <textarea
-                  id="review-comment"
-                  className="form-input"
-                  rows={4}
-                  placeholder="Describe the fit, shine, waterproof durability, packaging, and compliments you received..."
-                  value={reviewComment}
-                  onChange={(e) => setReviewComment(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="pd-review-form__actions">
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={submittingReview || !authorName.trim() || !reviewComment.trim()}
-                >
-                  {submittingReview ? 'Submitting…' : 'Submit Verified Review'}
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowReviewForm(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
           )}
 
           {/* Reviews List */}

@@ -430,11 +430,11 @@ export default function ProductDetail() {
                 </dl>
               </AccordionItem>
 
-              <AccordionItem title="Shipping & Returns">
-                <p><strong>Standard delivery:</strong> {product.shipping?.standard || '3–5 business days'}</p>
-                <p><strong>Express delivery:</strong> {product.shipping?.express || '1–2 business days'}</p>
+              <AccordionItem title="Shipping Information">
+                <p><strong>Standard shipping:</strong> {product.shipping?.standard || '6 to 8 days'}</p>
+                <p><strong>Express shipping:</strong> {product.shipping?.express || '3 to 4 days'}</p>
                 <p style={{ marginTop: '0.5rem' }}>
-                  Enjoy free standard shipping on orders over ₹{product.shipping?.free_threshold || 999}. 15-day hassle-free replacement or return guarantee.
+                  Free standard shipping on orders above ₹{product.shipping?.free_threshold || 999}. 15-day hassle-free replacement or return guarantee.
                 </p>
               </AccordionItem>
 

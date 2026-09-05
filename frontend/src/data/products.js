@@ -25,7 +25,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 142,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Emerald-Green Decorative Stones", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -49,7 +49,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 98,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "Glossy Onyx Heart"],
     specifications: {"Material": "Titanium Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Glossy Black Onyx Heart", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -73,7 +73,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 76,
     features: ["Anti-tarnish", "Waterproof", "Rhodium Plated", "Faceted Zircon"],
     specifications: {"Material": "Titanium Stainless Steel Chain, Copper Pendant", "Finish": "Rhodium Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "High Quality Pink Zircon Crystal", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -97,7 +97,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 64,
     features: ["316L Steel", "Anti-tarnish", "Waterproof", "Faceted Onyx"],
     specifications: {"Material": "316L Stainless Steel", "Weight": "3.6g", "Length": "40cm + 5cm extension", "PendantSize": "1.2cm", "Finish": "18K Gold Plated", "Stones": "Faceted Black Onyx Stone", "Features": "Anti-tarnish, Waterproof"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -121,7 +121,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 185,
     features: ["Reversible 2-in-1", "Anti-tarnish", "Waterproof", "Pav\u00e9 Halo"],
     specifications: {"Material": "Titanium Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Reversible Black/White Inlay & Pav\u00e9 Zircons", "Features": "Reversible 2-in-1, Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -145,7 +145,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 110,
     features: ["Double Layer Chain", "Anti-tarnish", "Waterproof", "Emerald Crystal"],
     specifications: {"Material": "316L Stainless Steel", "Finish": "18K Gold & Platinum Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Square Cut Emerald Stone & Solitaire Crystal", "Features": "Double Layer Chain, Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -169,7 +169,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 135,
     features: ["Herringbone Choker", "Anti-tarnish", "Waterproof", "Oval Emerald Stone"],
     specifications: {"Material": "Titanium Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Oval Cut Emerald Stone", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -193,7 +193,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 81,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Multicolor Marquise Cubic Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -217,7 +217,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 88,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Marquise Cubic Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -241,7 +241,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 95,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Pastel Bezel Gemstones", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -265,7 +265,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 102,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Multi-Color Crystal Blossoms", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -289,7 +289,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 109,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Multi-Colored Petal Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -313,7 +313,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 116,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Polished Gold Leaf Motifs", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -337,7 +337,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 123,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Pav\u00e9 Cubic Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -361,7 +361,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 130,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "None", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -385,7 +385,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 137,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Micro-Beaded Gold Granules", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -409,7 +409,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 144,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Natural Pink Shell & Zircon", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -433,7 +433,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 151,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Bezel Solitaire Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -457,7 +457,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 158,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Natural White Mother-of-Pearl", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -481,7 +481,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 165,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Cushion-Cut Emerald Crystal", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -505,7 +505,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 172,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Lustrous Simulated Pearl Bead", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -529,7 +529,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 29,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Glossy Black Enamel Bar", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -553,7 +553,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 36,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "None", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -577,7 +577,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 43,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Radiant Honey Topaz Crystal", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -601,7 +601,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 50,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Textured Gold Butterfly Charm", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -625,7 +625,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 57,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Multicolor Droplet Crystals", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -649,7 +649,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 64,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Luminous Pearls & Solitaire Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -673,7 +673,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 71,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Mirror Polish Folded Gold", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -697,7 +697,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 78,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Gold Script Charm", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -721,7 +721,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 85,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Lustrous Round Pearl", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -745,7 +745,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 92,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "None", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -769,7 +769,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 99,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Simulated Pearl Bead", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -793,7 +793,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 106,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Clover Silhouette Charm", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -817,7 +817,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 113,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Emerald Baguette Stones", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -841,7 +841,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 120,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Cubic Zirconia Pav\u00e9", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -865,7 +865,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 127,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Sculpted Bamboo Knots", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -889,7 +889,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 134,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "None", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -913,7 +913,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 141,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Sage Green Enamel", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -937,7 +937,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 148,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Round Brilliant Zircons", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -961,7 +961,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 155,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Emerald-Cut Clear Crystals", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -985,7 +985,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 162,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Black Faceted Crystals", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1009,7 +1009,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 169,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Engraved Numerals", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1033,7 +1033,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 26,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Engraved Numerals", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1057,7 +1057,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 33,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Pink Morganite Crystal", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1081,7 +1081,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 40,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Bezel Solitaire Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1105,7 +1105,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 47,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Round Pearl", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1129,7 +1129,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 54,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "None", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1153,7 +1153,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 61,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Multi-Color Enamel Daisies", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1177,7 +1177,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 68,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "None", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1201,7 +1201,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 75,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Pav\u00e9 Rose Crystals", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1225,7 +1225,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 82,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Opaline Gemstone", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1249,7 +1249,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 89,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Crystal Waterfall Strands", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1273,7 +1273,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 96,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "White Enamel Butterfly", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1297,7 +1297,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 103,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Cream Pearl & Beaded Gold", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1321,7 +1321,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 110,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Faceted Teardrop Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1345,7 +1345,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 117,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Folded Gold Heart Charm", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1369,7 +1369,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 124,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Solid Heart Charm", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1393,7 +1393,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 131,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Emerald Green Crystals", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1417,7 +1417,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 138,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Cursive Engraved Poetry", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1441,7 +1441,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 145,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Pear Cut Cubic Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1465,7 +1465,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 152,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Puffed Gold Heart", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1489,7 +1489,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 159,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Reversible Black & White Enamel", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1513,7 +1513,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 166,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Eight-Point Star Studs", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1537,7 +1537,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 173,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Hand-Painted Floral Enamel", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1561,7 +1561,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 30,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "None", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1585,7 +1585,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 37,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Natural White Mother-of-Pearl", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1609,7 +1609,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 44,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "White Enamel Daisies", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1633,7 +1633,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 51,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Faceted Round & Marquise Zircons", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1657,7 +1657,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 58,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Molten Gold Cast", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1681,7 +1681,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 65,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Baguette Cut Cubic Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1705,7 +1705,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 72,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Frosted Rose Quartz Crystals", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1729,7 +1729,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 79,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Star-Set Solitaire Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1753,7 +1753,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 86,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Micro Bow Ribbon Charm", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1777,7 +1777,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 93,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Black Enamel & Micro Zircons", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1801,7 +1801,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 100,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Center Solitaire Zirconia", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1825,7 +1825,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 107,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Luminous Pearl & Zircon Star", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1849,7 +1849,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 114,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Emerald Inlay & Pav\u00e9 Zircons", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1873,7 +1873,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 121,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "None", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1897,7 +1897,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 128,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Malachite Green Motif Inlays", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
   {
@@ -1921,7 +1921,7 @@ export const FALLBACK_PRODUCTS = [
     review_count: 135,
     features: ["Anti-tarnish", "Waterproof", "PVD Plated", "18K Gold Plated"],
     specifications: {"Material": "Titanium 316L Stainless Steel", "Finish": "18K Gold Color Plated", "Plating": "Long-lasting PVD Plated", "Stones": "Hand-Painted Garden Enamel", "Features": "Anti-tarnish, Waterproof, Quality Guarantee"},
-    shipping: {"standard": "3\u20135 business days", "express": "1\u20132 business days", "free_threshold": 999},
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
 ];

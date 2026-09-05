@@ -44,8 +44,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -96,8 +96,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -148,8 +148,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -202,8 +202,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -255,8 +255,8 @@ PRODUCTS = [
             "Features": "Reversible 2-in-1, Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -307,8 +307,8 @@ PRODUCTS = [
             "Features": "Double Layer Chain, Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -358,8 +358,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -408,8 +408,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -457,8 +457,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -506,8 +506,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -555,8 +555,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -604,8 +604,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -653,8 +653,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -702,8 +702,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -753,8 +753,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -804,8 +804,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -853,8 +853,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -905,8 +905,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -956,8 +956,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1008,8 +1008,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1063,8 +1063,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1117,8 +1117,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1166,8 +1166,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1217,8 +1217,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1270,8 +1270,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1323,8 +1323,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1375,8 +1375,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1427,8 +1427,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1475,8 +1475,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1523,8 +1523,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1571,8 +1571,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1619,8 +1619,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1667,8 +1667,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1715,8 +1715,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1763,8 +1763,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1811,8 +1811,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1859,8 +1859,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1907,8 +1907,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -1955,8 +1955,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2003,8 +2003,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2051,8 +2051,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2099,8 +2099,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2147,8 +2147,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2195,8 +2195,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2243,8 +2243,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2291,8 +2291,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2339,8 +2339,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2387,8 +2387,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2435,8 +2435,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2483,8 +2483,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2531,8 +2531,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2579,8 +2579,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2627,8 +2627,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2675,8 +2675,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2723,8 +2723,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2771,8 +2771,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2819,8 +2819,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2867,8 +2867,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2915,8 +2915,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -2963,8 +2963,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3011,8 +3011,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3059,8 +3059,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3107,8 +3107,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3155,8 +3155,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3203,8 +3203,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3251,8 +3251,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3299,8 +3299,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3347,8 +3347,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3395,8 +3395,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3443,8 +3443,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3491,8 +3491,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3539,8 +3539,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3587,8 +3587,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3635,8 +3635,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3683,8 +3683,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3731,8 +3731,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3779,8 +3779,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3827,8 +3827,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3875,8 +3875,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [
@@ -3923,8 +3923,8 @@ PRODUCTS = [
             "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
         },
         "shipping": {
-            "standard": "3\u20135 business days",
-            "express": "1\u20132 business days",
+            "standard": "6 to 8 days",
+            "express": "3 to 4 days",
             "free_threshold": 999
         },
         "care_instructions": [

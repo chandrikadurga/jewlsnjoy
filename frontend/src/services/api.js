@@ -119,6 +119,27 @@ export const productApi = {
       results: response.data.results.map(resolveProductImages),
     };
   },
+
+  /**
+   * Get reviews for a product
+   */
+  getReviews: async (productId) => {
+    try {
+      const response = await api.get(`/api/products/${productId}/reviews/`);
+      return response.data;
+    } catch (err) {
+      console.warn('Failed to fetch reviews from API, using defaults:', err);
+      return [];
+    }
+  },
+
+  /**
+   * Submit a new review for a product
+   */
+  addReview: async (productId, reviewData) => {
+    const response = await api.post(`/api/products/${productId}/reviews/`, reviewData);
+    return response.data;
+  },
 };
 
 // ─── Category API ──────────────────────────────────────────────

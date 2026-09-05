@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Category, Product, ProductImage, Order, OrderItem
+from .models import Category, Product, ProductImage, Order, OrderItem, Review
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
@@ -18,6 +18,7 @@ from .serializers import (
     AdminProductWriteSerializer,
     OrderSerializer,
     OrderCreateSerializer,
+    ReviewSerializer,
 )
 
 
@@ -80,6 +81,28 @@ class ProductDetailView(APIView):
             return Response(ProductSerializer(product).data)
         except Product.DoesNotExist:
             return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ProductReviewsView(APIView):
+    """
+    GET /api/products/<pk>/reviews/
+    POST /api/products/<pk>/reviews/
+    """
+    def get(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        reviews = product.reviews.all()
+        return Response(ReviewSerializer(reviews, many=True).data)
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        data = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
+        data['product'] = product.id
+        serializer = ReviewSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(is_verified_buyer=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class ProductBySlugView(APIView):

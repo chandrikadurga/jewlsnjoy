@@ -156,3 +156,25 @@ class OrderItem(models.Model):
     @property
     def subtotal(self):
         return self.price * self.quantity
+
+
+class Review(models.Model):
+    product = models.ForeignKey(
+        Product,
+        related_name='reviews',
+        on_delete=models.CASCADE
+    )
+    author_name = models.CharField(max_length=120)
+    rating = models.PositiveSmallIntegerField(default=5)
+    title = models.CharField(max_length=200, blank=True, default='')
+    comment = models.TextField()
+    is_verified_buyer = models.BooleanField(default=True)
+    helpful_count = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.rating}★ by {self.author_name} on {self.product.name}"
+

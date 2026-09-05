@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Shield, Truck, RotateCcw, Star } from 'lucide-react';
+import { ArrowRight, Shield, Truck, RotateCcw, Star, Check, ExternalLink } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
 import heroImg from '../../assets/products/1/1.jpeg';
@@ -122,6 +122,125 @@ function BrandStory() {
   );
 }
 
+// Customer Reviews & Testimonials Section with Clickable Product Links
+const HOME_REVIEWS = [
+  {
+    id: 1,
+    author: 'Ananya Sharma',
+    city: 'Mumbai',
+    rating: 5,
+    title: 'Zero tarnishing with daily wear!',
+    comment: 'I bought the Emerald Luxe Tennis Necklace for daily styling. The 18K gold finish is warm and lustrous, and the emerald stones sparkle subtly in the sun. Truly waterproof!',
+    productId: 1,
+    productName: 'Emerald Luxe Tennis Necklace',
+    productImage: '/products/1/1.jpeg',
+    price: '₹799',
+  },
+  {
+    id: 8,
+    author: 'Priyanka Desai',
+    city: 'Bengaluru',
+    rating: 5,
+    title: 'Breathtaking marquise crystals',
+    comment: 'The Rainbow Bloom Ring is easily adjustable and fits comfortably without pinching. The colors are vivid and pair seamlessly with Indian and Western outfits.',
+    productId: 8,
+    productName: 'Rainbow Bloom Marquise Crystal Ring',
+    productImage: '/products/8/1.jpeg',
+    price: '₹499',
+  },
+  {
+    id: 15,
+    author: 'Rhea Kapoor',
+    city: 'Delhi NCR',
+    rating: 5,
+    title: 'Featherlight & hypoallergenic',
+    comment: 'I have sensitive skin that normally reacts to imitation jewelry, but these Hollow Heart Studs are completely irritation-free. I never take them off!',
+    productId: 15,
+    productName: 'Minimalist Hollow Heart Silhouette Studs',
+    productImage: '/products/15/1.jpeg',
+    price: '₹449',
+  },
+  {
+    id: 21,
+    author: 'Pooja Sharma',
+    city: 'Pune',
+    rating: 5,
+    title: 'Pre-layered perfection',
+    comment: 'The Dual Symphony Herringbone Necklace sits like liquid gold on the collarbones. Luxury packaging, fast 2-day delivery, and compliments from everyone.',
+    productId: 21,
+    productName: 'Dual Symphony Layered Herringbone Necklace',
+    productImage: '/products/21/1.jpeg',
+    price: '₹899',
+  },
+];
+
+function CustomerReviewsSection() {
+  return (
+    <section className="section home-reviews" aria-labelledby="reviews-title">
+      <div className="container">
+        <div className="section-header">
+          <span className="eyebrow" style={{ color: 'var(--color-gold)' }}>What Our Customers Say</span>
+          <h2 className="section-title" id="reviews-title">Loved by Thousands</h2>
+          <p className="section-desc">
+            Real experiences from verified buyers wearing Jewels &apos;n&apos; Joys every day.
+          </p>
+        </div>
+
+        <div className="home-reviews__grid">
+          {HOME_REVIEWS.map((rev) => (
+            <article key={rev.id} className="home-review__card glass-panel">
+              <div className="home-review__stars">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star
+                    key={s}
+                    size={15}
+                    fill="#d4af37"
+                    color="#d4af37"
+                    strokeWidth={1.5}
+                  />
+                ))}
+              </div>
+
+              <h3 className="home-review__title">"{rev.title}"</h3>
+              <p className="home-review__quote">{rev.comment}</p>
+
+              <div className="home-review__author">
+                <span className="home-review__author-name">{rev.author}</span>
+                <span className="home-review__city">({rev.city})</span>
+                <span className="badge badge-green home-review__badge">
+                  <Check size={10} strokeWidth={3} />
+                  Verified Buyer
+                </span>
+              </div>
+
+              {/* Clickable link directly to the reviewed product */}
+              <Link
+                to={`/products/${rev.productId}`}
+                className="home-review__product-link"
+                title={`View ${rev.productName}`}
+              >
+                <img
+                  src={rev.productImage}
+                  alt={rev.productName}
+                  className="home-review__product-thumb"
+                  loading="lazy"
+                />
+                <div className="home-review__product-info">
+                  <span className="home-review__product-name">{rev.productName}</span>
+                  <span className="home-review__product-price">{rev.price}</span>
+                </div>
+                <span className="home-review__product-action">
+                  View Piece <ArrowRight size={13} strokeWidth={2} />
+                </span>
+              </Link>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // CTA Banner
 function CTABanner() {
   return (
@@ -190,6 +309,9 @@ export default function Home() {
           />
         </div>
       </section>
+
+      {/* Verified Customer Reviews with Clickable Product Links */}
+      <CustomerReviewsSection />
 
       <WhyChooseUs />
       <CTABanner />

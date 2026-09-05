@@ -4,7 +4,7 @@ Full ModelSerializers for Category, Product, ProductImage, Order, and OrderItem.
 """
 
 from rest_framework import serializers
-from .models import Category, Product, ProductImage, Order, OrderItem
+from .models import Category, Product, ProductImage, Order, OrderItem, Review
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -132,3 +132,14 @@ class OrderCreateSerializer(serializers.Serializer):
                 image_url=item.get('image_url') or (prod.primary_image_url if prod else '/products/1/1.jpeg')
             )
         return order
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = [
+            'id', 'product', 'author_name', 'rating', 'title',
+            'comment', 'is_verified_buyer', 'helpful_count', 'created_at'
+        ]
+        read_only_fields = ['id', 'is_verified_buyer', 'helpful_count', 'created_at']
+

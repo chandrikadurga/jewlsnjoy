@@ -3,18 +3,34 @@ import { Heart, ShoppingBag, Star } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import './ProductCard.css';
 
-function StarRating({ rating }) {
+function StarRating({ rating, count, productId }) {
+  const handleClick = (e) => {
+    if (productId) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.href = `/products/${productId}#reviews`;
+    }
+  };
+
   return (
-    <div className="product-card__stars" aria-label={`Rated ${rating} out of 5`}>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Star
-          key={star}
-          size={12}
-          fill={star <= Math.round(rating) ? 'currentColor' : 'none'}
-          strokeWidth={1.5}
-        />
-      ))}
-      <span className="product-card__rating-count">({Math.floor(Math.random() * 100) + 20})</span>
+    <div
+      className="product-card__stars-link"
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      title={`Rated ${rating} out of 5 (${count} reviews) — Click to view reviews`}
+    >
+      <div className="product-card__stars" aria-label={`Rated ${rating} out of 5, ${count} reviews`}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            size={12}
+            fill={star <= Math.round(rating) ? 'currentColor' : 'none'}
+            strokeWidth={1.5}
+          />
+        ))}
+        <span className="product-card__rating-count">({count})</span>
+      </div>
     </div>
   );
 }
@@ -88,9 +104,11 @@ export default function ProductCard({ product }) {
           <h3 className="product-card__name">{product.name}</h3>
           <p className="product-card__desc">{product.short_description}</p>
 
-          {product.rating && (
-            <StarRating rating={product.rating} />
-          )}
+          <StarRating
+            rating={product.rating || 4.9}
+            count={product.review_count || 48}
+            productId={product.id}
+          />
 
           <div className="product-card__price-row">
             <span className="product-card__price">{formatPrice(product.price)}</span>

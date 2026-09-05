@@ -143,6 +143,23 @@
 }
 
 /* Stars */
+.product-card__stars-link {
+  display: inline-flex;
+  cursor: pointer;
+  width: fit-content;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.product-card__stars-link:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.product-card__stars-link:hover .product-card__rating-count {
+  color: var(--color-brown);
+  text-decoration: underline;
+}
+
 .product-card__stars {
   display: flex;
   align-items: center;

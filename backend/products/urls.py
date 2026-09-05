@@ -7,4 +7,6 @@ urlpatterns = [
     path('bestsellers/', views.BestsellerProductsView.as_view(), name='bestseller-products'),
     path('slug/<str:slug>/', views.ProductBySlugView.as_view(), name='product-by-slug'),
     path('<int:pk>/', views.ProductDetailView.as_view(), name='product-detail'),
+    path('<int:pk>/reviews/', views.ProductReviewsView.as_view(), name='product-reviews'),
 ]
+

@@ -1,0 +1,390 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+   COLLECTIONS PAGE STYLES - Jewels 'n' Joys
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.collections-page {
+  background-color: var(--color-warm-white, #fdfbf7);
+  min-height: 100vh;
+}
+
+/* ─── Hero ────────────────────────────────────────────────────────────── */
+.collections-hero {
+  background: 
+    radial-gradient(ellipse at 75% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse at 25% 85%, rgba(198, 147, 75, 0.08) 0%, transparent 55%),
+    var(--color-cream);
+  padding: var(--space-16) 0 var(--space-12);
+  text-align: center;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.collections-hero__eyebrow {
+  margin-bottom: var(--space-3);
+  letter-spacing: 0.16em;
+  color: var(--color-gold);
+}
+
+.collections-hero__title {
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--color-brown);
+  margin-bottom: var(--space-4);
+}
+
+.collections-hero__title em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  color: var(--color-gold);
+}
+
+.collections-hero__subtitle {
+  max-width: 600px;
+  margin: 0 auto var(--space-8);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--color-brown-light);
+}
+
+.collections-hero__filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.collections-chip {
+  padding: 8px 18px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: var(--color-brown);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.collections-chip:hover {
+  background: var(--color-white);
+  border-color: var(--color-gold);
+  color: var(--color-gold-dark, #a37233);
+  transform: translateY(-1px);
+}
+
+.collections-chip.active {
+  background: var(--color-brown);
+  color: var(--color-cream);
+  border-color: var(--color-brown);
+  box-shadow: 0 4px 12px rgba(44, 36, 32, 0.15);
+}
+
+/* ─── Main Collections Grid ─────────────────────────────────────────── */
+.collections-grid-section {
+  padding: var(--space-16) 0 var(--space-20);
+}
+
+.collections-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.collection-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+  align-items: center;
+  background: var(--color-white);
+  border-radius: var(--radius-2xl, 24px);
+  padding: var(--space-8);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 16px 40px rgba(44, 36, 32, 0.04);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.collection-card:hover {
+  box-shadow: 0 24px 50px rgba(44, 36, 32, 0.08);
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+.collection-card--reversed {
+  direction: rtl;
+}
+
+.collection-card--reversed > * {
+  direction: ltr;
+}
+
+.collection-card__media {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  background: var(--color-beige);
+  box-shadow: var(--shadow-md);
+}
+
+.collection-card__cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.collection-card:hover .collection-card__cover {
+  transform: scale(1.03);
+}
+
+.collection-card__badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(253, 251, 247, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-gold-dark, #a37233);
+}
+
+.collection-card__count {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(44, 36, 32, 0.85);
+  color: var(--color-cream);
+  backdrop-filter: blur(6px);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.collection-card__content {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+}
+
+.collection-card__tagline {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-gold);
+  margin-bottom: var(--space-2);
+}
+
+.collection-card__title {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 500;
+  color: var(--color-brown);
+  line-height: 1.25;
+  margin-bottom: var(--space-4);
+}
+
+.collection-card__desc {
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: var(--color-brown-light);
+  margin-bottom: var(--space-6);
+}
+
+/* Mini highlights */
+.collection-card__highlights {
+  margin-bottom: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.collection-highlights__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+.collection-highlights__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.collection-highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem;
+  background: var(--color-cream);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.collection-highlight-item:hover {
+  border-color: var(--color-gold);
+  background: var(--color-white);
+  transform: translateY(-2px);
+}
+
+.collection-highlight-item__img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.collection-highlight-item__meta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.collection-highlight-item__name {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-brown);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collection-highlight-item__price {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-gold);
+}
+
+.collection-card__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ─── Category Fast Navigation ─────────────────────────────────────────── */
+.collections-categories-section {
+  padding: var(--space-16) 0;
+}
+
+.collections-category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.collections-cat-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-white);
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.collections-cat-card:hover {
+  border-color: var(--color-gold);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.collections-cat-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-brown);
+  margin-bottom: 0.2rem;
+}
+
+.collections-cat-card__desc {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  margin-bottom: 0.4rem;
+}
+
+.collections-cat-card__count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gold);
+}
+
+.collections-cat-card__arrow {
+  color: var(--color-gold);
+  transition: transform var(--transition-fast);
+}
+
+.collections-cat-card:hover .collections-cat-card__arrow {
+  transform: translateX(4px);
+}
+
+/* ─── Assurance Bar ────────────────────────────────────────────────────── */
+.collections-assurance-bar {
+  background: var(--color-brown);
+  color: var(--color-cream);
+  padding: 1.25rem 0;
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.collections-assurance-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-size: 0.84rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.collections-assurance-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.assurance-icon {
+  color: var(--color-gold);
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .collection-card {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+  .collection-card--reversed {
+    direction: ltr;
+  }
+  .collection-card__media {
+    max-width: 440px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .collection-highlights__grid {
+    grid-template-columns: 1fr;
+  }
+  .collections-hero__filter-chips {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+}

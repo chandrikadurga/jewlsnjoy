@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import craftImg from '../../assets/products/6/1.jpeg';
+import craftImg from '../../assets/products/6/2.jpeg';
 import './About.css';
 
 const VALUES = [
@@ -51,7 +51,7 @@ export default function About() {
           <div className="about-mission__image">
             <img
               src={craftImg}
-              onError={(e) => { e.currentTarget.src = '/products/6/1.jpeg'; }}
+              onError={(e) => { e.currentTarget.src = '/products/6/2.jpeg'; }}
               alt="Emerald Statement Herringbone Necklace — our craft"
               className="about-mission__img"
             />

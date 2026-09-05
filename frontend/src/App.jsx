@@ -8,6 +8,7 @@ import ProductDetail from './pages/ProductDetail/ProductDetail';
 import About from './pages/About/About';
 import Contact from './pages/Contact/Contact';
 import Checkout from './pages/Checkout/Checkout';
+import Policies from './pages/Policies/Policies';
 import NotFound from './pages/NotFound';
 
 // Admin pages
@@ -29,6 +30,10 @@ function App() {
             <Route path="/about"         element={<About />} />
             <Route path="/contact"       element={<Contact />} />
             <Route path="/checkout"      element={<Checkout />} />
+            <Route path="/policies"        element={<Policies />} />
+            <Route path="/return-policy"   element={<Policies />} />
+            <Route path="/privacy-policy"  element={<Policies />} />
+            <Route path="/shipping-policy" element={<Policies />} />
             <Route path="*"              element={<NotFound />} />
           </Route>
 

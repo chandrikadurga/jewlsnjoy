@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Shield, Truck, RotateCcw, Star, Check, ExternalLink } from 'lucide-react';
+import { ArrowRight, Shield, Truck, RotateCcw, Star, Check, ExternalLink, ShieldCheck } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
 import heroImg from '../../assets/products/1/1.jpeg';
@@ -11,33 +11,30 @@ import './Home.css';
 function Hero() {
   return (
     <section className="hero" aria-label="Hero">
-      <div className="container hero__inner">
-        <div className="hero__content">
-          <span className="eyebrow hero__eyebrow">The Art of Elegance</span>
-          <h1 className="hero__heading">
-            Timeless Elegance,<br className="hero__br" />
-            Beautifully Yours
-          </h1>
-          <p className="hero__desc">
-            Discover thoughtfully designed pieces that add a touch of sophistication to every moment.
-          </p>
-          <Link to="/shop" className="btn btn-primary btn-lg hero__cta">
+      <div className="hero__media">
+        <img
+          src={heroImg}
+          alt="Emerald Luxe Tennis Necklace"
+          className="hero__img"
+        />
+        <div className="hero__overlay" />
+      </div>
+      <div className="container hero__content">
+        <span className="eyebrow hero__eyebrow">Handcrafted Elegance</span>
+        <h1 className="hero__title">
+          Jewellery That Tells<br /><em>Your</em> Story
+        </h1>
+        <p className="hero__subtitle">
+          Timeless, anti-tarnish pieces thoughtfully designed to elevate your everyday moments.
+        </p>
+        <div className="hero__cta-group">
+          <Link to="/shop" className="btn btn-primary btn-lg" id="hero-shop-btn">
             Explore Collection
             <ArrowRight size={16} strokeWidth={2} />
           </Link>
-        </div>
-        <div className="hero__image-wrap">
-          <img
-            src={heroImg}
-            onError={(e) => { e.currentTarget.src = '/products/1/1.jpeg'; }}
-            alt="Emerald Luxe Tennis Necklace — Jewels 'n' Joys hero piece"
-            className="hero__image"
-            loading="eager"
-          />
-          <div className="hero__image-badge">
-            <Star size={12} fill="currentColor" strokeWidth={0} />
-            <span>New Collection</span>
-          </div>
+          <Link to="/shop?category=Necklaces" className="btn btn-secondary btn-lg" id="hero-categories-btn">
+            View Necklaces
+          </Link>
         </div>
       </div>
     </section>
@@ -46,10 +43,10 @@ function Hero() {
 
 // Why Choose Us
 const PILLARS = [
-  { icon: Shield,    title: 'Premium Quality',      desc: 'Every piece is crafted with long-lasting PVD plating for durability.' },
-  { icon: Truck,     title: 'Fast Delivery',        desc: 'Express and standard shipping options across India.' },
-  { icon: RotateCcw, title: 'Easy Returns',          desc: 'Hassle-free returns within 15 days of delivery.' },
-  { icon: Star,      title: 'Thoughtful Design',    desc: 'Each piece is designed to feel elegant, personal, and timeless.' },
+  { icon: Shield,      title: 'Premium Quality',      desc: 'Every piece is crafted with long-lasting PVD plating for durability.' },
+  { icon: Truck,       title: 'Reliable Shipping',    desc: 'Dispatched in 1–3 working days with careful protective packaging.' },
+  { icon: ShieldCheck, title: 'Damage Protection',    desc: 'Replacement support for damaged items reported within 24h with unboxing video.' },
+  { icon: Star,        title: 'Thoughtful Design',    desc: 'Each piece is designed to feel elegant, personal, and timeless.' },
 ];
 
 function WhyChooseUs() {

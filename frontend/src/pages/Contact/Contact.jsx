@@ -45,8 +45,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="contact-info-item__label">Email</p>
-                  <a href="mailto:hello@jewlsnjoys.com" className="contact-info-item__value">
-                    hello@jewlsnjoys.com
+                  <a href="mailto:jewelsnjoy25@gmail.com" className="contact-info-item__value">
+                    jewelsnjoy25@gmail.com
                   </a>
                 </div>
               </div>
@@ -55,9 +55,9 @@ export default function Contact() {
                   <Phone size={18} strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="contact-info-item__label">Phone</p>
-                  <a href="tel:+919876543210" className="contact-info-item__value">
-                    +91 98765 43210
+                  <p className="contact-info-item__label">WhatsApp &amp; Phone</p>
+                  <a href="https://wa.me/917251070150" target="_blank" rel="noopener noreferrer" className="contact-info-item__value">
+                    +91 7251070150
                   </a>
                 </div>
               </div>
@@ -66,18 +66,33 @@ export default function Contact() {
                   <MapPin size={18} strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="contact-info-item__label">Location</p>
-                  <p className="contact-info-item__value">India</p>
+                  <p className="contact-info-item__label">Support Hours</p>
+                  <p className="contact-info-item__value">Mon–Fri (Response in 48–72 hrs)</p>
                 </div>
               </div>
             </div>
 
-            <div className="contact-info__product-img">
-              <img
-                src={contactImg}
-                onError={(e) => { e.currentTarget.src = '/products/2/1.jpeg'; }}
-                alt="Midnight Heart Pendant Necklace"
-              />
+            {/* Quick Policy Notice */}
+            <div style={{
+              background: 'rgba(212, 175, 55, 0.08)',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+              borderRadius: '14px',
+              padding: '16px',
+              marginTop: '1.5rem',
+              fontSize: '0.8125rem',
+              lineHeight: '1.5'
+            }}>
+              <p style={{ fontWeight: 600, color: 'var(--color-brown)', marginBottom: '4px' }}>
+                Replacement &amp; Complaint Notice:
+              </p>
+              <p style={{ color: 'var(--color-muted)', marginBottom: '8px' }}>
+                Damaged/incorrect items must be reported within 24 hours of delivery with a mandatory 360° unboxing video with no cuts.
+              </p>
+              <div style={{ display: 'flex', gap: '12px', fontWeight: 600, color: 'var(--color-gold)' }}>
+                <Link to="/return-policy" style={{ textDecoration: 'underline' }}>Return Policy</Link>
+                <span>•</span>
+                <Link to="/shipping-policy" style={{ textDecoration: 'underline' }}>Shipping Policy</Link>
+              </div>
             </div>
           </div>
 

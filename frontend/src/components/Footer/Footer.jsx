@@ -139,27 +139,27 @@ export default function FooterGlow({
 
           <div>
             <div className="footer-glow__col-title mb-4 text-xs font-semibold tracking-widest uppercase">
-              Customer Care
+              Customer Care &amp; Legal
             </div>
             <ul className="footer-glow__list space-y-2.5">
               <li>
-                <Link to="/contact" className="footer-glow__link">
+                <Link to="/shipping-policy" className="footer-glow__link">
                   Shipping Policy
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="footer-glow__link">
-                  Easy Returns
+                <Link to="/return-policy" className="footer-glow__link">
+                  Return &amp; Refund Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className="footer-glow__link">
+                  Privacy Policy
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="footer-glow__link">
-                  FAQs
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="footer-glow__link">
-                  Care Guide
+                  Contact Support
                 </Link>
               </li>
             </ul>
@@ -167,9 +167,16 @@ export default function FooterGlow({
         </nav>
       </div>
 
-      {/* Copyright */}
-      <div className="footer-glow__copyright relative z-10 mt-10 text-center text-xs">
+      {/* Copyright & Legal Links */}
+      <div className="footer-glow__copyright relative z-10 mt-10 text-center text-xs flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6">
         <span>&copy; {currentYear} {brandName}. All rights reserved.</span>
+        <div className="flex items-center gap-4 text-xs text-stone-400">
+          <Link to="/privacy-policy" className="hover:underline">Privacy</Link>
+          <span>•</span>
+          <Link to="/return-policy" className="hover:underline">Returns</Link>
+          <span>•</span>
+          <Link to="/shipping-policy" className="hover:underline">Shipping</Link>
+        </div>
       </div>
     </footer>
   );

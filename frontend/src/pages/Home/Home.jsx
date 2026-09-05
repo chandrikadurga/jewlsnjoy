@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Truck, RotateCcw, Star } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
+import heroImg from '../../assets/products/1/1.jpeg';
+import storyMainImg from '../../assets/products/3/1.jpeg';
+import storyAccentImg from '../../assets/products/4/1.jpeg';
 import './Home.css';
 
 // Hero section
@@ -25,7 +28,8 @@ function Hero() {
         </div>
         <div className="hero__image-wrap">
           <img
-            src="/src/assets/products/1/1.jpeg"
+            src={heroImg}
+            onError={(e) => { e.currentTarget.src = '/products/1/1.jpeg'; }}
             alt="Emerald Luxe Tennis Necklace — Jewels N' Joys hero piece"
             className="hero__image"
             loading="eager"
@@ -80,12 +84,14 @@ function BrandStory() {
         <div className="brand-story__image-col">
           <div className="brand-story__image-stack">
             <img
-              src="/src/assets/products/3/1.jpeg"
+              src={storyMainImg}
+              onError={(e) => { e.currentTarget.src = '/products/3/1.jpeg'; }}
               alt="Royal Pink Heart Crown Necklace"
               className="brand-story__img brand-story__img--main"
             />
             <img
-              src="/src/assets/products/4/1.jpeg"
+              src={storyAccentImg}
+              onError={(e) => { e.currentTarget.src = '/products/4/1.jpeg'; }}
               alt="Onyx Solitaire Medallion Necklace"
               className="brand-story__img brand-story__img--accent"
             />

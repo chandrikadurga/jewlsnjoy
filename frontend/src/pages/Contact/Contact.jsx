@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Check } from 'lucide-react';
+import contactImg from '../../assets/products/2/1.jpeg';
 import './Contact.css';
 
 export default function Contact() {
@@ -73,7 +74,8 @@ export default function Contact() {
 
             <div className="contact-info__product-img">
               <img
-                src="/src/assets/products/2/1.jpeg"
+                src={contactImg}
+                onError={(e) => { e.currentTarget.src = '/products/2/1.jpeg'; }}
                 alt="Midnight Heart Pendant Necklace"
               />
             </div>

@@ -13,15 +13,15 @@ import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
-// Product image map — maps placeholder API paths to local assets
+// Product image map — maps placeholder API paths to public assets
 const PRODUCT_IMAGE_MAP = {
-  '/api/placeholder/product_1': '/src/assets/products/1/1.jpeg',
-  '/api/placeholder/product_2': '/src/assets/products/2/1.jpeg',
-  '/api/placeholder/product_3': '/src/assets/products/3/1.jpeg',
-  '/api/placeholder/product_4': '/src/assets/products/4/1.jpeg',
-  '/api/placeholder/product_5': '/src/assets/products/5/1.jpeg',
-  '/api/placeholder/product_6': '/src/assets/products/6/1.jpeg',
-  '/api/placeholder/product_7': '/src/assets/products/7/1.jpeg',
+  '/api/placeholder/product_1': '/products/1/1.jpeg',
+  '/api/placeholder/product_2': '/products/2/1.jpeg',
+  '/api/placeholder/product_3': '/products/3/1.jpeg',
+  '/api/placeholder/product_4': '/products/4/1.jpeg',
+  '/api/placeholder/product_5': '/products/5/1.jpeg',
+  '/api/placeholder/product_6': '/products/6/1.jpeg',
+  '/api/placeholder/product_7': '/products/7/1.jpeg',
 };
 
 function resolveProductImage(imagePath) {
@@ -31,7 +31,7 @@ function resolveProductImage(imagePath) {
   if (match) {
     const id = match[1];
     const angle = match[2] || '1';
-    return `/src/assets/products/${id}/${angle}.jpeg`;
+    return `/products/${id}/${angle}.jpeg`;
   }
   return imagePath;
 }

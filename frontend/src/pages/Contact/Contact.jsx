@@ -191,7 +191,7 @@ export default function Contact() {
                 </div>
                 <div className="contact-info-text">
                   <span className="contact-info-label">Location at</span>
-                  <p className="contact-info-value">Techno Main Salt Lake, Sector-V, Kolkata-700091</p>
+                  <p className="contact-info-value">Basant Vihar New Etah Chungi Near Redrose School Aligarh - 202001</p>
                 </div>
               </div>
             </div>

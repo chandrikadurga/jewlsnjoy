@@ -6,6 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    watch: {
+      usePolling: true,
+      interval: 1000,
+    },
     proxy: {
       // Proxy /api requests to Django backend during development
       '/api': {

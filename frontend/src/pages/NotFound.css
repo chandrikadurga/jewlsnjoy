@@ -1,0 +1,43 @@
+.not-found {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  text-align: center;
+}
+
+.not-found__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.not-found__code {
+  font-family: var(--font-serif);
+  font-size: 6rem;
+  font-weight: 300;
+  color: var(--color-beige-dark);
+  line-height: 1;
+}
+
+.not-found__title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 500;
+  color: var(--color-brown);
+}
+
+.not-found__desc {
+  color: var(--color-muted);
+  font-size: 1rem;
+  max-width: 340px;
+  line-height: 1.6;
+}
+
+.not-found__actions {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--space-4);
+}

@@ -1,0 +1,318 @@
+/* ─── Hero ────────────────────────────────────────────────── */
+.hero {
+  padding: var(--space-16) 0 var(--space-20);
+  overflow: hidden;
+}
+
+.hero__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: var(--space-16);
+  min-height: 520px;
+}
+
+.hero__content {
+  max-width: 520px;
+}
+
+.hero__eyebrow {
+  margin-bottom: var(--space-5);
+}
+
+.hero__heading {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--color-brown);
+  margin-bottom: var(--space-6);
+}
+
+.hero__br {
+  display: block;
+}
+
+.hero__desc {
+  font-size: 1.0625rem;
+  color: var(--color-brown-light);
+  line-height: 1.7;
+  margin-bottom: var(--space-8);
+  max-width: 420px;
+}
+
+.hero__cta {
+  display: inline-flex;
+}
+
+.hero__image-wrap {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  box-shadow: var(--shadow-lg);
+}
+
+.hero__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.hero__image-wrap:hover .hero__image {
+  transform: scale(1.03);
+}
+
+.hero__image-badge {
+  position: absolute;
+  bottom: var(--space-5);
+  left: var(--space-5);
+  background: rgba(245, 237, 226, 0.95);
+  backdrop-filter: blur(6px);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ─── Section Shared ──────────────────────────────────────── */
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-10);
+}
+
+.section-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 500;
+  color: var(--color-brown);
+  margin-bottom: var(--space-4);
+}
+
+.section-desc {
+  font-size: 1rem;
+  color: var(--color-muted);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.section-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-10);
+}
+
+.section--beige {
+  background-color: var(--color-beige);
+}
+
+/* ─── Brand Story ─────────────────────────────────────────── */
+.brand-story {
+  background-color: var(--color-beige);
+}
+
+.brand-story__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+.brand-story__image-col {}
+
+.brand-story__image-stack {
+  position: relative;
+  height: 520px;
+}
+
+.brand-story__img {
+  position: absolute;
+  border-radius: var(--radius-xl);
+  object-fit: cover;
+  box-shadow: var(--shadow-md);
+}
+
+.brand-story__img--main {
+  width: 72%;
+  height: 80%;
+  top: 0;
+  left: 0;
+}
+
+.brand-story__img--accent {
+  width: 55%;
+  height: 55%;
+  bottom: 0;
+  right: 0;
+  border: 4px solid var(--color-ivory);
+}
+
+.brand-story__content {
+  max-width: 500px;
+}
+
+.brand-story__content .section-title {
+  text-align: left;
+  margin-bottom: var(--space-3);
+}
+
+.brand-story__text {
+  font-size: 0.9375rem;
+  color: var(--color-brown-light);
+  line-height: 1.8;
+  margin-bottom: var(--space-5);
+}
+
+/* ─── Why Choose Us ──────────────────────────────────────── */
+.why-us__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.why-us__card {
+  text-align: center;
+  padding: var(--space-8) var(--space-5);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.why-us__card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.why-us__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-beige);
+  color: var(--color-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-5);
+}
+
+.why-us__card-title {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: var(--color-brown);
+  margin-bottom: var(--space-3);
+}
+
+.why-us__card-desc {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+/* ─── CTA Banner ─────────────────────────────────────────── */
+.cta-banner {
+  background-color: var(--color-brown);
+  padding: var(--space-20) 0;
+}
+
+.cta-banner__inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.cta-banner__heading {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--color-ivory);
+  font-weight: 400;
+}
+
+.cta-banner__desc {
+  color: var(--color-muted);
+  font-size: 1rem;
+  max-width: 400px;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .why-us__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .hero__inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
+    text-align: center;
+    min-height: auto;
+  }
+  .hero {
+    padding: var(--space-12) 0;
+  }
+  .hero__content {
+    max-width: 100%;
+    order: 2;
+  }
+  .hero__image-wrap {
+    order: 1;
+    max-width: 460px;
+    margin: 0 auto;
+    aspect-ratio: 3 / 2;
+  }
+  .hero__desc {
+    max-width: 100%;
+    margin: 0 auto var(--space-8);
+  }
+  .brand-story__inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
+  }
+  .brand-story__image-stack {
+    height: 360px;
+  }
+  .brand-story__content {
+    max-width: 100%;
+  }
+  .brand-story__content .section-title {
+    text-align: center;
+  }
+  .brand-story__content .divider-left {
+    margin: var(--space-4) auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero__heading {
+    font-size: 2rem;
+  }
+  .hero__br { display: none; }
+  .hero__image-wrap {
+    aspect-ratio: 4 / 3;
+  }
+  .why-us__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  .brand-story__image-stack {
+    height: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: var(--space-8) 0 var(--space-12);
+  }
+  .hero__heading {
+    font-size: 1.875rem;
+  }
+}

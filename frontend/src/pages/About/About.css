@@ -1,0 +1,138 @@
+.about-page {}
+
+.about-hero {
+  background-color: var(--color-beige);
+  padding: var(--space-20) 0;
+  text-align: center;
+}
+
+.about-hero__title {
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 400;
+  color: var(--color-brown);
+  line-height: 1.2;
+  margin-top: var(--space-4);
+  max-width: 780px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-hero__br { display: block; }
+
+/* Mission */
+.about-mission {}
+
+.about-mission__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+.about-mission__content {}
+.about-mission__title {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 500;
+  color: var(--color-brown);
+  margin-bottom: var(--space-3);
+}
+
+.about-mission__text {
+  font-size: 0.9375rem;
+  color: var(--color-brown-light);
+  line-height: 1.85;
+  margin-bottom: var(--space-4);
+}
+
+.about-mission__image {}
+
+.about-mission__img {
+  width: 100%;
+  border-radius: var(--radius-xl);
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  box-shadow: var(--shadow-md);
+}
+
+/* Values */
+.about-values {}
+.about-values__title {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 500;
+  color: var(--color-brown);
+  text-align: center;
+  margin-bottom: var(--space-10);
+}
+
+.about-values__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-6);
+}
+
+.about-value-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+}
+
+.about-value-card__title {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--color-brown);
+  margin-bottom: var(--space-3);
+}
+
+.about-value-card__desc {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  line-height: 1.7;
+}
+
+/* CTA */
+.about-cta {
+  background-color: var(--color-brown);
+}
+
+.about-cta__inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.about-cta__title {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 400;
+  color: var(--color-ivory);
+}
+
+.about-cta__desc {
+  color: var(--color-muted);
+  font-size: 1rem;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .about-hero__br { display: none; }
+
+  .about-mission__inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .about-mission__image {
+    order: -1;
+  }
+
+  .about-mission__img {
+    aspect-ratio: 16 / 9;
+  }
+
+  .about-values__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import craftImg from '../../assets/products/21/2.jpeg';
+import craftImg from '../../assets/products/5/2.jpeg';
 import './About.css';
 
 const VALUES = [
@@ -51,8 +51,8 @@ export default function About() {
           <div className="about-mission__image">
             <img
               src={craftImg}
-              onError={(e) => { e.currentTarget.src = '/products/21/2.jpeg'; }}
-              alt="Jewels 'n' Joys everyday elegance — handcrafted design"
+              onError={(e) => { e.currentTarget.src = '/products/5/2.jpeg'; }}
+              alt="Reversible Four-Leaf Clover Necklace — elegance designed for every day"
               className="about-mission__img"
             />
           </div>

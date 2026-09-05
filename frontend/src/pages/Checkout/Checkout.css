@@ -323,12 +323,26 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.checkout-pay-option__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .checkout-pay-option__name {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-brown);
+}
+
+.checkout-pay-option__brands {
+  font-size: 0.725rem;
+  font-weight: 500;
+  color: var(--color-gold);
+  letter-spacing: 0.02em;
 }
 
 .checkout-pay-option__tag {
@@ -347,6 +361,19 @@
   color: var(--color-muted);
   margin-top: 3px;
   line-height: 1.4;
+}
+
+.checkout-success__pm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--color-brown);
+}
+
+.checkout-success__pm-badge small {
+  color: var(--color-muted);
+  font-weight: normal;
 }
 
 /* Payment Reassurance Note */

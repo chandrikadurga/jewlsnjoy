@@ -134,6 +134,6 @@ CORS_ALLOW_CREDENTIALS = True
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 
-# Future: When adding authentication, configure JWT here
-# REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = [...]
-# REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES'] = [...]
+# Razorpay Configuration
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '')

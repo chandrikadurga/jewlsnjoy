@@ -184,6 +184,20 @@ export const orderApi = {
   },
 };
 
+// ─── Payment API (Razorpay) ────────────────────────────────────
+
+export const paymentApi = {
+  createRazorpayOrder: async (amount, currency = 'INR') => {
+    const response = await api.post('/api/payment/razorpay/create-order/', { amount, currency });
+    return response.data;
+  },
+  getRazorpayConfig: async () => {
+    const response = await api.get('/api/payment/razorpay/config/');
+    return response.data;
+  },
+};
+
+
 // ─── Admin API ─────────────────────────────────────────────────
 
 export const adminApi = {

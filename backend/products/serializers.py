@@ -133,6 +133,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'id', 'order_number', 'customer_name', 'customer_email', 'customer_phone',
             'shipping_address', 'city', 'state', 'postal_code', 'country',
             'total_amount', 'payment_method', 'payment_status', 'status',
+            'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature',
             'notes', 'created_at', 'updated_at', 'items',
         ]
 
@@ -145,7 +146,11 @@ class OrderCreateSerializer(serializers.Serializer):
     city = serializers.CharField(max_length=100)
     state = serializers.CharField(max_length=100, required=False, allow_blank=True)
     postal_code = serializers.CharField(max_length=20)
-    payment_method = serializers.CharField(max_length=50, default='Card')
+    payment_method = serializers.CharField(max_length=50, default='UPI / Card')
+    payment_status = serializers.CharField(max_length=50, required=False, default='Pending')
+    razorpay_order_id = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
+    razorpay_payment_id = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
+    razorpay_signature = serializers.CharField(max_length=255, required=False, allow_blank=True, default='')
     items = serializers.ListField(child=serializers.DictField())
 
     def create(self, validated_data):
@@ -155,6 +160,10 @@ class OrderCreateSerializer(serializers.Serializer):
         # Calculate total
         total = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
         
+        # Determine payment status
+        if validated_data.get('razorpay_payment_id'):
+            validated_data['payment_status'] = 'Paid'
+
         order_num = f"ORD-{uuid.uuid4().hex[:6].upper()}"
         order = Order.objects.create(
             order_number=order_num,

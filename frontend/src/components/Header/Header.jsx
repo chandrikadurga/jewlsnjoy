@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Search, Menu, X, User } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import SearchOverlay from '../SearchOverlay/SearchOverlay';
 import './Header.css';
@@ -83,17 +83,6 @@ export default function Header() {
               <Search size={20} strokeWidth={1.5} />
             </button>
 
-            {/* Account / Admin — desktop only */}
-            <Link
-              to="/admin"
-              className="header__icon-btn hide-mobile"
-              aria-label="Admin Dashboard"
-              title="Store Admin Dashboard"
-              id="header-account-btn"
-            >
-              <User size={20} strokeWidth={1.5} />
-            </Link>
-
             {/* Cart */}
             <button
               className="header__icon-btn header__cart-btn"
@@ -164,12 +153,6 @@ export default function Header() {
                 </li>
               ))}
             </ul>
-            <div className="header__mobile-footer">
-              <Link to="/admin" className="header__mobile-action" onClick={closeMobile}>
-                <User size={18} strokeWidth={1.5} />
-                Admin Suite
-              </Link>
-            </div>
           </nav>
         </>
       )}

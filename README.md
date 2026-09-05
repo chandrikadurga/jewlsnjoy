@@ -1,4 +1,4 @@
-# Jewels N' Joys — Luxury Jewellery E-Commerce
+# Jewels 'n' Joys — Luxury Jewellery E-Commerce
 
 Thoughtfully designed jewellery that adds a touch of elegance to every moment.
 

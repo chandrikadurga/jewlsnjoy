@@ -33,7 +33,7 @@ export default function About() {
             </h2>
             <div className="divider divider-left" aria-hidden="true" />
             <p className="about-mission__text">
-              At Jewels N&apos; Joys, we believe that beautiful jewellery isn&apos;t only
+              At Jewels &apos;n&apos; Joys, we believe that beautiful jewellery isn&apos;t only
               for grand celebrations. The right piece can make an ordinary Tuesday
               feel special. It can be the quiet confidence you carry with you, the
               small detail that makes you feel entirely yourself.

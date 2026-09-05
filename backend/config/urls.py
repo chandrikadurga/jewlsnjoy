@@ -10,7 +10,7 @@ from products.views import OrderCreateView
 
 def api_root(request):
     return JsonResponse({
-        'message': "Jewels N' Joys API",
+        'message': "Jewels 'n' Joys API",
         'version': '2.0',
         'endpoints': {
             'products': '/api/products/',

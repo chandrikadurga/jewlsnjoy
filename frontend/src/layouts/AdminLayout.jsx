@@ -38,9 +38,9 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside className={`admin-sidebar ${sidebarOpen ? 'admin-sidebar--open' : ''}`}>
         <div className="admin-sidebar__brand">
-          <img src={logoImg} alt="Jewels N' Joys" className="admin-sidebar__logo" />
+          <img src={logoImg} alt="Jewels 'n' Joys" className="admin-sidebar__logo" />
           <div className="admin-sidebar__brand-text">
-            <span className="admin-sidebar__brand-name">Jewels N&apos; Joys</span>
+            <span className="admin-sidebar__brand-name">Jewels &apos;n&apos; Joys</span>
             <span className="admin-sidebar__brand-badge">ADMIN SUITE</span>
           </div>
           <button
@@ -113,14 +113,14 @@ export default function AdminLayout() {
                 {location.pathname === '/admin/products' && 'Product Catalog'}
                 {location.pathname === '/admin/orders' && 'Customer Orders'}
               </h1>
-              <span className="admin-header__subtitle">Jewels N&apos; Joys Administration</span>
+              <span className="admin-header__subtitle">Jewels &apos;n&apos; Joys Administration</span>
             </div>
           </div>
 
           <div className="admin-header__actions">
             <div className="admin-badge admin-badge--gold">
               <Sparkles size={14} />
-              <span>Jewels N&apos; Joys Luxury</span>
+              <span>Jewels &apos;n&apos; Joys Luxury</span>
             </div>
             <div className="admin-user-pill">
               <div className="admin-user-avatar">AD</div>

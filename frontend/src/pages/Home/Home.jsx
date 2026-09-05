@@ -30,7 +30,7 @@ function Hero() {
           <img
             src={heroImg}
             onError={(e) => { e.currentTarget.src = '/products/1/1.jpeg'; }}
-            alt="Emerald Luxe Tennis Necklace — Jewels N' Joys hero piece"
+            alt="Emerald Luxe Tennis Necklace — Jewels 'n' Joys hero piece"
             className="hero__image"
             loading="eager"
           />
@@ -104,7 +104,7 @@ function BrandStory() {
           </h2>
           <div className="divider divider-left" aria-hidden="true" />
           <p className="brand-story__text">
-            At Jewels N&apos; Joys, every piece begins with a simple belief — that elegance should
+            At Jewels &apos;n&apos; Joys, every piece begins with a simple belief — that elegance should
             feel effortless. We design jewellery that moves with you, from quiet mornings to
             celebratory evenings.
           </p>

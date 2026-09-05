@@ -1,5 +1,5 @@
 /**
- * Axios API service for Jewels N' Joys
+ * Axios API service for Jewels 'n' Joys
  * 
  * All API calls go through this service.
  * Base URL is read from VITE_API_BASE_URL env variable.

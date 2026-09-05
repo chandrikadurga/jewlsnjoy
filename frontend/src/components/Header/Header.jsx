@@ -51,8 +51,8 @@ export default function Header() {
         <div className="container header__inner">
 
           {/* Logo */}
-          <Link to="/" className="header__logo" aria-label="Jewels N' Joys — Home">
-            <span className="header__logo-text">Jewels N&apos; Joys</span>
+          <Link to="/" className="header__logo" aria-label="Jewels 'n' Joys — Home">
+            <span className="header__logo-text">Jewels &apos;n&apos; Joys</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -138,7 +138,7 @@ export default function Header() {
           >
             <div className="header__mobile-header">
               <Link to="/" className="header__logo" onClick={closeMobile}>
-                <span className="header__logo-text">Jewels N&apos; Joys</span>
+                <span className="header__logo-text">Jewels &apos;n&apos; Joys</span>
               </Link>
               <button
                 className="header__icon-btn"

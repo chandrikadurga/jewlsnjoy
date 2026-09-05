@@ -1,5 +1,5 @@
 /**
- * Fallback product data for Jewels N' Joys.
+ * Fallback product data for Jewels 'n' Joys.
  * 7 items with multiple high-definition photography angles per product.
  */
 

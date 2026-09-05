@@ -91,7 +91,7 @@ export default function Checkout() {
               Order Reference: <strong>{confirmedOrderNumber}</strong>
             </p>
             <p className="checkout-success__note">
-              Thank you for choosing Jewels N&apos; Joys. Your order has been registered in our database and our team is preparing your pieces with care.
+              Thank you for choosing Jewels &apos;n&apos; Joys. Your order has been registered in our database and our team is preparing your pieces with care.
             </p>
             <div className="checkout-success__actions">
               <Link to="/shop" className="btn btn-primary btn-lg">Continue Shopping</Link>

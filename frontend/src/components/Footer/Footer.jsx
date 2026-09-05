@@ -3,7 +3,7 @@ import logoImg from '../../assets/logo.jpeg';
 import './Footer.css';
 
 export default function FooterGlow({
-  brandName = "Jewels N' Joys",
+  brandName = "Jewels 'n' Joys",
   tagline = "Thoughtfully designed jewellery that adds a touch of elegance to every moment.",
 }) {
   const currentYear = new Date().getFullYear();
@@ -24,7 +24,7 @@ export default function FooterGlow({
             <div className="footer-glow__logo-wrap">
               <img
                 src={logoImg}
-                alt="Jewels N' Joys"
+                alt="Jewels 'n' Joys"
                 className="footer-glow__logo-img"
               />
             </div>

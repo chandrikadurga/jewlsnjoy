@@ -1,14 +1,22 @@
 /* =============================================================
-   Jewels N' Joys — Luxury Mobile-First Checkout Styles
+   Jewels N' Joys — Checkout Styles
+   Matches website luxury ivory/espresso/gold design tokens
+   Responsive on desktop, tablet, and mobile
    ============================================================= */
 
 .checkout-page {
-  background: linear-gradient(180deg, rgba(245, 237, 226, 0.4) 0%, rgba(232, 220, 203, 0.25) 100%);
+  background-color: var(--color-ivory);
   min-height: 85vh;
   padding: var(--space-8) 0 var(--space-20);
 }
 
-/* --- Mobile Order Summary Top Accordion Bar --- */
+.checkout-container {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+/* --- Mobile Order Summary Top Accordion Bar (< 992px) --- */
 .checkout-mobile-bar {
   display: none;
 }
@@ -71,28 +79,58 @@
     background: #FAF7F2;
     border-top: 1px solid var(--color-border);
     padding: var(--space-5) var(--container-padding);
-    animation: slideDown 0.25s ease-out;
+    animation: checkoutSlideDown 0.25s ease-out;
   }
 
-  @keyframes slideDown {
+  @keyframes checkoutSlideDown {
     from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
   }
 }
 
-/* --- Page Header & Breadcrumbs --- */
+/* --- Page Header --- */
 .checkout-page__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-8);
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid rgba(217, 204, 184, 0.6);
 }
 
-.checkout-page__breadcrumbs {
+.checkout-page__header-left {
   display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.checkout-page__title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.85rem, 3.2vw, 2.35rem);
+  font-weight: 500;
+  color: var(--color-brown);
+  letter-spacing: -0.01em;
+}
+
+.checkout-page__badge {
+  display: inline-flex;
   align-items: center;
+  gap: 6px;
+  background: rgba(198, 161, 91, 0.12);
+  border: 1px solid rgba(198, 161, 91, 0.3);
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-brown);
+  letter-spacing: 0.02em;
+}
+
+.checkout-page__badge svg {
+  color: var(--color-gold);
 }
 
 .checkout-page__back {
@@ -109,33 +147,22 @@
   color: var(--color-gold);
 }
 
-.checkout-page__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(198, 161, 91, 0.12);
-  border: 1px solid rgba(198, 161, 91, 0.3);
-  padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-brown);
-  letter-spacing: 0.02em;
-}
-
-.checkout-page__badge svg {
-  color: var(--color-gold);
-}
-
-/* --- Main Layout --- */
+/* --- Main Layout Grid --- */
 .checkout-layout {
   display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: var(--space-10);
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 2.75rem;
   align-items: start;
 }
 
-/* --- Form Column & Cards --- */
+@media (min-width: 1280px) {
+  .checkout-layout {
+    grid-template-columns: minmax(0, 1.35fr) 440px;
+    gap: 3rem;
+  }
+}
+
+/* --- Left Form Column & Cards --- */
 .checkout-form-col {
   width: 100%;
 }
@@ -143,15 +170,15 @@
 .checkout-section {
   background: var(--color-white);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(217, 204, 184, 0.75);
-  padding: var(--space-7) var(--space-8);
-  margin-bottom: var(--space-6);
-  box-shadow: 0 4px 20px rgba(43, 33, 29, 0.03);
+  border: 1px solid rgba(217, 204, 184, 0.85);
+  padding: 2rem 2.25rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 4px 18px rgba(43, 33, 29, 0.04);
   transition: border-color var(--transition-fast);
 }
 
 .checkout-section:focus-within {
-  border-color: rgba(198, 161, 91, 0.45);
+  border-color: rgba(198, 161, 91, 0.55);
 }
 
 .checkout-section__header {
@@ -196,7 +223,7 @@
   margin-top: 3px;
 }
 
-/* --- Form Elements --- */
+/* --- Form Fields & Grid --- */
 .checkout-form__row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -215,9 +242,9 @@
 }
 
 .checkout-field__label {
-  font-size: 0.775rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--color-brown);
 }
@@ -232,10 +259,10 @@
   padding: 0.75rem 1rem;
   border: 1.5px solid #DDD3C4;
   border-radius: var(--radius-md);
-  font-size: 1rem; /* >=16px prevents iOS zoom-in */
+  font-size: 0.95rem;
   font-family: var(--font-sans);
   color: var(--color-brown);
-  background: #FCFAF7;
+  background: #FAF7F2;
   transition: all var(--transition-fast);
   outline: none;
   width: 100%;
@@ -243,7 +270,7 @@
 
 .checkout-field__input::placeholder {
   color: #A3968B;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 .checkout-field__input:focus {
@@ -309,8 +336,8 @@
 .checkout-pay-option input[type="radio"] {
   margin-top: 3px;
   accent-color: var(--color-gold);
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
 }
 
@@ -363,20 +390,7 @@
   line-height: 1.4;
 }
 
-.checkout-success__pm-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  color: var(--color-brown);
-}
-
-.checkout-success__pm-badge small {
-  color: var(--color-muted);
-  font-weight: normal;
-}
-
-/* Payment Reassurance Note */
+/* Payment Note */
 .checkout-payment-note {
   display: flex;
   align-items: flex-start;
@@ -466,11 +480,12 @@
 .checkout-summary {
   background: var(--color-white);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(198, 161, 91, 0.25);
+  border: 1px solid rgba(217, 204, 184, 0.85);
   box-shadow: 0 6px 24px rgba(43, 33, 29, 0.05);
-  padding: var(--space-6) var(--space-7);
+  padding: 2rem;
   position: sticky;
-  top: calc(var(--header-height) + var(--space-6));
+  top: calc(var(--header-height, 72px) + 2rem);
+  width: 100%;
 }
 
 .checkout-summary__header {
@@ -546,7 +561,7 @@
   flex-direction: column;
   gap: var(--space-4);
   margin-bottom: var(--space-5);
-  max-height: 320px;
+  max-height: 340px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -554,15 +569,15 @@
 .checkout-summary__item {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 1rem;
 }
 
 .checkout-summary__img-wrap {
   position: relative;
-  width: 58px;
-  height: 58px;
+  width: 60px;
+  height: 60px;
   border-radius: var(--radius-sm);
-  overflow: hidden;
+  overflow: visible;
   background: var(--color-beige);
   border: 1px solid rgba(198, 161, 91, 0.25);
   flex-shrink: 0;
@@ -572,14 +587,15 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: calc(var(--radius-sm) - 1px);
 }
 
 .checkout-summary__qty {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 18px;
-  height: 18px;
+  top: -6px;
+  right: -6px;
+  width: 19px;
+  height: 19px;
   background: var(--color-brown);
   color: var(--color-white);
   font-size: 0.65rem;
@@ -588,7 +604,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  z-index: 2;
 }
 
 .checkout-summary__item-info {
@@ -600,21 +617,27 @@
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-brown);
-  white-space: nowrap;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .checkout-summary__item-variant {
   font-size: 0.75rem;
   color: var(--color-muted);
+  margin-top: 2px;
 }
 
 .checkout-summary__item-price {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-brown);
+  white-space: nowrap;
   flex-shrink: 0;
+  text-align: right;
+  padding-left: 0.5rem;
 }
 
 /* Coupon Box */
@@ -677,19 +700,20 @@
   color: var(--color-error);
 }
 
-/* Totals */
+/* Summary Totals */
 .checkout-summary__totals {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   margin-bottom: var(--space-5);
+  padding-top: var(--space-2);
 }
 
 .checkout-summary__row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--color-brown);
 }
 
@@ -700,11 +724,15 @@
 
 .checkout-summary__row--total {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
-  font-weight: 600;
-  border-top: 1.5px solid rgba(217, 204, 184, 0.7);
+  border-top: 1.5px solid rgba(217, 204, 184, 0.85);
   padding-top: var(--space-4);
-  margin-top: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.checkout-summary__row--total span:first-child {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-brown);
 }
 
 .checkout-vat-note {
@@ -717,6 +745,9 @@
 
 .checkout-total-val {
   color: var(--color-brown);
+  font-size: 1.35rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 /* Guarantee Card at bottom of summary */
@@ -950,6 +981,19 @@
   color: var(--color-muted);
 }
 
+.checkout-success__pm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--color-brown);
+}
+
+.checkout-success__pm-badge small {
+  color: var(--color-muted);
+  font-weight: normal;
+}
+
 .checkout-success__trust-bar {
   display: flex;
   flex-wrap: wrap;
@@ -990,14 +1034,14 @@
   transform: translateY(-2px);
 }
 
-/* --- Mobile Responsiveness --- */
+/* --- Responsive Breakpoints --- */
 @media (max-width: 992px) {
   .checkout-layout {
     grid-template-columns: 1fr;
     gap: var(--space-6);
   }
 
-  /* Hide the large sticky summary on mobile, as the collapsible top bar takes over */
+  /* On mobile/tablet, hide the duplicate desktop sidebar */
   .checkout-layout > .checkout-summary {
     display: none;
   }

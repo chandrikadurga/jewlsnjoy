@@ -446,19 +446,20 @@ export default function Checkout() {
         )}
       </div>
 
-      <div className="container">
+      <div className="container checkout-container">
         <div className="checkout-page__header">
-          <div className="checkout-page__breadcrumbs">
-            <Link to="/shop" className="checkout-page__back">
-              ← Return to Jewellery
-            </Link>
+          <div className="checkout-page__header-left">
+            <h1 className="checkout-page__title">Checkout</h1>
+            <div className="checkout-page__badge">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
+              </svg>
+              <span>256-Bit SSL Encrypted & Razorpay Protected</span>
+            </div>
           </div>
-          <div className="checkout-page__badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
-            </svg>
-            <span>256-Bit SSL Encrypted & Razorpay Protected</span>
-          </div>
+          <Link to="/shop" className="checkout-page__back">
+            — Continue Shopping
+          </Link>
         </div>
 
         <div className="checkout-layout">

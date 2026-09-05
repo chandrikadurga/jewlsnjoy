@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import MainLayout from './layouts/MainLayout';
+import AdminLayout from './layouts/AdminLayout';
 import Home from './pages/Home/Home';
 import Shop from './pages/Shop/Shop';
 import ProductDetail from './pages/ProductDetail/ProductDetail';
@@ -9,11 +10,17 @@ import Contact from './pages/Contact/Contact';
 import Checkout from './pages/Checkout/Checkout';
 import NotFound from './pages/NotFound';
 
+// Admin pages
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import AdminProducts from './pages/Admin/AdminProducts';
+import AdminOrders from './pages/Admin/AdminOrders';
+
 function App() {
   return (
     <BrowserRouter>
       <CartProvider>
         <Routes>
+          {/* Storefront Routes */}
           <Route element={<MainLayout />}>
             <Route path="/"              element={<Home />} />
             <Route path="/shop"          element={<Shop />} />
@@ -23,6 +30,13 @@ function App() {
             <Route path="/contact"       element={<Contact />} />
             <Route path="/checkout"      element={<Checkout />} />
             <Route path="*"              element={<NotFound />} />
+          </Route>
+
+          {/* Luxury Admin Suite Routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="orders" element={<AdminOrders />} />
           </Route>
         </Routes>
       </CartProvider>

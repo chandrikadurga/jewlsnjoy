@@ -130,4 +130,51 @@ export const categoryApi = {
   },
 };
 
+// ─── Order API ─────────────────────────────────────────────────
+
+export const orderApi = {
+  create: async (orderData) => {
+    const response = await api.post('/api/orders/', orderData);
+    return response.data;
+  },
+};
+
+// ─── Admin API ─────────────────────────────────────────────────
+
+export const adminApi = {
+  getStats: async () => {
+    const response = await api.get('/api/admin/stats/');
+    return response.data;
+  },
+  getProducts: async (params = {}) => {
+    const response = await api.get('/api/admin/products/', { params });
+    return Array.isArray(response.data) ? response.data.map(resolveProductImages) : [];
+  },
+  getProduct: async (id) => {
+    const response = await api.get(`/api/admin/products/${id}/`);
+    return resolveProductImages(response.data);
+  },
+  createProduct: async (productData) => {
+    const response = await api.post('/api/admin/products/', productData);
+    return resolveProductImages(response.data);
+  },
+  updateProduct: async (id, productData) => {
+    const response = await api.patch(`/api/admin/products/${id}/`, productData);
+    return resolveProductImages(response.data);
+  },
+  deleteProduct: async (id) => {
+    const response = await api.delete(`/api/admin/products/${id}/`);
+    return response.data;
+  },
+  getOrders: async (params = {}) => {
+    const response = await api.get('/api/admin/orders/', { params });
+    return response.data;
+  },
+  updateOrderStatus: async (id, status) => {
+    const response = await api.patch(`/api/admin/orders/${id}/`, { status });
+    return response.data;
+  },
+};
+
 export default api;
+

@@ -83,14 +83,16 @@ export default function Header() {
               <Search size={20} strokeWidth={1.5} />
             </button>
 
-            {/* Account — desktop only */}
-            <button
+            {/* Account / Admin — desktop only */}
+            <Link
+              to="/admin"
               className="header__icon-btn hide-mobile"
-              aria-label="My account"
+              aria-label="Admin Dashboard"
+              title="Store Admin Dashboard"
               id="header-account-btn"
             >
               <User size={20} strokeWidth={1.5} />
-            </button>
+            </Link>
 
             {/* Cart */}
             <button
@@ -163,10 +165,10 @@ export default function Header() {
               ))}
             </ul>
             <div className="header__mobile-footer">
-              <button className="header__mobile-action">
+              <Link to="/admin" className="header__mobile-action" onClick={closeMobile}>
                 <User size={18} strokeWidth={1.5} />
-                My Account
-              </button>
+                Admin Suite
+              </Link>
             </div>
           </nav>
         </>

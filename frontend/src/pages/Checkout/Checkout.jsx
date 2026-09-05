@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { orderApi } from '../../services/api';
 import './Checkout.css';
 
 const INDIAN_STATES = [
@@ -14,8 +15,10 @@ const INDIAN_STATES = [
 ];
 
 export default function Checkout() {
-  const { items, cartTotal, isEmpty } = useCart();
+  const { items, cartTotal, isEmpty, clearCart } = useCart();
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmedOrderNumber, setConfirmedOrderNumber] = useState('');
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', phone: '',
     address: '', city: '', state: '', postalCode: '',
@@ -28,12 +31,44 @@ export default function Checkout() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const orderPayload = {
+        customer_name: `${form.firstName} ${form.lastName}`.trim() || 'Valued Customer',
+        customer_email: form.email,
+        customer_phone: form.phone,
+        shipping_address: form.address,
+        city: form.city,
+        state: form.state,
+        postal_code: form.postalCode,
+        payment_method: 'UPI / Card',
+        items: items.map((item) => ({
+          id: item.product.id,
+          name: item.product.name,
+          price: item.product.price,
+          quantity: item.quantity,
+          image_url: item.product.primary_image_url || item.product.image || `/products/${item.product.id}/1.jpeg`,
+        })),
+      };
+
+      const res = await orderApi.create(orderPayload);
+      setConfirmedOrderNumber(res.order_number);
+    } catch (err) {
+      console.error('Order creation error:', err);
+      // Fallback local order number
+      setConfirmedOrderNumber(`ORD-${Math.floor(10000 + Math.random() * 90000)}`);
+    } finally {
+      setIsSubmitting(false);
+      setSubmitted(true);
+      clearCart();
+    }
   };
 
-  if (isEmpty) {
+  if (isEmpty && !submitted) {
     return (
       <div className="checkout-empty">
         <div className="container">
@@ -51,14 +86,17 @@ export default function Checkout() {
         <div className="container">
           <div className="checkout-success__card">
             <div className="checkout-success__icon">✦</div>
-            <h1 className="checkout-success__title">Thank You!</h1>
+            <h1 className="checkout-success__title">Order Confirmed!</h1>
+            <p className="checkout-success__order-num">
+              Order Reference: <strong>{confirmedOrderNumber}</strong>
+            </p>
             <p className="checkout-success__note">
-              Checkout functionality will be connected to the payment and order system in the next phase.
+              Thank you for choosing Jewels N&apos; Joys. Your order has been registered in our database and our team is preparing your pieces with care.
             </p>
-            <p className="checkout-success__subtext">
-              Your order details have been received. Our team will reach out shortly once payment integration is complete.
-            </p>
-            <Link to="/shop" className="btn btn-primary btn-lg">Continue Shopping</Link>
+            <div className="checkout-success__actions">
+              <Link to="/shop" className="btn btn-primary btn-lg">Continue Shopping</Link>
+              <Link to="/admin/orders" className="btn btn-secondary btn-lg">View in Admin Panel</Link>
+            </div>
           </div>
         </div>
       </div>

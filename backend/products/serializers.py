@@ -132,8 +132,8 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'order_number', 'user_id', 'customer_name', 'customer_email', 'customer_phone',
             'shipping_address', 'city', 'state', 'postal_code', 'country',
-            'total_amount', 'payment_method', 'payment_status', 'status',
-            'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature',
+            'total_amount', 'currency', 'payment_method', 'payment_status', 'status',
+            'cashfree_order_id', 'cashfree_payment_id', 'cashfree_payment_session_id',
             'notes', 'created_at', 'updated_at', 'items',
         ]
         read_only_fields = ['id', 'order_number', 'user_id', 'created_at', 'updated_at']
@@ -147,11 +147,12 @@ class OrderCreateSerializer(serializers.Serializer):
     city = serializers.CharField(max_length=100)
     state = serializers.CharField(max_length=100, required=False, allow_blank=True)
     postal_code = serializers.CharField(max_length=20)
-    payment_method = serializers.CharField(max_length=50, default='UPI / Card')
-    payment_status = serializers.CharField(max_length=50, required=False, default='Pending')
-    razorpay_order_id = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
-    razorpay_payment_id = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
-    razorpay_signature = serializers.CharField(max_length=255, required=False, allow_blank=True, default='')
+    payment_method = serializers.CharField(max_length=50, default='Cashfree')
+    payment_status = serializers.CharField(max_length=50, required=False, default='pending')
+    cashfree_order_id = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
+    cashfree_payment_id = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
+    cashfree_payment_session_id = serializers.CharField(max_length=255, required=False, allow_blank=True, default='')
+    currency = serializers.CharField(max_length=10, required=False, default='INR')
     total_amount = serializers.DecimalField(max_digits=12, decimal_places=2, required=False)
     items = serializers.ListField(child=serializers.DictField())
 
@@ -188,8 +189,8 @@ class OrderCreateSerializer(serializers.Serializer):
             total = sum(parse_price(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
         
         # Determine payment status
-        if validated_data.get('razorpay_payment_id'):
-            validated_data['payment_status'] = 'Paid'
+        if validated_data.get('cashfree_payment_id'):
+            validated_data['payment_status'] = 'paid'
 
         order_num = f"ORD-{uuid.uuid4().hex[:6].upper()}"
         user_id = validated_data.pop('user_id', '')

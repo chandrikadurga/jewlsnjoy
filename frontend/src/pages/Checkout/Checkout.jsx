@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import { orderApi, paymentApi } from '../../services/api';
+import { orderApi } from '../../services/api';
+import paymentService from '../../services/paymentService';
 import './Checkout.css';
 
 const INDIAN_STATES = [
@@ -15,21 +16,6 @@ const INDIAN_STATES = [
   'Daman and Diu','Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'
 ];
 
-// Helper to dynamically load Razorpay SDK if not already present
-const loadRazorpaySDK = () => {
-  return new Promise((resolve) => {
-    if (window.Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
 
 export default function Checkout() {
   const { items, cartTotal, isEmpty, clearCart } = useCart();
@@ -40,12 +26,12 @@ export default function Checkout() {
   const [confirmedPaymentId, setConfirmedPaymentId] = useState('');
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState('');
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('razorpay');
+  const [paymentMethod, setPaymentMethod] = useState('cashfree');
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState({ type: '', text: '' });
   const [copied, setCopied] = useState(false);
-  const [razorpayConfig, setRazorpayConfig] = useState({ key: '', is_configured: false });
+  const [cashfreeConfig, setCashfreeConfig] = useState({ environment: 'sandbox', is_configured: false });
   const [orderError, setOrderError] = useState('');
 
   const [form, setForm] = useState({
@@ -79,11 +65,11 @@ export default function Checkout() {
   const total = Math.max(0, cartTotal - discountAmount + rawShipping + codFee);
   const amountForFreeShipping = Math.max(0, 999 - cartTotal);
 
-  // Pre-fetch Razorpay configuration from backend
+  // Pre-fetch Cashfree configuration from backend
   useEffect(() => {
-    paymentApi.getRazorpayConfig()
-      .then((cfg) => setRazorpayConfig(cfg))
-      .catch((err) => console.warn('Razorpay config fetch error:', err));
+    paymentService.getConfig()
+      .then((cfg) => setCashfreeConfig(cfg))
+      .catch((err) => console.warn('Cashfree config fetch error:', err));
   }, []);
 
   const handleChange = (e) => {
@@ -199,104 +185,65 @@ export default function Checkout() {
       return;
     }
 
-    // ── Razorpay Online Payment Path ──────────────────────────────────
+    // ── Cashfree Online Payment Path ──────────────────────────────────
     try {
-      let rzpOrder = null;
-      try {
-        rzpOrder = await paymentApi.createRazorpayOrder(total);
-      } catch (apiErr) {
-        console.warn('Backend Razorpay order creation notice:', apiErr);
+      const checkoutPayload = {
+        customer_name: `${form.firstName} ${form.lastName}`.trim(),
+        customer_email: cleanEmail,
+        customer_phone: form.phone,
+        shipping_address: form.address,
+        city: form.city,
+        state: form.state,
+        postal_code: form.postalCode,
+        country: 'India',
+        notes: couponCode ? `Coupon applied: ${couponCode}` : '',
+        items: items.map((item) => ({
+          id: item.id,
+          quantity: item.quantity,
+        })),
+      };
+
+      const cfOrder = await paymentService.createPaymentOrder(checkoutPayload);
+
+      if (!cfOrder || !cfOrder.payment_session_id) {
+        throw new Error(cfOrder?.error || 'Failed to initialize payment session with Cashfree.');
       }
 
-      const activeKey =
-        (rzpOrder && rzpOrder.key && rzpOrder.key !== 'rzp_test_placeholder')
-          ? rzpOrder.key
-          : (razorpayConfig.key || import.meta.env.VITE_RAZORPAY_KEY_ID || '');
-
-      const isLoaded = await loadRazorpaySDK();
-
-      // If key is configured and Razorpay SDK is ready, open standard Razorpay Checkout
-      if (isLoaded && activeKey) {
-        const options = {
-          key: activeKey,
-          amount: (rzpOrder && rzpOrder.amount) || Math.round(total * 100),
-          currency: (rzpOrder && rzpOrder.currency) || 'INR',
-          name: "Jewels 'n' Joys",
-          description: "Anti-Tarnish Luxury Jewellery",
-          image: '/assets/logo.jpeg',
-          order_id: (rzpOrder && rzpOrder.order_id && !rzpOrder.order_id.startsWith('order_demo_'))
-            ? rzpOrder.order_id
-            : undefined,
-          prefill: {
-            name: `${form.firstName} ${form.lastName}`.trim(),
-            email: cleanEmail,
-            contact: form.phone,
-          },
-          theme: {
-            color: '#C6A15B', // Jewels 'n' Joys Luxury Champagne Gold
-          },
-          modal: {
-            ondismiss: () => {
-              setIsSubmitting(false);
-            },
-          },
-          handler: async (response) => {
-            try {
-              const res = await orderApi.create({
-                ...baseOrderPayload,
-                payment_method: 'Razorpay',
-                payment_status: 'Paid',
-                razorpay_payment_id: response.razorpay_payment_id || '',
-                razorpay_order_id: response.razorpay_order_id || (rzpOrder ? rzpOrder.order_id : ''),
-                razorpay_signature: response.razorpay_signature || '',
-              });
-              setConfirmedOrderNumber(res.order_number);
-              setConfirmedPaymentMethod('Razorpay');
-              setConfirmedPaymentId(response.razorpay_payment_id || '');
-              setSubmitted(true);
-              clearCart();
-            } catch (saveErr) {
-              console.error('Order save error post-Razorpay:', saveErr);
-              const msg = getErrorText(saveErr);
-              setOrderError(`Payment captured, but database save failed: ${msg}`);
-              alert(`Payment captured (${response.razorpay_payment_id}), but database save returned: ${msg}. Please contact support with this ID.`);
-            } finally {
-              setIsSubmitting(false);
-            }
-          },
-        };
-
-        const rzp = new window.Razorpay(options);
-        rzp.on('payment.failed', (resp) => {
-          console.error('Razorpay payment failed:', resp.error);
-          alert(`Payment Failed: ${resp.error.description || 'Please try another method or retry.'}`);
-          setIsSubmitting(false);
-        });
-        rzp.open();
-        return;
-      }
-
-      // ── Razorpay Direct / Ready Flow ───────────────────────────────
-      // Records order directly to SQLite backend with genuine order record
-      const simulatedPaymentId = `pay_rzp_${Math.random().toString(36).substring(2, 11)}`;
-      const res = await orderApi.create({
-        ...baseOrderPayload,
-        payment_method: 'Razorpay',
-        payment_status: 'Paid',
-        razorpay_order_id: (rzpOrder && rzpOrder.order_id) || `order_${Date.now()}`,
-        razorpay_payment_id: simulatedPaymentId,
+      // Open Cashfree Web Checkout Modal
+      const checkoutResult = await paymentService.openCheckout({
+        paymentSessionId: cfOrder.payment_session_id,
+        mode: cashfreeConfig.environment || 'sandbox',
       });
 
-      setConfirmedOrderNumber(res.order_number);
-      setConfirmedPaymentMethod('Razorpay');
-      setConfirmedPaymentId(simulatedPaymentId);
-      setSubmitted(true);
-      clearCart();
+      if (checkoutResult && checkoutResult.error) {
+        console.warn('Cashfree checkout notice:', checkoutResult.error);
+      }
+
+      // Verify payment authoritatively on Django backend
+      const verifyResult = await paymentService.verifyPayment(
+        cfOrder.order_number,
+        cfOrder.cashfree_order_id
+      );
+
+      if (verifyResult && verifyResult.verified && verifyResult.payment_status === 'paid') {
+        const orderData = verifyResult.order || {};
+        setConfirmedOrderNumber(orderData.order_number || cfOrder.order_number);
+        setConfirmedPaymentMethod('Cashfree');
+        setConfirmedPaymentId(orderData.cashfree_payment_id || '');
+        setSubmitted(true);
+        clearCart();
+      } else if (verifyResult && verifyResult.payment_status === 'failed') {
+        setOrderError(verifyResult.message || 'Payment was not completed. Please try again.');
+        alert(verifyResult.message || 'Payment was not completed. Please try again.');
+      } else {
+        // Customer closed modal or payment is still pending/cancelled
+        console.info('Cashfree checkout modal closed or payment pending.');
+      }
     } catch (err) {
-      console.error('Order processing error:', err);
+      console.error('Cashfree payment processing error:', err);
       const msg = getErrorText(err);
-      setOrderError(`Could not save order: ${msg}`);
-      alert(`Order could not be saved to server: ${msg}`);
+      setOrderError(`Payment processing error: ${msg}`);
+      alert(`Payment processing error: ${msg}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -363,7 +310,7 @@ export default function Checkout() {
               <div className="checkout-success__dp-item">
                 <strong>Payment Mode:</strong>
                 <span className="checkout-success__pm-badge">
-                  {confirmedPaymentMethod || 'Razorpay'}
+                  {confirmedPaymentMethod || 'Cashfree'}
                   {confirmedPaymentId && <small> ({confirmedPaymentId})</small>}
                 </span>
               </div>
@@ -508,7 +455,7 @@ export default function Checkout() {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
               </svg>
-              <span>256-Bit SSL Encrypted & Razorpay Protected</span>
+              <span>256-Bit SSL Encrypted & Cashfree Protected</span>
             </div>
           </div>
           <Link to="/shop" className="checkout-page__back">
@@ -696,24 +643,24 @@ export default function Checkout() {
                   <span className="checkout-section__step">3</span>
                   <div className="checkout-section__title-group">
                     <h2 className="checkout-section__title">Payment Method</h2>
-                    <p className="checkout-section__subtitle">All major payment options supported via Razorpay & Cash on Delivery</p>
+                    <p className="checkout-section__subtitle">All major payment options supported via Cashfree & Cash on Delivery</p>
                   </div>
                 </div>
 
                 <div className="checkout-payment-options">
-                  {/* Razorpay Option */}
-                  <label className={`checkout-pay-option ${paymentMethod === 'razorpay' ? 'active' : ''}`}>
+                  {/* Cashfree Option */}
+                  <label className={`checkout-pay-option ${paymentMethod === 'cashfree' ? 'active' : ''}`}>
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="razorpay"
-                      checked={paymentMethod === 'razorpay'}
-                      onChange={() => setPaymentMethod('razorpay')}
+                      value="cashfree"
+                      checked={paymentMethod === 'cashfree'}
+                      onChange={() => setPaymentMethod('cashfree')}
                     />
                     <div className="checkout-pay-option__content">
                       <div className="checkout-pay-option__top">
                         <div className="checkout-pay-option__title-row">
-                          <span className="checkout-pay-option__name">Razorpay Secure</span>
+                          <span className="checkout-pay-option__name">Cashfree Secure</span>
                           <span className="checkout-pay-option__tag">Recommended</span>
                         </div>
                         <span className="checkout-pay-option__brands">UPI • Cards • NetBanking • Wallets</span>
@@ -750,7 +697,7 @@ export default function Checkout() {
                 <div className="checkout-payment-note">
                   <div className="checkout-payment-note__icon">✦</div>
                   <p>
-                    <strong>Razorpay 256-Bit Protection:</strong> Payments are processed through Razorpay’s banking-grade encrypted infrastructure. Your payment credentials are never stored on our servers.
+                    <strong>Cashfree 256-Bit Protection:</strong> Payments are processed through Cashfree’s banking-grade encrypted infrastructure. Your payment credentials are never stored on our servers.
                   </p>
                 </div>
               </section>
@@ -767,7 +714,7 @@ export default function Checkout() {
                 </div>
                 <div className="checkout-trust-pill">
                   <span className="checkout-trust-pill__icon">✦</span>
-                  <span>Razorpay Verified Merchant</span>
+                  <span>Cashfree Verified Merchant</span>
                 </div>
               </div>
 
@@ -794,15 +741,15 @@ export default function Checkout() {
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
-                    <span className="checkout-spinner-label">Connecting to Razorpay...</span>
-                  ) : paymentMethod === 'razorpay' ? (
-                    <span>Pay with Razorpay • ₹{total.toLocaleString('en-IN')}</span>
+                    <span className="checkout-spinner-label">Connecting to Cashfree...</span>
+                  ) : paymentMethod === 'cashfree' ? (
+                    <span>Pay with Cashfree • ₹{total.toLocaleString('en-IN')}</span>
                   ) : (
                     <span>Confirm COD Order • ₹{total.toLocaleString('en-IN')}</span>
                   )}
                 </button>
                 <p className="checkout-guarantee-micro">
-                  🔒 Encrypted with 256-bit SSL. Razorpay PCI-DSS Level 1 Compliant.
+                  🔒 Encrypted with 256-bit SSL. Cashfree PCI-DSS Level 1 Compliant.
                 </p>
               </div>
             </form>

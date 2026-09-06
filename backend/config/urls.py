@@ -5,11 +5,7 @@ Root URL configuration for Jewels N' Joys backend.
 from django.contrib import admin
 from django.urls import path, include
 from django.http import JsonResponse
-from products.views import (
-    OrderCreateView,
-    RazorpayCreateOrderView,
-    RazorpayConfigView,
-)
+from products.views import OrderCreateView
 
 
 def api_root(request):
@@ -26,8 +22,10 @@ def api_root(request):
             'orders': '/api/orders/',
             'my_orders': '/api/orders/my-orders/',
             'track_order': '/api/orders/track/<order_number>/',
-            'razorpay_create_order': '/api/payment/razorpay/create-order/',
-            'razorpay_config': '/api/payment/razorpay/config/',
+            'payments_create': '/api/payments/create/',
+            'payments_verify': '/api/payments/verify/',
+            'payments_webhook': '/api/payments/webhook/',
+            'payments_config': '/api/payments/config/',
             'admin_stats': '/api/admin/stats/',
             'admin_products': '/api/admin/products/',
             'admin_orders': '/api/admin/orders/',
@@ -43,7 +41,6 @@ urlpatterns = [
     path('api/products/', include('products.urls')),
     path('api/categories/', include('products.category_urls')),
     path('api/orders/', include('products.order_urls')),
-    path('api/payment/razorpay/create-order/', RazorpayCreateOrderView.as_view(), name='razorpay-create-order'),
-    path('api/payment/razorpay/config/', RazorpayConfigView.as_view(), name='razorpay-config'),
+    path('api/payments/', include('payments.urls')),
     path('api/admin/', include('products.admin_urls')),
 ]

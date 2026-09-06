@@ -212,15 +212,22 @@ export const orderApi = {
   },
 };
 
-// ─── Payment API (Razorpay) ────────────────────────────────────
+// ─── Payment API (Cashfree) ────────────────────────────────────
 
 export const paymentApi = {
-  createRazorpayOrder: async (amount, currency = 'INR') => {
-    const response = await api.post('/api/payment/razorpay/create-order/', { amount, currency });
+  createPaymentOrder: async (checkoutPayload, config = {}) => {
+    const response = await api.post('/api/payments/create/', checkoutPayload, config);
     return response.data;
   },
-  getRazorpayConfig: async () => {
-    const response = await api.get('/api/payment/razorpay/config/');
+  verifyPayment: async (orderNumber, cashfreeOrderId = '', config = {}) => {
+    const response = await api.post('/api/payments/verify/', {
+      order_number: orderNumber,
+      cashfree_order_id: cashfreeOrderId,
+    }, config);
+    return response.data;
+  },
+  getConfig: async () => {
+    const response = await api.get('/api/payments/config/');
     return response.data;
   },
 };

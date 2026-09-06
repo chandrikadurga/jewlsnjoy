@@ -462,11 +462,13 @@ export default function ProductDetail() {
               <button
                 className="btn btn-primary btn-lg pd-actions__add"
                 onClick={handleAddToCart}
-                disabled={product.in_stock === false || product.stock_quantity === 0}
+                disabled={loading || product.in_stock === false || product.stock_quantity === 0}
                 id="add-to-cart-btn"
               >
-                {product.in_stock === false || product.stock_quantity === 0 ? (
-                  'Sold Out'
+                {loading ? (
+                  'Checking...'
+                ) : product.in_stock === false || product.stock_quantity === 0 ? (
+                  'Out of Stock'
                 ) : added ? (
                   <><Check size={16} strokeWidth={2.5} /> Added to Bag</>
                 ) : (
@@ -476,10 +478,10 @@ export default function ProductDetail() {
               <button
                 className="btn btn-secondary btn-lg pd-actions__buy"
                 onClick={handleBuyNow}
-                disabled={product.in_stock === false || product.stock_quantity === 0}
+                disabled={loading || product.in_stock === false || product.stock_quantity === 0}
                 id="buy-now-btn"
               >
-                {product.in_stock === false || product.stock_quantity === 0 ? 'Out of Stock' : 'Buy Now'}
+                {loading ? 'Checking...' : (product.in_stock === false || product.stock_quantity === 0 ? 'Out of Stock' : 'Buy Now')}
               </button>
               <button
                 className={`pd-actions__wishlist ${isWishlisted ? 'pd-actions__wishlist--active' : ''}`}

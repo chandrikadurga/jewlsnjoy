@@ -107,7 +107,7 @@ export default function ProductCard({ product }) {
           <div className="product-card__overlay" aria-hidden="true">
             {isOutOfStock ? (
               <span className="btn product-card__out-btn">
-                Sold Out
+                Out of Stock
               </span>
             ) : (
               <button
@@ -149,7 +149,7 @@ export default function ProductCard({ product }) {
             onClick={handleAddToCart}
             disabled={isOutOfStock}
           >
-            {isOutOfStock ? 'Sold Out' : 'Add to Bag'}
+            {isOutOfStock ? 'Out of Stock' : 'Add to Bag'}
           </button>
         </div>
       </Link>

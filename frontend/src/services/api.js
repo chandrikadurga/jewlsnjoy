@@ -127,9 +127,9 @@ export const productApi = {
    */
   getFeatured: async () => {
     const response = await api.get('/api/products/featured/');
+    const list = Array.isArray(response.data) ? response.data : (response.data.results || []);
     return {
-      ...response.data,
-      results: response.data.results.map(resolveProductImages),
+      results: list.map(resolveProductImages),
     };
   },
 
@@ -138,9 +138,9 @@ export const productApi = {
    */
   getBestsellers: async () => {
     const response = await api.get('/api/products/bestsellers/');
+    const list = Array.isArray(response.data) ? response.data : (response.data.results || []);
     return {
-      ...response.data,
-      results: response.data.results.map(resolveProductImages),
+      results: list.map(resolveProductImages),
     };
   },
 

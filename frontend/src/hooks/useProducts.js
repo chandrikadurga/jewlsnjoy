@@ -125,7 +125,7 @@ export function useProduct(idOrSlug) {
  * Hook for fetching featured products.
  */
 export function useFeaturedProducts() {
-  const [products, setProducts] = useState(() => FALLBACK_PRODUCTS.filter((p) => p.is_featured));
+  const [products, setProducts] = useState(() => FALLBACK_PRODUCTS.filter((p) => p.is_featured).slice(0, 8));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -133,7 +133,7 @@ export function useFeaturedProducts() {
     productApi.getFeatured()
       .then((data) => {
         if (data && data.results && data.results.length > 0) {
-          setProducts(data.results);
+          setProducts(data.results.slice(0, 8));
         }
       })
       .catch(() => {
@@ -149,7 +149,7 @@ export function useFeaturedProducts() {
  * Hook for fetching bestsellers.
  */
 export function useBestsellers() {
-  const [products, setProducts] = useState(() => FALLBACK_PRODUCTS.filter((p) => p.is_bestseller));
+  const [products, setProducts] = useState(() => FALLBACK_PRODUCTS.filter((p) => p.is_bestseller).slice(0, 8));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -157,7 +157,7 @@ export function useBestsellers() {
     productApi.getBestsellers()
       .then((data) => {
         if (data && data.results && data.results.length > 0) {
-          setProducts(data.results);
+          setProducts(data.results.slice(0, 8));
         }
       })
       .catch(() => {

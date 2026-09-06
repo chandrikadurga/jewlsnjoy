@@ -311,7 +311,7 @@ export default function Home() {
             </p>
           </div>
           <ProductGrid
-            products={featured}
+            products={(featured || []).slice(0, 8)}
             loading={featuredLoading}
             error={featuredError}
           />
@@ -333,7 +333,7 @@ export default function Home() {
             <h2 className="section-title" id="bestsellers-title">Best Sellers</h2>
           </div>
           <ProductGrid
-            products={bestsellers}
+            products={(bestsellers || []).slice(0, 8)}
             loading={bsLoading}
             error={bsError}
           />

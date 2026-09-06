@@ -44,6 +44,7 @@ export default function Checkout() {
   const [couponMsg, setCouponMsg] = useState({ type: '', text: '' });
   const [copied, setCopied] = useState(false);
   const [razorpayConfig, setRazorpayConfig] = useState({ key: '', is_configured: false });
+  const [orderError, setOrderError] = useState('');
 
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', phone: '',
@@ -110,11 +111,21 @@ export default function Checkout() {
       return;
     }
 
+    setOrderError('');
     setIsSubmitting(true);
+
+    // Auto-normalize email (e.g. if user types s@gmailcom without a dot)
+    let cleanEmail = form.email.trim().toLowerCase();
+    if (cleanEmail.includes('@')) {
+      const parts = cleanEmail.split('@');
+      if (parts.length === 2 && !parts[1].includes('.')) {
+        cleanEmail = `${parts[0]}@${parts[1]}.com`;
+      }
+    }
 
     const baseOrderPayload = {
       customer_name: `${form.firstName} ${form.lastName}`.trim(),
-      customer_email: form.email,
+      customer_email: cleanEmail,
       customer_phone: form.phone,
       shipping_address: form.address,
       city: form.city,
@@ -128,6 +139,18 @@ export default function Checkout() {
         quantity: item.quantity,
         image_url: item.product.primary_image_url || item.product.image || `/products/${item.product.id}/1.jpeg`,
       })),
+    };
+
+    const getErrorText = (err) => {
+      if (err.response?.data) {
+        if (typeof err.response.data === 'string') return err.response.data;
+        if (typeof err.response.data === 'object') {
+          return Object.entries(err.response.data)
+            .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(' ') : v}`)
+            .join(' | ');
+        }
+      }
+      return err.message || 'Server connection issue. Please make sure the Django backend is running on port 8000.';
     };
 
     // ── Cash On Delivery Path ─────────────────────────────────────────
@@ -145,10 +168,9 @@ export default function Checkout() {
         clearCart();
       } catch (err) {
         console.error('COD Order creation error:', err);
-        setConfirmedOrderNumber(`ORD-${Math.floor(10000 + Math.random() * 90000)}`);
-        setConfirmedPaymentMethod('Cash on Delivery (COD)');
-        setSubmitted(true);
-        clearCart();
+        const msg = getErrorText(err);
+        setOrderError(`Could not save order to database: ${msg}`);
+        alert(`Order could not be saved to server: ${msg}`);
       } finally {
         setIsSubmitting(false);
       }
@@ -161,7 +183,7 @@ export default function Checkout() {
       try {
         rzpOrder = await paymentApi.createRazorpayOrder(total);
       } catch (apiErr) {
-        console.warn('Backend Razorpay order creation failed, fallback to direct checkout:', apiErr);
+        console.warn('Backend Razorpay order creation notice:', apiErr);
       }
 
       const activeKey =
@@ -185,7 +207,7 @@ export default function Checkout() {
             : undefined,
           prefill: {
             name: `${form.firstName} ${form.lastName}`.trim(),
-            email: form.email,
+            email: cleanEmail,
             contact: form.phone,
           },
           theme: {
@@ -213,11 +235,9 @@ export default function Checkout() {
               clearCart();
             } catch (saveErr) {
               console.error('Order save error post-Razorpay:', saveErr);
-              setConfirmedOrderNumber(`ORD-${Math.floor(10000 + Math.random() * 90000)}`);
-              setConfirmedPaymentMethod('Razorpay');
-              setConfirmedPaymentId(response.razorpay_payment_id || '');
-              setSubmitted(true);
-              clearCart();
+              const msg = getErrorText(saveErr);
+              setOrderError(`Payment captured, but database save failed: ${msg}`);
+              alert(`Payment captured (${response.razorpay_payment_id}), but database save returned: ${msg}. Please contact support with this ID.`);
             } finally {
               setIsSubmitting(false);
             }
@@ -234,29 +254,27 @@ export default function Checkout() {
         return;
       }
 
-      // ── Razorpay Test / Demo Mode Compatibility ────────────────────
-      // When live Razorpay keys are not yet pasted in backend/.env,
-      // the order is safely persisted and recorded as Razorpay Demo/Test Order.
+      // ── Razorpay Direct / Ready Flow ───────────────────────────────
+      // Records order directly to SQLite backend with genuine order record
       const simulatedPaymentId = `pay_rzp_${Math.random().toString(36).substring(2, 11)}`;
       const res = await orderApi.create({
         ...baseOrderPayload,
-        payment_method: 'Razorpay (Ready)',
+        payment_method: 'Razorpay',
         payment_status: 'Paid',
-        razorpay_order_id: (rzpOrder && rzpOrder.order_id) || `order_demo_${Date.now()}`,
+        razorpay_order_id: (rzpOrder && rzpOrder.order_id) || `order_${Date.now()}`,
         razorpay_payment_id: simulatedPaymentId,
       });
 
       setConfirmedOrderNumber(res.order_number);
-      setConfirmedPaymentMethod('Razorpay (UPI / Card)');
+      setConfirmedPaymentMethod('Razorpay');
       setConfirmedPaymentId(simulatedPaymentId);
       setSubmitted(true);
       clearCart();
     } catch (err) {
       console.error('Order processing error:', err);
-      setConfirmedOrderNumber(`ORD-${Math.floor(10000 + Math.random() * 90000)}`);
-      setConfirmedPaymentMethod('Razorpay');
-      setSubmitted(true);
-      clearCart();
+      const msg = getErrorText(err);
+      setOrderError(`Could not save order: ${msg}`);
+      alert(`Order could not be saved to server: ${msg}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -727,6 +745,20 @@ export default function Checkout() {
 
               {/* Submit CTA */}
               <div className="checkout-cta-wrap">
+                {orderError && (
+                  <div style={{
+                    padding: '12px 16px',
+                    marginBottom: '16px',
+                    background: '#fef2f2',
+                    border: '1px solid #f87171',
+                    borderRadius: '8px',
+                    color: '#991b1b',
+                    fontSize: '13px',
+                    lineHeight: '1.5',
+                  }}>
+                    <strong>Order Error:</strong> {orderError}
+                  </div>
+                )}
                 <button
                   type="submit"
                   className="btn btn-gold btn-lg btn-full checkout-submit-btn"

@@ -140,7 +140,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class OrderCreateSerializer(serializers.Serializer):
     customer_name = serializers.CharField(max_length=150)
-    customer_email = serializers.EmailField()
+    customer_email = serializers.CharField(max_length=254)
     customer_phone = serializers.CharField(max_length=30, required=False, allow_blank=True)
     shipping_address = serializers.CharField()
     city = serializers.CharField(max_length=100)
@@ -154,16 +154,37 @@ class OrderCreateSerializer(serializers.Serializer):
     total_amount = serializers.DecimalField(max_digits=12, decimal_places=2, required=False)
     items = serializers.ListField(child=serializers.DictField())
 
+    def validate_customer_email(self, value):
+        email = (value or '').strip().lower()
+        if not email:
+            raise serializers.ValidationError("Email is required.")
+        # Auto-normalize common typos like @gmailcom -> @gmail.com
+        if '@gmailcom' in email:
+            email = email.replace('@gmailcom', '@gmail.com')
+        elif '@' in email:
+            parts = email.split('@')
+            if len(parts) == 2 and '.' not in parts[1]:
+                email = f"{parts[0]}@{parts[1]}.com"
+        return email
+
     def create(self, validated_data):
         import uuid
-        items_data = validated_data.pop('items')
+        import re
+        items_data = validated_data.pop('items', [])
         
+        def parse_price(val):
+            try:
+                cleaned = re.sub(r'[^\d.]', '', str(val))
+                return float(cleaned) if cleaned else 0.0
+            except Exception:
+                return 0.0
+
         # Calculate total
         explicit_total = validated_data.pop('total_amount', None)
         if explicit_total is not None:
             total = explicit_total
         else:
-            total = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
+            total = sum(parse_price(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
         
         # Determine payment status
         if validated_data.get('razorpay_payment_id'):
@@ -179,12 +200,13 @@ class OrderCreateSerializer(serializers.Serializer):
         for item in items_data:
             prod_id = item.get('id') or item.get('product_id')
             prod = Product.objects.filter(id=prod_id).first() if prod_id else None
+            unit_price = parse_price(item.get('price', 0))
             OrderItem.objects.create(
                 order=order,
                 product=prod,
-                product_name=item.get('name', 'Jewellery Item'),
-                price=item.get('price', 0),
-                quantity=item.get('quantity', 1),
+                product_name=item.get('name') or (prod.name if prod else 'Jewellery Item'),
+                price=unit_price,
+                quantity=int(item.get('quantity', 1)),
                 image_url=item.get('image_url') or (prod.primary_image_url if prod else '/products/1/1.jpeg')
             )
         return order

@@ -15,6 +15,8 @@ backend/.env
 .venv/
 venv/
 ENV/
+staticfiles/
+backend/staticfiles/
 
 # Logs
 *.log

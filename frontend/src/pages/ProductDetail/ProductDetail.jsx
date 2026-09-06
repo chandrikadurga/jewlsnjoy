@@ -513,6 +513,56 @@ export default function ProductDetail() {
                 </ul>
               </AccordionItem>
             </Accordion>
+
+            {/* Trust & Perks Highlights Strip */}
+            <div className="pd-trust-highlights">
+              <div className="pd-trust-item">
+                <div className="pd-trust-item__icon" aria-hidden="true">
+                  <svg width="38" height="38" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 18h7M4 25h9M8 32h5" />
+                    <path d="M29 10l12 6.5v13.5l-12 6.5-12-6.5V16.5L29 10z" />
+                    <path d="M29 10v13.5" />
+                    <path d="M41 16.5l-12 7-12-7" />
+                    <circle cx="23" cy="41" r="2" />
+                    <circle cx="35" cy="41" r="2" />
+                    <path d="M25 41h8" />
+                  </svg>
+                </div>
+                <span className="pd-trust-item__title">EASY RETURN</span>
+                <span className="pd-trust-item__sub">& EXCHANGE</span>
+              </div>
+
+              <div className="pd-trust-item">
+                <div className="pd-trust-item__icon" aria-hidden="true">
+                  <svg width="38" height="38" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 16h8M3 23h10M6 30h7" />
+                    <rect x="15" y="12" width="18" height="19" rx="2" />
+                    <path d="M33 18h6a2 2 0 0 1 1.6.8l3.4 4.7V31h-11V18z" />
+                    <path d="M37 24h5" />
+                    <circle cx="21" cy="35" r="3.5" />
+                    <circle cx="38" cy="35" r="3.5" />
+                    <path d="M24.5 35h10" />
+                  </svg>
+                </div>
+                <span className="pd-trust-item__title">FREE SHIPPING</span>
+                <span className="pd-trust-item__sub">ON ORDERS ABOVE ₹999/-</span>
+              </div>
+
+              <div className="pd-trust-item">
+                <div className="pd-trust-item__icon" aria-hidden="true">
+                  <svg width="38" height="38" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="19" y="7" width="18" height="9" rx="1.5" transform="rotate(-6 28 11.5)" />
+                    <circle cx="28" cy="11.5" r="2" />
+                    <rect x="20" y="20" width="16" height="11" rx="1.5" />
+                    <path d="M28 20v11" />
+                    <path d="M20 25.5h16" />
+                    <path d="M9 28h8l5 4h12a3 3 0 0 1 3 3v1H18l-6-4H9v-4z" />
+                  </svg>
+                </div>
+                <span className="pd-trust-item__title">COD AVAILABLE</span>
+                <span className="pd-trust-item__sub">ON ALL ORDERS</span>
+              </div>
+            </div>
           </div>
         </div>
 

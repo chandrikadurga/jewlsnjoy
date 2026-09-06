@@ -16,11 +16,16 @@ import {
 import { adminApi, categoryApi } from '../../services/api';
 import { FALLBACK_PRODUCTS } from '../../data/products';
 import { broadcastCatalogUpdate } from '../../utils/catalogEvents';
+import {
+  cacheProduct,
+  cacheProductsList,
+  getCachedProductsList,
+} from '../../utils/productCache';
 import './AdminProducts.css';
 
 export default function AdminProducts() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(() => getCachedProductsList() || []);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,11 +56,18 @@ export default function AdminProducts() {
         adminApi.getProducts(),
         categoryApi.getAll().catch(() => []),
       ]);
-      setProducts(prodsData.length ? prodsData : FALLBACK_PRODUCTS);
+      if (prodsData && prodsData.length) {
+        setProducts(prodsData);
+        cacheProductsList(prodsData);
+      } else {
+        const cached = getCachedProductsList();
+        setProducts(cached || FALLBACK_PRODUCTS);
+      }
       setCategories(catsData);
     } catch (err) {
       console.error('Failed to load products:', err);
-      setProducts(FALLBACK_PRODUCTS);
+      const cached = getCachedProductsList();
+      setProducts(cached || FALLBACK_PRODUCTS);
     } finally {
       setLoading(false);
     }
@@ -134,10 +146,12 @@ export default function AdminProducts() {
       };
 
       if (editingProduct) {
-        await adminApi.updateProduct(editingProduct.id, payload);
+        const updated = await adminApi.updateProduct(editingProduct.id, payload);
+        cacheProduct(updated || { ...editingProduct, ...payload });
         showFeedback('Piece updated successfully!');
       } else {
-        await adminApi.createProduct(payload);
+        const created = await adminApi.createProduct(payload);
+        if (created) cacheProduct(created);
         showFeedback('New piece added to catalog!');
       }
 
@@ -148,15 +162,19 @@ export default function AdminProducts() {
       console.error('Error saving product:', err);
       // Fallback local update
       if (editingProduct) {
+        const updatedLocal = { ...editingProduct, ...formData, ...payload };
+        cacheProduct(updatedLocal);
         setProducts((prev) =>
-          prev.map((p) => (p.id === editingProduct.id ? { ...p, ...formData } : p))
+          prev.map((p) => (p.id === editingProduct.id ? updatedLocal : p))
         );
         showFeedback('Updated locally!');
       } else {
         const newProd = {
           ...formData,
+          ...payload,
           id: Date.now(),
         };
+        cacheProduct(newProd);
         setProducts((prev) => [newProd, ...prev]);
         showFeedback('Created locally!');
       }
@@ -186,6 +204,8 @@ export default function AdminProducts() {
   const handleToggleStock = async (prod) => {
     const nextState = !prod.in_stock;
     const nextQty = nextState ? (prod.stock_quantity > 0 ? prod.stock_quantity : 25) : 0;
+    const updatedProd = { ...prod, in_stock: nextState, stock_quantity: nextQty };
+    cacheProduct(updatedProd);
     try {
       await adminApi.updateProduct(prod.id, {
         in_stock: nextState,
@@ -193,7 +213,7 @@ export default function AdminProducts() {
       });
       setProducts((prev) =>
         prev.map((p) =>
-          p.id === prod.id ? { ...p, in_stock: nextState, stock_quantity: nextQty } : p
+          p.id === prod.id ? updatedProd : p
         )
       );
       broadcastCatalogUpdate();
@@ -329,8 +349,8 @@ export default function AdminProducts() {
                     </div>
                   </td>
                   <td>
-                    <span className={`admin-stock-num ${prod.stock_quantity < 15 ? 'admin-stock-num--low' : ''}`}>
-                      {prod.stock_quantity ?? 25} units
+                    <span className={`admin-stock-num ${(prod.stock_quantity ?? 0) < 15 ? 'admin-stock-num--low' : ''}`}>
+                      {prod.stock_quantity ?? 0} units
                     </span>
                   </td>
                   <td>

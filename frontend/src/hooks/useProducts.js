@@ -2,9 +2,20 @@ import { useState, useEffect, useCallback } from 'react';
 import { productApi } from '../services/api';
 import { FALLBACK_PRODUCTS } from '../data/products';
 import { subscribeToCatalogUpdates } from '../utils/catalogEvents';
+import {
+  getCachedProduct,
+  cacheProduct,
+  cacheProductsList,
+  getCachedProductsList,
+} from '../utils/productCache';
 
-function findFallbackProduct(idOrSlug) {
+function getInitialProduct(idOrSlug) {
   if (!idOrSlug) return null;
+  // 1. Check persistent live cache first
+  const cached = getCachedProduct(idOrSlug);
+  if (cached) return cached;
+
+  // 2. Fall back to static dataset
   const numId = Number(idOrSlug);
   return (
     FALLBACK_PRODUCTS.find((p) => (!isNaN(numId) && p.id === numId) || p.slug === String(idOrSlug)) ||
@@ -47,7 +58,14 @@ function filterFallbackProducts(params = {}) {
  * Returns { products, loading, error, refetch }
  */
 export function useProducts(params = {}) {
-  const [products, setProducts] = useState(() => filterFallbackProducts(params));
+  const [products, setProducts] = useState(() => {
+    const cached = getCachedProductsList();
+    if (cached && cached.length > 0) {
+      if (params.all === 'true') return cached;
+      return cached.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+    }
+    return filterFallbackProducts(params);
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -60,15 +78,18 @@ export function useProducts(params = {}) {
       const data = await productApi.getAll(parsed);
       const rawList = data?.results || (Array.isArray(data) ? data : []);
       if (rawList.length > 0) {
+        cacheProductsList(rawList);
         const filtered = parsed.all === 'true'
           ? rawList
           : rawList.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
         setProducts(filtered);
       } else {
-        setProducts(fallback);
+        const cached = getCachedProductsList();
+        setProducts(cached || fallback);
       }
     } catch (err) {
-      setProducts(fallback);
+      const cached = getCachedProductsList();
+      setProducts(cached || fallback);
       setError(null);
     } finally {
       setLoading(false);
@@ -90,14 +111,19 @@ export function useProducts(params = {}) {
  * Hook for fetching a single product by ID or slug.
  */
 export function useProduct(idOrSlug) {
-  const [product, setProduct] = useState(() => findFallbackProduct(idOrSlug));
-  const [loading, setLoading] = useState(false);
+  const [product, setProduct] = useState(() => getInitialProduct(idOrSlug));
+  const [loading, setLoading] = useState(() => {
+    const initial = getInitialProduct(idOrSlug);
+    return !initial || !initial._fromLive;
+  });
   const [error, setError] = useState(null);
 
   const fetchSingleProduct = useCallback(async (cancelledRef) => {
     if (!idOrSlug) return;
-    const fallback = findFallbackProduct(idOrSlug);
-    if (!fallback) setLoading(true);
+    const initial = getInitialProduct(idOrSlug);
+    if (!initial || !initial._fromLive) {
+      setLoading(true);
+    }
 
     try {
       let data;
@@ -107,13 +133,15 @@ export function useProduct(idOrSlug) {
         data = await productApi.getById(idOrSlug);
       }
       if (!cancelledRef?.current && data) {
-        setProduct(data);
+        const enriched = { ...data, _fromLive: true };
+        cacheProduct(enriched);
+        setProduct(enriched);
         setError(null);
       }
     } catch (err) {
       if (!cancelledRef?.current) {
-        if (fallback) {
-          setProduct(fallback);
+        if (initial) {
+          setProduct(initial);
           setError(null);
         } else {
           setError(err);
@@ -145,9 +173,14 @@ export function useProduct(idOrSlug) {
  * Hook for fetching featured products.
  */
 export function useFeaturedProducts() {
-  const [products, setProducts] = useState(() =>
-    FALLBACK_PRODUCTS.filter((p) => p.is_featured && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0)).slice(0, 8)
-  );
+  const [products, setProducts] = useState(() => {
+    const cached = getCachedProductsList();
+    if (cached && cached.length > 0) {
+      const feat = cached.filter((p) => p.is_featured && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+      if (feat.length > 0) return feat.slice(0, 8);
+    }
+    return FALLBACK_PRODUCTS.filter((p) => p.is_featured && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0)).slice(0, 8);
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -155,9 +188,12 @@ export function useFeaturedProducts() {
     productApi.getFeatured()
       .then((data) => {
         const list = Array.isArray(data) ? data : (data?.results || []);
-        const inStock = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
-        if (inStock.length > 0) {
-          setProducts(inStock.slice(0, 8));
+        if (list.length > 0) {
+          cacheProductsList(list);
+          const inStock = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+          if (inStock.length > 0) {
+            setProducts(inStock.slice(0, 8));
+          }
         }
       })
       .catch(() => {
@@ -179,9 +215,14 @@ export function useFeaturedProducts() {
  * Hook for fetching bestsellers.
  */
 export function useBestsellers() {
-  const [products, setProducts] = useState(() =>
-    FALLBACK_PRODUCTS.filter((p) => p.is_bestseller && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0)).slice(0, 8)
-  );
+  const [products, setProducts] = useState(() => {
+    const cached = getCachedProductsList();
+    if (cached && cached.length > 0) {
+      const best = cached.filter((p) => p.is_bestseller && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+      if (best.length > 0) return best.slice(0, 8);
+    }
+    return FALLBACK_PRODUCTS.filter((p) => p.is_bestseller && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0)).slice(0, 8);
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -189,9 +230,12 @@ export function useBestsellers() {
     productApi.getBestsellers()
       .then((data) => {
         const list = Array.isArray(data) ? data : (data?.results || []);
-        const inStock = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
-        if (inStock.length > 0) {
-          setProducts(inStock.slice(0, 8));
+        if (list.length > 0) {
+          cacheProductsList(list);
+          const inStock = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+          if (inStock.length > 0) {
+            setProducts(inStock.slice(0, 8));
+          }
         }
       })
       .catch(() => {

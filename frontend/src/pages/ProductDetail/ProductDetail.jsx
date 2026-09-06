@@ -414,7 +414,11 @@ export default function ProductDetail() {
 
             {/* Stock status indicator */}
             <div className="pd-stock-status" style={{ margin: '0.5rem 0 1rem' }}>
-              {product.in_stock === false || product.stock_quantity === 0 ? (
+              {loading && !product?._fromLive ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#6b7280', fontSize: '0.85rem' }}>
+                  Checking availability...
+                </span>
+              ) : product.in_stock === false || product.stock_quantity === 0 ? (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#ef4444', fontWeight: 600, fontSize: '0.85rem' }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }} />
                   Out of Stock
@@ -422,7 +426,7 @@ export default function ProductDetail() {
               ) : (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#16a34a', fontWeight: 600, fontSize: '0.85rem' }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a' }} />
-                  In Stock ({product.stock_quantity || 25} units available)
+                  In Stock ({product.stock_quantity ?? 0} units available)
                 </span>
               )}
             </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import { orderApi, paymentApi } from '../../services/api';
 import './Checkout.css';
 
@@ -32,6 +33,7 @@ const loadRazorpaySDK = () => {
 
 export default function Checkout() {
   const { items, cartTotal, isEmpty, clearCart } = useCart();
+  const { user, profile } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedOrderNumber, setConfirmedOrderNumber] = useState('');
@@ -50,6 +52,26 @@ export default function Checkout() {
     firstName: '', lastName: '', email: '', phone: '',
     address: '', city: '', state: '', postalCode: '',
   });
+
+  // Pre-fill user data if logged in
+  useEffect(() => {
+    if (user) {
+      const fullName = (profile?.full_name || user.user_metadata?.full_name || '').trim();
+      const parts = fullName.split(' ');
+      const firstName = parts[0] || '';
+      const lastName = parts.slice(1).join(' ') || '';
+      const phone = profile?.phone || user.user_metadata?.phone || '';
+      const email = user.email || '';
+
+      setForm((prev) => ({
+        ...prev,
+        firstName: prev.firstName || firstName,
+        lastName: prev.lastName || lastName,
+        email: prev.email || email,
+        phone: prev.phone || phone,
+      }));
+    }
+  }, [user, profile]);
 
   const codFee = paymentMethod === 'cod' ? 25 : 0;
   const rawShipping = cartTotal >= 999 ? 0 : 80;
@@ -364,6 +386,12 @@ export default function Checkout() {
             </div>
 
             <div className="checkout-success__actions">
+              <Link
+                to={`/orders/${encodeURIComponent(confirmedOrderNumber)}`}
+                className="btn btn-secondary btn-lg"
+              >
+                Track Order Status
+              </Link>
               <a
                 href={`https://wa.me/919457650897?text=${encodeURIComponent(
                   `Hello Jewels 'n' Joys! I just placed order ${confirmedOrderNumber}. Could you share delivery updates?`

@@ -69,12 +69,30 @@ function resolveProductImages(product) {
   };
 }
 
+import { supabase } from './supabase';
+
 const api = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
+});
+
+// Request interceptor to automatically attach Supabase JWT Bearer token if available
+api.interceptors.request.use(async (config) => {
+  try {
+    if (!config.headers.Authorization) {
+      const { data } = await supabase.auth.getSession();
+      const token = data?.session?.access_token;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+  } catch {
+    // Ignore error if supabase session fetch fails
+  }
+  return config;
 });
 
 // Response interceptor for error handling
@@ -178,7 +196,18 @@ export const categoryApi = {
 
 export const orderApi = {
   create: async (orderData) => {
-    const response = await api.post('/api/orders/', orderData);
+    // Zero-Trust: Do not include user_id in payload, Django derives it from Bearer token
+    const { user_id, ...safePayload } = orderData || {};
+    const response = await api.post('/api/orders/', safePayload);
+    return response.data;
+  },
+  getMyOrders: async () => {
+    const response = await api.get('/api/orders/my-orders/');
+    return response.data;
+  },
+  trackOrder: async (orderNumber) => {
+    const cleanNum = encodeURIComponent(String(orderNumber || '').trim());
+    const response = await api.get(`/api/orders/track/${cleanNum}/`);
     return response.data;
   },
 };

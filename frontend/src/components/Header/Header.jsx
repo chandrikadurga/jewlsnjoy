@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Search, Menu, X } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, Heart, User } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { useWishlist } from '../../context/WishlistContext';
 import SearchOverlay from '../SearchOverlay/SearchOverlay';
 import './Header.css';
 
@@ -15,6 +17,8 @@ const NAV_LINKS = [
 
 export default function Header() {
   const { cartItemCount, openDrawer } = useCart();
+  const { user, isAuthenticated, openAuthModal } = useAuth();
+  const { wishlistCount } = useWishlist();
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [searchOpen, setSearchOpen]   = useState(false);
   const [scrolled, setScrolled]       = useState(false);
@@ -82,6 +86,46 @@ export default function Header() {
             >
               <Search size={20} strokeWidth={1.5} />
             </button>
+
+            {/* Wishlist */}
+            <Link
+              to="/wishlist"
+              className="header__icon-btn"
+              aria-label={`Wishlist, ${wishlistCount} item${wishlistCount !== 1 ? 's' : ''}`}
+              id="header-wishlist-btn"
+              title="My Wishlist"
+            >
+              <Heart size={20} strokeWidth={1.5} />
+              {wishlistCount > 0 && (
+                <span className="header__cart-badge" aria-hidden="true">
+                  {wishlistCount > 9 ? '9+' : wishlistCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Customer Account */}
+            {isAuthenticated ? (
+              <Link
+                to="/account"
+                className="header__icon-btn"
+                aria-label="My Account"
+                id="header-account-btn"
+                title={`Account: ${user?.email}`}
+              >
+                <User size={20} strokeWidth={1.5} />
+              </Link>
+            ) : (
+              <button
+                type="button"
+                className="header__icon-btn"
+                onClick={() => openAuthModal('login')}
+                aria-label="Sign In"
+                id="header-account-btn"
+                title="Sign In / Register"
+              >
+                <User size={20} strokeWidth={1.5} />
+              </button>
+            )}
 
             {/* Cart */}
             <button
@@ -152,6 +196,57 @@ export default function Header() {
                   </NavLink>
                 </li>
               ))}
+              <li style={{ borderTop: '1px solid var(--color-border)', margin: '0.75rem 0', paddingTop: '0.75rem' }}>
+                <NavLink
+                  to="/wishlist"
+                  className={({ isActive }) =>
+                    `header__mobile-link${isActive ? ' header__mobile-link--active' : ''}`
+                  }
+                  onClick={closeMobile}
+                >
+                  My Wishlist {wishlistCount > 0 ? `(${wishlistCount})` : ''}
+                </NavLink>
+              </li>
+              {isAuthenticated ? (
+                <>
+                  <li>
+                    <NavLink
+                      to="/account"
+                      className={({ isActive }) =>
+                        `header__mobile-link${isActive ? ' header__mobile-link--active' : ''}`
+                      }
+                      onClick={closeMobile}
+                    >
+                      My Account
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/orders"
+                      className={({ isActive }) =>
+                        `header__mobile-link${isActive ? ' header__mobile-link--active' : ''}`
+                      }
+                      onClick={closeMobile}
+                    >
+                      My Orders
+                    </NavLink>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <button
+                    type="button"
+                    className="header__mobile-link"
+                    style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', padding: '0.75rem 0' }}
+                    onClick={() => {
+                      closeMobile();
+                      openAuthModal('login');
+                    }}
+                  >
+                    Sign In / Register
+                  </button>
+                </li>
+              )}
             </ul>
           </nav>
         </>

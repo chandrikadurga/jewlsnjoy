@@ -4,6 +4,7 @@ import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import CartDrawer from '../components/CartDrawer/CartDrawer';
 import WhatsAppButton from '../components/WhatsAppButton';
+import AuthModal from '../components/Auth/AuthModal';
 
 export default function MainLayout() {
   const { pathname } = useLocation();
@@ -22,6 +23,7 @@ export default function MainLayout() {
       <Footer />
       <CartDrawer />
       <WhatsAppButton />
+      <AuthModal />
     </div>
   );
 }

@@ -1,0 +1,155 @@
+/* =============================================================
+   Jewels 'n' Joys — Order History & Tracking Styles
+   ============================================================= */
+
+.orders-page {
+  padding: 3.5rem 0 5rem 0;
+  background: var(--color-ivory, #f5ede2);
+  min-height: 85vh;
+}
+
+.orders-header {
+  margin-bottom: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.orders-title {
+  font-family: var(--font-serif, 'Playfair Display', serif);
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--color-brown, #2b211d);
+  margin: 0.25rem 0 0.5rem 0;
+}
+
+.orders-subtitle {
+  font-size: 1rem;
+  color: var(--color-brown-light, #5c4a3e);
+  margin: 0;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.order-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border, #d9ccb8);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.order-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-gold, #c6a15b);
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-border, #d9ccb8);
+  margin-bottom: 1.25rem;
+}
+
+.order-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.order-number {
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  color: var(--color-brown, #2b211d);
+}
+
+.order-date {
+  font-size: 0.875rem;
+  color: var(--color-muted, #8a7a70);
+}
+
+.order-items-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.order-item-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.order-item-thumb {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--radius-md, 8px);
+  object-fit: cover;
+  background: var(--color-ivory, #f5ede2);
+  border: 1px solid var(--color-border, #d9ccb8);
+}
+
+.order-item-details {
+  flex: 1;
+}
+
+.order-item-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-brown, #2b211d);
+  margin: 0 0 0.25rem 0;
+}
+
+.order-item-meta {
+  font-size: 0.8125rem;
+  color: var(--color-muted, #8a7a70);
+  margin: 0;
+}
+
+.order-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f2ece4;
+}
+
+.order-total-amount {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-brown, #2b211d);
+}
+
+.order-track-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--color-gold, #c6a15b);
+  color: #ffffff;
+  border-radius: var(--radius-md, 8px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.order-track-btn:hover {
+  background: #b8934a;
+}

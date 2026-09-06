@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingBag, Star } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 import './ProductCard.css';
 
 function StarRating({ rating, count, productId }) {
@@ -37,6 +38,8 @@ function StarRating({ rating, count, productId }) {
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(product?.id);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -47,7 +50,9 @@ export default function ProductCard({ product }) {
   const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // Future: implement wishlist
+    if (product?.id) {
+      toggleWishlist(product.id);
+    }
   };
 
   const formatPrice = (price) => `₹${price.toLocaleString('en-IN')}`;
@@ -78,11 +83,16 @@ export default function ProductCard({ product }) {
           </div>
           {/* Wishlist */}
           <button
-            className="product-card__wishlist"
+            className={`product-card__wishlist ${isWishlisted ? 'is-active' : ''}`}
             onClick={handleWishlist}
-            aria-label={`Add ${product.name} to wishlist`}
+            aria-label={isWishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
           >
-            <Heart size={16} strokeWidth={1.5} />
+            <Heart
+              size={16}
+              strokeWidth={1.5}
+              fill={isWishlisted ? '#c0392b' : 'none'}
+              color={isWishlisted ? '#c0392b' : 'currentColor'}
+            />
           </button>
 
           {/* Quick action overlay */}

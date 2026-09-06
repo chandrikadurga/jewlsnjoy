@@ -277,7 +277,8 @@
   flex-shrink: 0;
 }
 
-.pd-actions__wishlist:hover {
+.pd-actions__wishlist:hover,
+.pd-actions__wishlist.pd-actions__wishlist--active {
   color: #c0392b;
   border-color: #c0392b;
 }

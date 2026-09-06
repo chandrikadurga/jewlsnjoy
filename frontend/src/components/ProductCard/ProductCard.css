@@ -71,7 +71,8 @@
   cursor: pointer;
 }
 
-.product-card__wishlist:hover {
+.product-card__wishlist:hover,
+.product-card__wishlist.is-active {
   color: #c0392b;
   background: white;
 }

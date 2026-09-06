@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useProduct } from '../../hooks/useProducts';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 import { productApi } from '../../services/api';
 import { Accordion, AccordionItem } from '../../components/Accordion/Accordion';
 import './ProductDetail.css';
@@ -52,6 +53,8 @@ export default function ProductDetail() {
   const { id } = useParams();
   const { product, loading, error } = useProduct(id);
   const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(product?.id);
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -457,11 +460,18 @@ export default function ProductDetail() {
                 Buy Now
               </button>
               <button
-                className="pd-actions__wishlist"
-                aria-label="Add to wishlist"
+                className={`pd-actions__wishlist ${isWishlisted ? 'pd-actions__wishlist--active' : ''}`}
+                aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                 id="wishlist-btn"
+                onClick={() => product?.id && toggleWishlist(product.id)}
+                title={isWishlisted ? "Saved in your Wishlist" : "Save to Wishlist"}
               >
-                <Heart size={20} strokeWidth={1.5} />
+                <Heart
+                  size={20}
+                  strokeWidth={1.5}
+                  fill={isWishlisted ? '#c0392b' : 'none'}
+                  color={isWishlisted ? '#c0392b' : 'currentColor'}
+                />
               </button>
             </div>
 

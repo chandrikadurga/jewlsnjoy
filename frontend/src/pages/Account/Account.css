@@ -1,0 +1,313 @@
+/* =============================================================
+   Jewels 'n' Joys — Customer Account Dashboard
+   ============================================================= */
+
+.account-page {
+  padding: 3.5rem 0 5rem 0;
+  background: var(--color-ivory, #f5ede2);
+  min-height: 85vh;
+}
+
+.account-header {
+  margin-bottom: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.account-greeting {
+  font-family: var(--font-serif, 'Playfair Display', serif);
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--color-brown, #2b211d);
+  margin: 0.25rem 0 0.5rem 0;
+}
+
+.account-email-sub {
+  font-size: 0.9375rem;
+  color: var(--color-brown-light, #5c4a3e);
+  margin: 0;
+}
+
+.account-signout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: #ffffff;
+  border: 1px solid var(--color-border, #d9ccb8);
+  border-radius: var(--radius-md, 8px);
+  color: var(--color-brown, #2b211d);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.account-signout-btn:hover {
+  background: #fdf2f2;
+  color: #9b3c3c;
+  border-color: #f8d7da;
+}
+
+/* Stat Cards */
+.account-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.account-stat-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border, #d9ccb8);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(43,33,29,0.08));
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.account-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md, 0 4px 16px rgba(43,33,29,0.10));
+  border-color: var(--color-gold, #c6a15b);
+}
+
+.account-stat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-ivory, #f5ede2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold, #c6a15b);
+  flex-shrink: 0;
+}
+
+.account-stat-info h3 {
+  font-size: 1.75rem;
+  font-family: var(--font-serif, 'Playfair Display', serif);
+  font-weight: 600;
+  color: var(--color-brown, #2b211d);
+  margin: 0;
+  line-height: 1;
+}
+
+.account-stat-info p {
+  margin: 0.375rem 0 0 0;
+  font-size: 0.875rem;
+  color: var(--color-muted, #8a7a70);
+  font-weight: 500;
+}
+
+/* Layout Grid */
+.account-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .account-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.account-panel {
+  background: #ffffff;
+  border: 1px solid var(--color-border, #d9ccb8);
+  border-radius: var(--radius-lg, 12px);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.account-panel-title {
+  font-family: var(--font-serif, 'Playfair Display', serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-brown, #2b211d);
+  margin: 0 0 1.25rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border, #d9ccb8);
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+/* Profile Form */
+.account-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.account-profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.account-profile-field label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-brown, #2b211d);
+}
+
+.account-profile-field input {
+  padding: 0.6875rem 0.875rem;
+  border: 1px solid var(--color-border, #d9ccb8);
+  border-radius: var(--radius-md, 8px);
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 0.875rem;
+  background: #faf8f5;
+  color: var(--color-black, #0d0a09);
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.account-profile-field input:focus {
+  background: #ffffff;
+  border-color: var(--color-gold, #c6a15b);
+  outline: none;
+}
+
+.account-profile-field input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: #eeebe6;
+}
+
+.account-profile-save-btn {
+  padding: 0.75rem 1.25rem;
+  background: var(--color-gold, #c6a15b);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.account-profile-save-btn:hover:not(:disabled) {
+  background: #b8934a;
+}
+
+/* Orders List */
+.account-orders-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.account-order-item {
+  border: 1px solid var(--color-border, #d9ccb8);
+  border-radius: var(--radius-md, 8px);
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: #faf8f5;
+  transition: border-color var(--transition-fast, 150ms ease);
+}
+
+.account-order-item:hover {
+  border-color: var(--color-gold, #c6a15b);
+}
+
+.account-order-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.account-order-num {
+  font-weight: 600;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  color: var(--color-brown, #2b211d);
+}
+
+.account-order-date {
+  font-size: 0.8125rem;
+  color: var(--color-muted, #8a7a70);
+}
+
+.account-order-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badge-shipped {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-delivered {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-processing,
+.badge-order_placed,
+.badge-confirmed,
+.badge-pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.badge-cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.account-order-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.account-order-total {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--color-brown, #2b211d);
+}
+
+.account-track-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--color-gold, #c6a15b);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition-fast, 150ms ease);
+}
+
+.account-track-link:hover {
+  color: #b8934a;
+  text-decoration: underline;
+}
+
+.account-empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-muted, #8a7a70);
+}
+
+.account-empty-state p {
+  margin: 0.5rem 0 1.25rem 0;
+  font-size: 0.9375rem;
+}

@@ -151,6 +151,7 @@ class OrderCreateSerializer(serializers.Serializer):
     razorpay_order_id = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
     razorpay_payment_id = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
     razorpay_signature = serializers.CharField(max_length=255, required=False, allow_blank=True, default='')
+    total_amount = serializers.DecimalField(max_digits=12, decimal_places=2, required=False)
     items = serializers.ListField(child=serializers.DictField())
 
     def create(self, validated_data):
@@ -158,7 +159,11 @@ class OrderCreateSerializer(serializers.Serializer):
         items_data = validated_data.pop('items')
         
         # Calculate total
-        total = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
+        explicit_total = validated_data.pop('total_amount', None)
+        if explicit_total is not None:
+            total = explicit_total
+        else:
+            total = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
         
         # Determine payment status
         if validated_data.get('razorpay_payment_id'):

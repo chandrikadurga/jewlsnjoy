@@ -50,9 +50,10 @@ export default function Checkout() {
     address: '', city: '', state: '', postalCode: '',
   });
 
+  const codFee = paymentMethod === 'cod' ? 25 : 0;
   const rawShipping = cartTotal >= 999 ? 0 : 80;
   const discountAmount = Math.round((cartTotal * appliedDiscount) / 100);
-  const total = Math.max(0, cartTotal - discountAmount + rawShipping);
+  const total = Math.max(0, cartTotal - discountAmount + rawShipping + codFee);
   const amountForFreeShipping = Math.max(0, 999 - cartTotal);
 
   // Pre-fetch Razorpay configuration from backend
@@ -119,6 +120,7 @@ export default function Checkout() {
       city: form.city,
       state: form.state,
       postal_code: form.postalCode,
+      total_amount: total,
       items: items.map((item) => ({
         id: item.product.id,
         name: item.product.name,
@@ -436,6 +438,12 @@ export default function Checkout() {
                   <span>Standard Shipping</span>
                   <span>{rawShipping === 0 ? <strong className="free-shipping-tag">FREE</strong> : `₹${rawShipping}`}</span>
                 </div>
+                {paymentMethod === 'cod' && (
+                  <div className="checkout-summary__row">
+                    <span>COD Charges</span>
+                    <span>₹25</span>
+                  </div>
+                )}
                 <div className="checkout-summary__row checkout-summary__row--total">
                   <span>Total Due</span>
                   <span>₹{total.toLocaleString('en-IN')}</span>
@@ -642,7 +650,7 @@ export default function Checkout() {
                   <span className="checkout-section__step">3</span>
                   <div className="checkout-section__title-group">
                     <h2 className="checkout-section__title">Payment Method</h2>
-                    <p className="checkout-section__subtitle">All major payment options supported via Razorpay</p>
+                    <p className="checkout-section__subtitle">All major payment options supported via Razorpay & Cash on Delivery</p>
                   </div>
                 </div>
 
@@ -681,10 +689,13 @@ export default function Checkout() {
                     />
                     <div className="checkout-pay-option__content">
                       <div className="checkout-pay-option__top">
-                        <span className="checkout-pay-option__name">Cash on Delivery (COD)</span>
+                        <div className="checkout-pay-option__title-row">
+                          <span className="checkout-pay-option__name">Cash on Delivery (COD)</span>
+                          <span className="checkout-pay-option__tag checkout-pay-option__tag--fee">+ ₹25 Charges</span>
+                        </div>
                       </div>
                       <p className="checkout-pay-option__desc">
-                        Pay cash or UPI directly to courier upon arrival at your doorstep.
+                        Pay cash or UPI directly to courier upon arrival at your doorstep. (₹25 COD handling charge applies)
                       </p>
                     </div>
                   </label>
@@ -821,6 +832,12 @@ export default function Checkout() {
                 <span>Shipping</span>
                 <span>{rawShipping === 0 ? <strong className="free-shipping-tag">FREE</strong> : `₹${rawShipping}`}</span>
               </div>
+              {paymentMethod === 'cod' && (
+                <div className="checkout-summary__row">
+                  <span>COD Charges</span>
+                  <span>₹25</span>
+                </div>
+              )}
               <div className="checkout-summary__row checkout-summary__row--total">
                 <div>
                   <span>Total</span>

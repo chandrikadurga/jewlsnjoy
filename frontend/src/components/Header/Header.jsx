@@ -9,8 +9,8 @@ const NAV_LINKS = [
   { to: '/',            label: 'Home'        },
   { to: '/shop',        label: 'Shop'        },
   { to: '/collections', label: 'Collections' },
-  { to: '/about',       label: 'About'       },
-  { to: '/contact',     label: 'Contact'     },
+  { to: '/about',       label: 'About Us'    },
+  { to: '/contact',     label: 'Contact Us'  },
 ];
 
 export default function Header() {

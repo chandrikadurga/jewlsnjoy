@@ -26,6 +26,8 @@ def api_root(request):
             'payments_verify': '/api/payments/verify/',
             'payments_webhook': '/api/payments/webhook/',
             'payments_config': '/api/payments/config/',
+            'admin_login': '/api/admin/login/',
+            'admin_verify': '/api/admin/verify/',
             'admin_stats': '/api/admin/stats/',
             'admin_products': '/api/admin/products/',
             'admin_orders': '/api/admin/orders/',

@@ -95,6 +95,7 @@ if DATABASE_URL:
             default=DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
+            ssl_require=True if any(s in DATABASE_URL for s in ['supabase', 'render', 'amazonaws', 'pooler']) else False,
         )
     }
 else:

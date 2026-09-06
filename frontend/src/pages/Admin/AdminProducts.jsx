@@ -120,11 +120,16 @@ export default function AdminProducts() {
 
     try {
       setSaveLoading(true);
+      const qty = parseInt(formData.stock_quantity, 10);
+      const stockQty = isNaN(qty) ? 0 : Math.max(0, qty);
+      const isStock = stockQty > 0 ? Boolean(formData.in_stock) : false;
+
       const payload = {
         ...formData,
         price: parseFloat(formData.price),
         original_price: formData.original_price ? parseFloat(formData.original_price) : null,
-        stock_quantity: parseInt(formData.stock_quantity, 10) || 0,
+        stock_quantity: stockQty,
+        in_stock: isStock,
       };
 
       if (editingProduct) {
@@ -175,14 +180,22 @@ export default function AdminProducts() {
 
   const handleToggleStock = async (prod) => {
     const nextState = !prod.in_stock;
+    const nextQty = nextState ? (prod.stock_quantity > 0 ? prod.stock_quantity : 25) : 0;
     try {
-      await adminApi.updateProduct(prod.id, { in_stock: nextState });
+      await adminApi.updateProduct(prod.id, {
+        in_stock: nextState,
+        stock_quantity: nextQty,
+      });
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === prod.id ? { ...p, in_stock: nextState, stock_quantity: nextQty } : p
+        )
+      );
+      showFeedback(`Product ${nextState ? 'marked In Stock' : 'marked Out of Stock'}`);
     } catch (err) {
       console.error('Could not toggle stock on server:', err);
+      showFeedback('Could not update stock on server');
     }
-    setProducts((prev) =>
-      prev.map((p) => (p.id === prod.id ? { ...p, in_stock: nextState } : p))
-    );
   };
 
   const handleToggleBadge = async (prod, field) => {

@@ -412,6 +412,21 @@ export default function ProductDetail() {
               </div>
             )}
 
+            {/* Stock status indicator */}
+            <div className="pd-stock-status" style={{ margin: '0.5rem 0 1rem' }}>
+              {product.in_stock === false || product.stock_quantity === 0 ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#ef4444', fontWeight: 600, fontSize: '0.85rem' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }} />
+                  Out of Stock
+                </span>
+              ) : (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#16a34a', fontWeight: 600, fontSize: '0.85rem' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a' }} />
+                  In Stock ({product.stock_quantity || 25} units available)
+                </span>
+              )}
+            </div>
+
             {/* Quantity */}
             <div className="pd-quantity">
               <p className="pd-quantity__label">Quantity</p>
@@ -419,7 +434,7 @@ export default function ProductDetail() {
                 <button
                   className="quantity-selector__btn"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  disabled={quantity <= 1}
+                  disabled={quantity <= 1 || product.in_stock === false || product.stock_quantity === 0}
                   aria-label="Decrease quantity"
                   id="qty-minus"
                 >
@@ -429,6 +444,7 @@ export default function ProductDetail() {
                 <button
                   className="quantity-selector__btn"
                   onClick={() => setQuantity((q) => q + 1)}
+                  disabled={product.in_stock === false || product.stock_quantity === 0}
                   aria-label="Increase quantity"
                   id="qty-plus"
                 >
@@ -442,10 +458,12 @@ export default function ProductDetail() {
               <button
                 className="btn btn-primary btn-lg pd-actions__add"
                 onClick={handleAddToCart}
-                disabled={!product.in_stock}
+                disabled={product.in_stock === false || product.stock_quantity === 0}
                 id="add-to-cart-btn"
               >
-                {added ? (
+                {product.in_stock === false || product.stock_quantity === 0 ? (
+                  'Sold Out'
+                ) : added ? (
                   <><Check size={16} strokeWidth={2.5} /> Added to Bag</>
                 ) : (
                   <><ShoppingBag size={16} strokeWidth={1.5} /> Add to Bag</>
@@ -454,10 +472,10 @@ export default function ProductDetail() {
               <button
                 className="btn btn-secondary btn-lg pd-actions__buy"
                 onClick={handleBuyNow}
-                disabled={!product.in_stock}
+                disabled={product.in_stock === false || product.stock_quantity === 0}
                 id="buy-now-btn"
               >
-                Buy Now
+                {product.in_stock === false || product.stock_quantity === 0 ? 'Out of Stock' : 'Buy Now'}
               </button>
               <button
                 className={`pd-actions__wishlist ${isWishlisted ? 'pd-actions__wishlist--active' : ''}`}

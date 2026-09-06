@@ -40,24 +40,34 @@ class Command(BaseCommand):
             p_id = p_data['id']
             primary_url = f"/products/{p_id}/1.jpeg"
 
-            prod, created = Product.objects.update_or_create(
-                id=p_id,
-                defaults={
-                    'name': p_data['name'],
-                    'slug': p_data.get('slug', f"product-{p_id}"),
-                    'category': cat,
-                    'price': p_data['price'],
-                    'original_price': p_data.get('original_price'),
-                    'description': p_data.get('description', ''),
-                    'details': p_data.get('details', {}),
-                    'style_tags': p_data.get('style', []),
-                    'in_stock': p_data.get('in_stock', True),
-                    'stock_quantity': random.randint(10, 45),
-                    'is_featured': p_data.get('is_featured', False),
-                    'is_bestseller': p_data.get('is_bestseller', False),
-                    'primary_image_url': primary_url,
-                }
-            )
+            existing = Product.objects.filter(id=p_id).first()
+            if existing:
+                existing.name = p_data['name']
+                existing.category = cat
+                existing.price = p_data['price']
+                if p_data.get('original_price'):
+                    existing.original_price = p_data['original_price']
+                existing.description = p_data.get('description', existing.description)
+                existing.primary_image_url = primary_url
+                existing.save()
+                prod = existing
+            else:
+                prod = Product.objects.create(
+                    id=p_id,
+                    name=p_data['name'],
+                    slug=p_data.get('slug', f"product-{p_id}"),
+                    category=cat,
+                    price=p_data['price'],
+                    original_price=p_data.get('original_price'),
+                    description=p_data.get('description', ''),
+                    details=p_data.get('details', {}),
+                    style_tags=p_data.get('style', []),
+                    in_stock=p_data.get('in_stock', True),
+                    stock_quantity=random.randint(10, 45),
+                    is_featured=p_data.get('is_featured', False),
+                    is_bestseller=p_data.get('is_bestseller', False),
+                    primary_image_url=primary_url,
+                )
             created_products.append(prod)
 
             # Clear and rebuild images

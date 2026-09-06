@@ -216,3 +216,44 @@
     font-size: 0.9375rem;
   }
 }
+
+/* ─── Out of Stock Visual Styles ─── */
+.badge-out-of-stock {
+  background: #2b211d !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 0.65rem !important;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.product-card__image--out-of-stock {
+  opacity: 0.65;
+  filter: grayscale(20%);
+}
+
+.product-card__out-btn {
+  width: 100%;
+  background: rgba(30, 24, 20, 0.9) !important;
+  color: #f7efe6 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: not-allowed;
+  font-size: 0.8rem !important;
+  font-weight: 600;
+  text-align: center;
+  pointer-events: none;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+}
+
+.product-card__add-mobile.btn--disabled,
+.product-card__add-mobile:disabled {
+  background: #f0ebe4 !important;
+  color: #a89f91 !important;
+  border-color: #e0d8cc !important;
+  cursor: not-allowed;
+}

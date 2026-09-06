@@ -166,6 +166,11 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.onrender\.com$",
 ]
 CORS_ALLOW_CREDENTIALS = True
+from corsheaders.defaults import default_headers
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'x-admin-token',
+]
+
 if DEBUG or os.getenv('CORS_ALLOW_ALL', 'False').lower() in ('true', '1', 't'):
     CORS_ALLOW_ALL_ORIGINS = True
 

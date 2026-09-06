@@ -66,6 +66,11 @@ class Product(models.Model):
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug
+
+        # When stock_quantity is 0, product is automatically marked out of stock
+        if self.stock_quantity == 0:
+            self.in_stock = False
+
         super().save(*args, **kwargs)
 
     def __str__(self):

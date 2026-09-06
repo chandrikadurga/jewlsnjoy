@@ -40,10 +40,12 @@ export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const isWishlisted = isInWishlist(product?.id);
+  const isOutOfStock = product?.in_stock === false || product?.stock_quantity === 0;
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isOutOfStock) return;
     addToCart(product, 1, null);
   };
 
@@ -58,7 +60,7 @@ export default function ProductCard({ product }) {
   const formatPrice = (price) => `₹${price.toLocaleString('en-IN')}`;
 
   return (
-    <article className="product-card">
+    <article className={`product-card ${isOutOfStock ? 'product-card--out-of-stock' : ''}`}>
       <Link
         to={`/products/${product.id}`}
         className="product-card__link"
@@ -69,16 +71,22 @@ export default function ProductCard({ product }) {
           <img
             src={product.image}
             alt={product.name}
-            className="product-card__image"
+            className={`product-card__image ${isOutOfStock ? 'product-card__image--out-of-stock' : ''}`}
             loading="lazy"
           />
           {/* Badges */}
           <div className="product-card__badges">
-            {product.is_bestseller && (
-              <span className="badge badge-gold">Bestseller</span>
-            )}
-            {product.is_featured && !product.is_bestseller && (
-              <span className="badge badge-green">Featured</span>
+            {isOutOfStock ? (
+              <span className="badge badge-out-of-stock">Out of Stock</span>
+            ) : (
+              <>
+                {product.is_bestseller && (
+                  <span className="badge badge-gold">Bestseller</span>
+                )}
+                {product.is_featured && !product.is_bestseller && (
+                  <span className="badge badge-green">Featured</span>
+                )}
+              </>
             )}
           </div>
           {/* Wishlist */}
@@ -97,14 +105,20 @@ export default function ProductCard({ product }) {
 
           {/* Quick action overlay */}
           <div className="product-card__overlay" aria-hidden="true">
-            <button
-              className="btn btn-primary btn-sm product-card__add-btn"
-              onClick={handleAddToCart}
-              tabIndex={-1}
-            >
-              <ShoppingBag size={14} strokeWidth={2} />
-              Add to Bag
-            </button>
+            {isOutOfStock ? (
+              <span className="btn product-card__out-btn">
+                Sold Out
+              </span>
+            ) : (
+              <button
+                className="btn btn-primary btn-sm product-card__add-btn"
+                onClick={handleAddToCart}
+                tabIndex={-1}
+              >
+                <ShoppingBag size={14} strokeWidth={2} />
+                Add to Bag
+              </button>
+            )}
           </div>
         </div>
 
@@ -131,10 +145,11 @@ export default function ProductCard({ product }) {
 
           {/* Mobile add to cart */}
           <button
-            className="btn btn-secondary btn-sm product-card__add-mobile"
+            className={`btn btn-secondary btn-sm product-card__add-mobile ${isOutOfStock ? 'btn--disabled' : ''}`}
             onClick={handleAddToCart}
+            disabled={isOutOfStock}
           >
-            Add to Bag
+            {isOutOfStock ? 'Sold Out' : 'Add to Bag'}
           </button>
         </div>
       </Link>

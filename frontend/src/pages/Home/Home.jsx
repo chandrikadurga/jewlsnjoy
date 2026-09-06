@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Shield, Truck, RotateCcw, Star, Check, ExternalLink, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Star, Check, ExternalLink } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
 import heroImg from '../../assets/products/1/3.jpeg';
@@ -48,32 +48,58 @@ function Hero() {
   );
 }
 
-// Why Choose Us
-const PILLARS = [
-  { icon: Shield,      title: 'Premium Quality',      desc: 'Every piece is crafted with long-lasting PVD plating for durability.' },
-  { icon: Truck,       title: 'Reliable Shipping',    desc: 'Dispatched in 1–3 working days with careful protective packaging.' },
-  { icon: ShieldCheck, title: 'Damage Protection',    desc: 'Replacement support for damaged items reported within 24h with unboxing video.' },
-  { icon: Star,        title: 'Thoughtful Design',    desc: 'Each piece is designed to feel elegant, personal, and timeless.' },
-];
-
-function WhyChooseUs() {
+// Store Perks & Promises Banner (Easy Return, Free Shipping, COD)
+function StorePerks() {
   return (
-    <section className="section why-us" aria-labelledby="why-us-title">
+    <section className="section section--perks why-us" aria-label="Store Benefits & Promises">
       <div className="container">
-        <div className="section-header">
-          <span className="eyebrow">Why Choose Us</span>
-          <h2 className="section-title" id="why-us-title">Crafted for You</h2>
-        </div>
-        <div className="why-us__grid">
-          {PILLARS.map((pillar) => (
-            <div className="why-us__card" key={pillar.title}>
-              <div className="why-us__icon">
-                <pillar.icon size={22} strokeWidth={1.5} />
-              </div>
-              <h3 className="why-us__card-title">{pillar.title}</h3>
-              <p className="why-us__card-desc">{pillar.desc}</p>
+        <div className="home-perks-banner">
+          <div className="home-perk-item">
+            <div className="home-perk-icon" aria-hidden="true">
+              <svg width="42" height="42" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 18h7M4 25h9M8 32h5" />
+                <path d="M29 10l12 6.5v13.5l-12 6.5-12-6.5V16.5L29 10z" />
+                <path d="M29 10v13.5" />
+                <path d="M41 16.5l-12 7-12-7" />
+                <circle cx="23" cy="41" r="2" />
+                <circle cx="35" cy="41" r="2" />
+                <path d="M25 41h8" />
+              </svg>
             </div>
-          ))}
+            <h3 className="home-perk-title">EASY RETURN</h3>
+            <p className="home-perk-sub">& EXCHANGE</p>
+          </div>
+
+          <div className="home-perk-item">
+            <div className="home-perk-icon" aria-hidden="true">
+              <svg width="42" height="42" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 16h8M3 23h10M6 30h7" />
+                <rect x="15" y="12" width="18" height="19" rx="2" />
+                <path d="M33 18h6a2 2 0 0 1 1.6.8l3.4 4.7V31h-11V18z" />
+                <path d="M37 24h5" />
+                <circle cx="21" cy="35" r="3.5" />
+                <circle cx="38" cy="35" r="3.5" />
+                <path d="M24.5 35h10" />
+              </svg>
+            </div>
+            <h3 className="home-perk-title">FREE SHIPPING</h3>
+            <p className="home-perk-sub">ON ORDERS ABOVE ₹999/-</p>
+          </div>
+
+          <div className="home-perk-item">
+            <div className="home-perk-icon" aria-hidden="true">
+              <svg width="42" height="42" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="19" y="7" width="18" height="9" rx="1.5" transform="rotate(-6 28 11.5)" />
+                <circle cx="28" cy="11.5" r="2" />
+                <rect x="20" y="20" width="16" height="11" rx="1.5" />
+                <path d="M28 20v11" />
+                <path d="M20 25.5h16" />
+                <path d="M9 28h8l5 4h12a3 3 0 0 1 3 3v1H18l-6-4H9v-4z" />
+              </svg>
+            </div>
+            <h3 className="home-perk-title">COD AVAILABLE</h3>
+            <p className="home-perk-sub">ON ALL ORDERS</p>
+          </div>
         </div>
       </div>
     </section>
@@ -317,7 +343,7 @@ export default function Home() {
       {/* Verified Customer Reviews with Clickable Product Links */}
       <CustomerReviewsSection />
 
-      <WhyChooseUs />
+      <StorePerks />
       <CTABanner />
     </div>
   );

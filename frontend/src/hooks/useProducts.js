@@ -46,10 +46,6 @@ function filterFallbackProducts(params = {}) {
       p.category.toLowerCase().includes(q)
     );
   }
-  // Exclude out-of-stock fallback items unless explicitly requested
-  if (params.all !== 'true' && params.all !== true) {
-    list = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
-  }
   return list;
 }
 
@@ -61,8 +57,7 @@ export function useProducts(params = {}) {
   const [products, setProducts] = useState(() => {
     const cached = getCachedProductsList();
     if (cached && cached.length > 0) {
-      if (params.all === 'true') return cached;
-      return cached.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+      return cached;
     }
     return filterFallbackProducts(params);
   });
@@ -79,10 +74,7 @@ export function useProducts(params = {}) {
       const rawList = data?.results || (Array.isArray(data) ? data : []);
       if (rawList.length > 0) {
         cacheProductsList(rawList);
-        const filtered = parsed.all === 'true'
-          ? rawList
-          : rawList.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
-        setProducts(filtered);
+        setProducts(rawList);
       } else {
         const cached = getCachedProductsList();
         setProducts(cached || fallback);
@@ -176,10 +168,10 @@ export function useFeaturedProducts() {
   const [products, setProducts] = useState(() => {
     const cached = getCachedProductsList();
     if (cached && cached.length > 0) {
-      const feat = cached.filter((p) => p.is_featured && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+      const feat = cached.filter((p) => p.is_featured);
       if (feat.length > 0) return feat.slice(0, 8);
     }
-    return FALLBACK_PRODUCTS.filter((p) => p.is_featured && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0)).slice(0, 8);
+    return FALLBACK_PRODUCTS.filter((p) => p.is_featured).slice(0, 8);
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -190,10 +182,7 @@ export function useFeaturedProducts() {
         const list = Array.isArray(data) ? data : (data?.results || []);
         if (list.length > 0) {
           cacheProductsList(list);
-          const inStock = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
-          if (inStock.length > 0) {
-            setProducts(inStock.slice(0, 8));
-          }
+          setProducts(list.slice(0, 8));
         }
       })
       .catch(() => {
@@ -218,10 +207,10 @@ export function useBestsellers() {
   const [products, setProducts] = useState(() => {
     const cached = getCachedProductsList();
     if (cached && cached.length > 0) {
-      const best = cached.filter((p) => p.is_bestseller && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+      const best = cached.filter((p) => p.is_bestseller);
       if (best.length > 0) return best.slice(0, 8);
     }
-    return FALLBACK_PRODUCTS.filter((p) => p.is_bestseller && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0)).slice(0, 8);
+    return FALLBACK_PRODUCTS.filter((p) => p.is_bestseller).slice(0, 8);
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -232,10 +221,7 @@ export function useBestsellers() {
         const list = Array.isArray(data) ? data : (data?.results || []);
         if (list.length > 0) {
           cacheProductsList(list);
-          const inStock = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
-          if (inStock.length > 0) {
-            setProducts(inStock.slice(0, 8));
-          }
+          setProducts(list.slice(0, 8));
         }
       })
       .catch(() => {

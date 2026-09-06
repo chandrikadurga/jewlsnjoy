@@ -74,15 +74,12 @@ class ProductListView(APIView):
                 Q(category__name__icontains=search)
             )
 
-        # In-stock filter: by default on public storefront, only active in-stock products with units > 0 are shown
+        # In-stock filter: only applied when explicitly specified via query param
         in_stock_param = request.query_params.get('in_stock')
-        all_param = request.query_params.get('all')
         if in_stock_param == 'true':
             queryset = queryset.filter(in_stock=True, stock_quantity__gt=0)
         elif in_stock_param == 'false':
             queryset = queryset.filter(Q(in_stock=False) | Q(stock_quantity=0))
-        elif all_param != 'true':
-            queryset = queryset.filter(in_stock=True, stock_quantity__gt=0)
 
         serializer = ProductListSerializer(queryset, many=True)
         response = Response({
@@ -151,7 +148,7 @@ class FeaturedProductsView(APIView):
     GET /api/products/featured/
     """
     def get(self, request):
-        products = Product.objects.filter(is_featured=True, in_stock=True, stock_quantity__gt=0)[:8]
+        products = Product.objects.filter(is_featured=True)[:8]
         response = Response(ProductListSerializer(products, many=True).data)
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         response['Pragma'] = 'no-cache'
@@ -163,7 +160,7 @@ class BestsellerProductsView(APIView):
     GET /api/products/bestsellers/
     """
     def get(self, request):
-        products = Product.objects.filter(is_bestseller=True, in_stock=True, stock_quantity__gt=0)[:8]
+        products = Product.objects.filter(is_bestseller=True)[:8]
         response = Response(ProductListSerializer(products, many=True).data)
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         response['Pragma'] = 'no-cache'

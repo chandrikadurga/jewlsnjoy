@@ -35,8 +35,9 @@ def api_root(request):
 
 
 urlpatterns = [
+    path('', api_root, name='api-index'),
     path('admin/', admin.site.urls),
-    path('api/', api_root),
+    path('api/', api_root, name='api-root'),
     path('api/products/', include('products.urls')),
     path('api/categories/', include('products.category_urls')),
     path('api/orders/', OrderCreateView.as_view(), name='order-create'),

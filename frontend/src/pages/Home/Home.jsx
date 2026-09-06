@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Check, ExternalLink, Play, Pause, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
-import heroImg from '../../assets/products/1/3.jpeg';
+import heroImg from '../../assets/hero-necklaces.png';
 import storyMainImg from '../../assets/products/3/2.jpeg';
 import storyAccentImg from '../../assets/products/4/1.jpeg';
 import './Home.css';
@@ -36,12 +36,9 @@ function Hero() {
           <div className="hero__image-wrap">
             <img
               src={heroImg}
-              alt="Emerald Luxe Tennis Necklace - Jewels 'n' Joys"
+              alt="Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys"
               className="hero__image"
             />
-            <div className="hero__image-badge">
-              <span>Anti-Tarnish • 18K Gold Plated</span>
-            </div>
           </div>
         </div>
       </div>

@@ -130,12 +130,13 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'id', 'order_number', 'customer_name', 'customer_email', 'customer_phone',
+            'id', 'order_number', 'user_id', 'customer_name', 'customer_email', 'customer_phone',
             'shipping_address', 'city', 'state', 'postal_code', 'country',
             'total_amount', 'payment_method', 'payment_status', 'status',
             'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature',
             'notes', 'created_at', 'updated_at', 'items',
         ]
+        read_only_fields = ['id', 'order_number', 'user_id', 'created_at', 'updated_at']
 
 
 class OrderCreateSerializer(serializers.Serializer):
@@ -191,9 +192,12 @@ class OrderCreateSerializer(serializers.Serializer):
             validated_data['payment_status'] = 'Paid'
 
         order_num = f"ORD-{uuid.uuid4().hex[:6].upper()}"
+        user_id = validated_data.pop('user_id', '')
+
         order = Order.objects.create(
             order_number=order_num,
             total_amount=total,
+            user_id=user_id,
             **validated_data
         )
 

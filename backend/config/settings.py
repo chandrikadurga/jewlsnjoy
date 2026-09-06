@@ -171,3 +171,8 @@ if DEBUG or os.getenv('CORS_ALLOW_ALL', 'False').lower() in ('true', '1', 't'):
 # Razorpay Configuration
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '')
 RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '')
+
+# Supabase Auth Configuration
+SUPABASE_URL = os.getenv('SUPABASE_URL', 'https://hlxffdtkghzednkpwxlb.supabase.co')
+SUPABASE_ANON_KEY = os.getenv('SUPABASE_PUBLISHABLE_KEY', os.getenv('SUPABASE_ANON_KEY', 'sb_publishable_Q7YuMERgjfL5BcbmeBvGQw_irH77xJQ'))
+

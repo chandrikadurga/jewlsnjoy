@@ -98,14 +98,18 @@ class ProductImage(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
+        ('order_placed', 'Order Placed'),
+        ('confirmed', 'Confirmed'),
         ('processing', 'Processing'),
         ('shipped', 'Shipped'),
+        ('out_for_delivery', 'Out for Delivery'),
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
+        ('pending', 'Pending'),  # backward compatibility
     ]
 
     order_number = models.CharField(max_length=50, unique=True)
+    user_id = models.CharField(max_length=64, blank=True, default='', db_index=True)
     customer_name = models.CharField(max_length=150)
     customer_email = models.EmailField()
     customer_phone = models.CharField(max_length=30, blank=True, default='')

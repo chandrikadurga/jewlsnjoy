@@ -3,12 +3,18 @@ Django REST API views for Jewels N' Joys.
 Full-stack database queries for public storefront and admin dashboard.
 """
 
+import json
+import logging
+import urllib.request
 from decimal import Decimal
+from django.conf import settings
 from django.db.models import Sum, Q, Count
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+logger = logging.getLogger(__name__)
 
 from .models import Category, Product, ProductImage, Order, OrderItem, Review
 from .serializers import (
@@ -144,17 +150,128 @@ class CategoryListView(APIView):
         return Response(CategorySerializer(categories, many=True).data)
 
 
+def get_authenticated_supabase_user(request):
+    """
+    Extracts Bearer token from request Authorization header and verifies it with Supabase Auth API.
+    Returns:
+      {
+        'uid': '<uuid>',
+        'email': '<email>',
+        'email_verified': True/False,
+        'user_metadata': {...}
+      }
+    or None if unauthenticated / invalid.
+    """
+    auth_header = request.headers.get('Authorization') or request.META.get('HTTP_AUTHORIZATION', '')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return None
+
+    token = auth_header.split(' ', 1)[1].strip()
+    if not token:
+        return None
+
+    supabase_url = getattr(settings, 'SUPABASE_URL', 'https://hlxffdtkghzednkpwxlb.supabase.co').rstrip('/')
+    anon_key = getattr(settings, 'SUPABASE_ANON_KEY', '')
+
+    user_endpoint = f"{supabase_url}/auth/v1/user"
+    req = urllib.request.Request(
+        user_endpoint,
+        headers={
+            'apikey': anon_key,
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        }
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=5) as response:
+            if response.status == 200:
+                data = json.loads(response.read().decode('utf-8'))
+                uid = data.get('id')
+                if not uid:
+                    return None
+                email = (data.get('email') or '').strip().lower()
+                email_confirmed_at = data.get('email_confirmed_at')
+                email_verified = bool(email_confirmed_at)
+                return {
+                    'uid': str(uid),
+                    'email': email,
+                    'email_verified': email_verified,
+                    'user_metadata': data.get('user_metadata', {})
+                }
+    except Exception as e:
+        logger.warning("Supabase token verification failed: %s", str(e))
+        return None
+
+    return None
+
+
 class OrderCreateView(APIView):
     """
     POST /api/orders/
     Called by storefront checkout to persist customer order.
+    Zero-Trust Security: user_id is never accepted from the request body.
+    Server extracts and verifies Supabase JWT if present; otherwise sets empty string for guest.
     """
     def post(self, request):
+        auth_user = get_authenticated_supabase_user(request)
+        verified_uid = auth_user['uid'] if auth_user else ''
+
         serializer = OrderCreateSerializer(data=request.data)
         if serializer.is_valid():
-            order = serializer.save()
+            order = serializer.save(user_id=verified_uid)
             return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomerOrderListView(APIView):
+    """
+    GET /api/orders/my-orders/
+    Returns orders belonging to the authenticated customer.
+    Requires verified Supabase Bearer token.
+    Claims legacy unassigned orders (user_id='') ONLY IF the user's email is verified.
+    """
+    def get(self, request):
+        auth_user = get_authenticated_supabase_user(request)
+        if not auth_user or not auth_user.get('uid'):
+            return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        user_uid = auth_user['uid']
+        user_email = auth_user.get('email', '')
+        email_verified = auth_user.get('email_verified', False)
+
+        # Legacy order claiming: ONLY claim if customer's email is verified through Supabase
+        if email_verified and user_email:
+            Order.objects.filter(
+                user_id='',
+                customer_email__iexact=user_email
+            ).update(user_id=user_uid)
+
+        orders = Order.objects.filter(user_id=user_uid).prefetch_related('items').order_by('-created_at')
+        return Response(OrderSerializer(orders, many=True).data)
+
+
+class CustomerOrderTrackView(APIView):
+    """
+    GET /api/orders/track/<str:order_number>/
+    Returns order tracking details for authenticated customer.
+    Requires Bearer token matching Order.user_id.
+    Always returns 404 NOT FOUND (never 403) on unauthorized or missing orders
+    to avoid leaking whether an order number exists.
+    """
+    def get(self, request, order_number):
+        auth_user = get_authenticated_supabase_user(request)
+        if not auth_user or not auth_user.get('uid'):
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        user_uid = auth_user['uid']
+        clean_num = order_number.strip()
+
+        order = Order.objects.filter(order_number__iexact=clean_num, user_id=user_uid).prefetch_related('items').first()
+        if not order:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(OrderSerializer(order).data)
+
 
 
 # ─── Admin Dashboard Views ────────────────────────────────────────────────────

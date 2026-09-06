@@ -120,10 +120,12 @@ export const productApi = {
    * @param {Object} params - { category, style, featured, bestseller, search }
    */
   getAll: async (params = {}) => {
-    const response = await api.get('/api/products/', { params });
+    const response = await api.get('/api/products/', { params: { ...params, _t: Date.now() } });
+    const list = response.data?.results || (Array.isArray(response.data) ? response.data : []);
     return {
       ...response.data,
-      results: response.data.results.map(resolveProductImages),
+      count: response.data?.count ?? list.length,
+      results: list.map(resolveProductImages),
     };
   },
 
@@ -131,7 +133,7 @@ export const productApi = {
    * Get a single product by ID
    */
   getById: async (id) => {
-    const response = await api.get(`/api/products/${id}/`);
+    const response = await api.get(`/api/products/${id}/`, { params: { _t: Date.now() } });
     return resolveProductImages(response.data);
   },
 
@@ -139,7 +141,7 @@ export const productApi = {
    * Get a single product by slug
    */
   getBySlug: async (slug) => {
-    const response = await api.get(`/api/products/slug/${slug}/`);
+    const response = await api.get(`/api/products/slug/${slug}/`, { params: { _t: Date.now() } });
     return resolveProductImages(response.data);
   },
 
@@ -147,7 +149,7 @@ export const productApi = {
    * Get featured products for homepage
    */
   getFeatured: async () => {
-    const response = await api.get('/api/products/featured/');
+    const response = await api.get('/api/products/featured/', { params: { _t: Date.now() } });
     const list = Array.isArray(response.data) ? response.data : (response.data.results || []);
     return {
       results: list.map(resolveProductImages),
@@ -158,7 +160,7 @@ export const productApi = {
    * Get bestseller products
    */
   getBestsellers: async () => {
-    const response = await api.get('/api/products/bestsellers/');
+    const response = await api.get('/api/products/bestsellers/', { params: { _t: Date.now() } });
     const list = Array.isArray(response.data) ? response.data : (response.data.results || []);
     return {
       results: list.map(resolveProductImages),
@@ -253,11 +255,11 @@ export const adminApi = {
     return response.data;
   },
   getProducts: async (params = {}) => {
-    const response = await api.get('/api/admin/products/', { params });
+    const response = await api.get('/api/admin/products/', { params: { ...params, _t: Date.now() } });
     return Array.isArray(response.data) ? response.data.map(resolveProductImages) : [];
   },
   getProduct: async (id) => {
-    const response = await api.get(`/api/admin/products/${id}/`);
+    const response = await api.get(`/api/admin/products/${id}/`, { params: { _t: Date.now() } });
     return resolveProductImages(response.data);
   },
   createProduct: async (productData) => {
@@ -273,7 +275,7 @@ export const adminApi = {
     return response.data;
   },
   getOrders: async (params = {}) => {
-    const response = await api.get('/api/admin/orders/', { params });
+    const response = await api.get('/api/admin/orders/', { params: { ...params, _t: Date.now() } });
     return response.data;
   },
   updateOrderStatus: async (id, status) => {

@@ -67,9 +67,11 @@ class Product(models.Model):
                 counter += 1
             self.slug = slug
 
-        # When stock_quantity is 0, product is automatically marked out of stock
+        # When stock_quantity is 0 or in_stock is False, keep them synchronized
         if self.stock_quantity == 0:
             self.in_stock = False
+        elif not self.in_stock:
+            self.stock_quantity = 0
 
         super().save(*args, **kwargs)
 

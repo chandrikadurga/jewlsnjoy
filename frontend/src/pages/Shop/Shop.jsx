@@ -40,6 +40,9 @@ export default function Shop() {
   const filtered = useMemo(() => {
     let list = [...source];
 
+    // Immediately exclude out-of-stock items (units = 0 or marked in_stock = false)
+    list = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+
     // Search
     if (searchQuery) {
       const q = searchQuery.toLowerCase();

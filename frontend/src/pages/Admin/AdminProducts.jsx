@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { adminApi, categoryApi } from '../../services/api';
 import { FALLBACK_PRODUCTS } from '../../data/products';
+import { broadcastCatalogUpdate } from '../../utils/catalogEvents';
 import './AdminProducts.css';
 
 export default function AdminProducts() {
@@ -140,6 +141,7 @@ export default function AdminProducts() {
         showFeedback('New piece added to catalog!');
       }
 
+      broadcastCatalogUpdate();
       await loadData();
       closeModal();
     } catch (err) {
@@ -158,6 +160,7 @@ export default function AdminProducts() {
         setProducts((prev) => [newProd, ...prev]);
         showFeedback('Created locally!');
       }
+      broadcastCatalogUpdate();
       closeModal();
     } finally {
       setSaveLoading(false);
@@ -171,10 +174,12 @@ export default function AdminProducts() {
       await adminApi.deleteProduct(id);
       showFeedback('Product deleted.');
       setProducts((prev) => prev.filter((p) => p.id !== id));
+      broadcastCatalogUpdate();
     } catch (err) {
       console.error('Error deleting product:', err);
       setProducts((prev) => prev.filter((p) => p.id !== id));
       showFeedback('Removed locally.');
+      broadcastCatalogUpdate();
     }
   };
 
@@ -191,6 +196,7 @@ export default function AdminProducts() {
           p.id === prod.id ? { ...p, in_stock: nextState, stock_quantity: nextQty } : p
         )
       );
+      broadcastCatalogUpdate();
       showFeedback(`Product ${nextState ? 'marked In Stock' : 'marked Out of Stock'}`);
     } catch (err) {
       console.error('Could not toggle stock on server:', err);
@@ -202,6 +208,7 @@ export default function AdminProducts() {
     const nextVal = !prod[field];
     try {
       await adminApi.updateProduct(prod.id, { [field]: nextVal });
+      broadcastCatalogUpdate();
     } catch (err) {
       console.error('Could not toggle badge:', err);
     }

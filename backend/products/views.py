@@ -74,11 +74,24 @@ class ProductListView(APIView):
                 Q(category__name__icontains=search)
             )
 
+        # In-stock filter: by default on public storefront, only active in-stock products with units > 0 are shown
+        in_stock_param = request.query_params.get('in_stock')
+        all_param = request.query_params.get('all')
+        if in_stock_param == 'true':
+            queryset = queryset.filter(in_stock=True, stock_quantity__gt=0)
+        elif in_stock_param == 'false':
+            queryset = queryset.filter(Q(in_stock=False) | Q(stock_quantity=0))
+        elif all_param != 'true':
+            queryset = queryset.filter(in_stock=True, stock_quantity__gt=0)
+
         serializer = ProductListSerializer(queryset, many=True)
-        return Response({
+        response = Response({
             'count': queryset.count(),
             'results': serializer.data
         })
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        return response
 
 
 class ProductDetailView(APIView):
@@ -88,7 +101,10 @@ class ProductDetailView(APIView):
     def get(self, request, pk):
         try:
             product = Product.objects.select_related('category').prefetch_related('images').get(pk=pk)
-            return Response(ProductSerializer(product).data)
+            response = Response(ProductSerializer(product).data)
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+            response['Pragma'] = 'no-cache'
+            return response
         except Product.DoesNotExist:
             return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -122,7 +138,10 @@ class ProductBySlugView(APIView):
     def get(self, request, slug):
         try:
             product = Product.objects.select_related('category').prefetch_related('images').get(slug=slug)
-            return Response(ProductSerializer(product).data)
+            response = Response(ProductSerializer(product).data)
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+            response['Pragma'] = 'no-cache'
+            return response
         except Product.DoesNotExist:
             return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -132,8 +151,11 @@ class FeaturedProductsView(APIView):
     GET /api/products/featured/
     """
     def get(self, request):
-        products = Product.objects.filter(is_featured=True)[:8]
-        return Response(ProductListSerializer(products, many=True).data)
+        products = Product.objects.filter(is_featured=True, in_stock=True, stock_quantity__gt=0)[:8]
+        response = Response(ProductListSerializer(products, many=True).data)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        return response
 
 
 class BestsellerProductsView(APIView):
@@ -141,8 +163,11 @@ class BestsellerProductsView(APIView):
     GET /api/products/bestsellers/
     """
     def get(self, request):
-        products = Product.objects.filter(is_bestseller=True)[:8]
-        return Response(ProductListSerializer(products, many=True).data)
+        products = Product.objects.filter(is_bestseller=True, in_stock=True, stock_quantity__gt=0)[:8]
+        response = Response(ProductListSerializer(products, many=True).data)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        return response
 
 
 class CategoryListView(APIView):
@@ -410,7 +435,10 @@ class AdminProductListView(APIView):
                 Q(name__icontains=search) |
                 Q(category__name__icontains=search)
             )
-        return Response(ProductSerializer(products, many=True).data)
+        response = Response(ProductSerializer(products, many=True).data)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        return response
 
     def post(self, request):
         data = request.data.copy()
@@ -462,28 +490,63 @@ class AdminProductDetailView(APIView):
     """
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
-        return Response(ProductSerializer(product).data)
+        response = Response(ProductSerializer(product).data)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
+
+    def _sync_stock_data(self, product, raw_data):
+        data = raw_data.copy() if hasattr(raw_data, 'copy') else dict(raw_data)
+        if 'stock_quantity' in data:
+            try:
+                qty = int(data['stock_quantity'])
+                if qty <= 0:
+                    data['stock_quantity'] = 0
+                    data['in_stock'] = False
+                elif 'in_stock' not in data:
+                    data['in_stock'] = True
+            except (ValueError, TypeError):
+                pass
+        if data.get('in_stock') is False:
+            data['stock_quantity'] = 0
+        elif data.get('in_stock') is True:
+            if 'stock_quantity' in data:
+                try:
+                    if int(data['stock_quantity']) <= 0:
+                        data['stock_quantity'] = 10
+                except (ValueError, TypeError):
+                    pass
+            elif product and product.stock_quantity <= 0:
+                data['stock_quantity'] = 10
+        return data
 
     def patch(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
-        serializer = AdminProductWriteSerializer(product, data=request.data, partial=True)
+        data = self._sync_stock_data(product, request.data)
+        serializer = AdminProductWriteSerializer(product, data=data, partial=True)
         if serializer.is_valid():
             product = serializer.save()
-            return Response(ProductSerializer(product).data)
+            response = Response(ProductSerializer(product).data)
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+            return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
-        serializer = AdminProductWriteSerializer(product, data=request.data)
+        data = self._sync_stock_data(product, request.data)
+        serializer = AdminProductWriteSerializer(product, data=data)
         if serializer.is_valid():
             product = serializer.save()
-            return Response(ProductSerializer(product).data)
+            response = Response(ProductSerializer(product).data)
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+            return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         product.delete()
-        return Response({'message': 'Product deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        response = Response({'message': 'Product deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
 
 
 class AdminOrderListView(APIView):

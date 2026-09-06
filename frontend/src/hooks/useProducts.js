@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { productApi } from '../services/api';
 import { FALLBACK_PRODUCTS } from '../data/products';
+import { subscribeToCatalogUpdates } from '../utils/catalogEvents';
 
 function findFallbackProduct(idOrSlug) {
   if (!idOrSlug) return null;
@@ -34,6 +35,10 @@ function filterFallbackProducts(params = {}) {
       p.category.toLowerCase().includes(q)
     );
   }
+  // Exclude out-of-stock fallback items unless explicitly requested
+  if (params.all !== 'true' && params.all !== true) {
+    list = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+  }
   return list;
 }
 
@@ -53,14 +58,18 @@ export function useProducts(params = {}) {
     const fallback = filterFallbackProducts(parsed);
     try {
       const data = await productApi.getAll(parsed);
-      if (data && data.results && data.results.length > 0) {
-        setProducts(data.results);
+      const rawList = data?.results || (Array.isArray(data) ? data : []);
+      if (rawList.length > 0) {
+        const filtered = parsed.all === 'true'
+          ? rawList
+          : rawList.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+        setProducts(filtered);
       } else {
         setProducts(fallback);
       }
     } catch (err) {
       setProducts(fallback);
-      setError(null); // Keep fallback working gracefully
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -68,6 +77,10 @@ export function useProducts(params = {}) {
 
   useEffect(() => {
     fetch();
+    const unsubscribe = subscribeToCatalogUpdates(() => {
+      fetch();
+    });
+    return unsubscribe;
   }, [fetch]);
 
   return { products, loading, error, refetch: fetch };
@@ -81,59 +94,70 @@ export function useProduct(idOrSlug) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const fetchSingleProduct = useCallback(async (cancelledRef) => {
     if (!idOrSlug) return;
-    let cancelled = false;
+    const fallback = findFallbackProduct(idOrSlug);
+    if (!fallback) setLoading(true);
 
-    async function fetch() {
-      const fallback = findFallbackProduct(idOrSlug);
-      if (!fallback) setLoading(true);
-
-      try {
-        let data;
-        if (isNaN(Number(idOrSlug))) {
-          data = await productApi.getBySlug(idOrSlug);
-        } else {
-          data = await productApi.getById(idOrSlug);
-        }
-        if (!cancelled && data) {
-          setProduct(data);
-          setError(null);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          if (fallback) {
-            setProduct(fallback);
-            setError(null);
-          } else {
-            setError(err);
-          }
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
+    try {
+      let data;
+      if (isNaN(Number(idOrSlug))) {
+        data = await productApi.getBySlug(idOrSlug);
+      } else {
+        data = await productApi.getById(idOrSlug);
       }
+      if (!cancelledRef?.current && data) {
+        setProduct(data);
+        setError(null);
+      }
+    } catch (err) {
+      if (!cancelledRef?.current) {
+        if (fallback) {
+          setProduct(fallback);
+          setError(null);
+        } else {
+          setError(err);
+        }
+      }
+    } finally {
+      if (!cancelledRef?.current) setLoading(false);
     }
-
-    fetch();
-    return () => { cancelled = true; };
   }, [idOrSlug]);
 
-  return { product, loading, error };
+  useEffect(() => {
+    const cancelledRef = { current: false };
+    fetchSingleProduct(cancelledRef);
+
+    const unsubscribe = subscribeToCatalogUpdates(() => {
+      fetchSingleProduct(cancelledRef);
+    });
+
+    return () => {
+      cancelledRef.current = true;
+      unsubscribe();
+    };
+  }, [fetchSingleProduct]);
+
+  return { product, loading, error, refetch: () => fetchSingleProduct({ current: false }) };
 }
 
 /**
  * Hook for fetching featured products.
  */
 export function useFeaturedProducts() {
-  const [products, setProducts] = useState(() => FALLBACK_PRODUCTS.filter((p) => p.is_featured).slice(0, 8));
+  const [products, setProducts] = useState(() =>
+    FALLBACK_PRODUCTS.filter((p) => p.is_featured && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0)).slice(0, 8)
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const fetchFeatured = useCallback(() => {
     productApi.getFeatured()
       .then((data) => {
-        if (data && data.results && data.results.length > 0) {
-          setProducts(data.results.slice(0, 8));
+        const list = Array.isArray(data) ? data : (data?.results || []);
+        const inStock = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+        if (inStock.length > 0) {
+          setProducts(inStock.slice(0, 8));
         }
       })
       .catch(() => {
@@ -142,22 +166,32 @@ export function useFeaturedProducts() {
       .finally(() => setLoading(false));
   }, []);
 
-  return { products, loading, error };
+  useEffect(() => {
+    fetchFeatured();
+    const unsubscribe = subscribeToCatalogUpdates(fetchFeatured);
+    return unsubscribe;
+  }, [fetchFeatured]);
+
+  return { products, loading, error, refetch: fetchFeatured };
 }
 
 /**
  * Hook for fetching bestsellers.
  */
 export function useBestsellers() {
-  const [products, setProducts] = useState(() => FALLBACK_PRODUCTS.filter((p) => p.is_bestseller).slice(0, 8));
+  const [products, setProducts] = useState(() =>
+    FALLBACK_PRODUCTS.filter((p) => p.is_bestseller && p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0)).slice(0, 8)
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const fetchBestsellers = useCallback(() => {
     productApi.getBestsellers()
       .then((data) => {
-        if (data && data.results && data.results.length > 0) {
-          setProducts(data.results.slice(0, 8));
+        const list = Array.isArray(data) ? data : (data?.results || []);
+        const inStock = list.filter((p) => p.in_stock !== false && (p.stock_quantity === undefined || p.stock_quantity > 0));
+        if (inStock.length > 0) {
+          setProducts(inStock.slice(0, 8));
         }
       })
       .catch(() => {
@@ -166,5 +200,12 @@ export function useBestsellers() {
       .finally(() => setLoading(false));
   }, []);
 
-  return { products, loading, error };
+  useEffect(() => {
+    fetchBestsellers();
+    const unsubscribe = subscribeToCatalogUpdates(fetchBestsellers);
+    return unsubscribe;
+  }, [fetchBestsellers]);
+
+  return { products, loading, error, refetch: fetchBestsellers };
 }
+

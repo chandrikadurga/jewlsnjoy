@@ -150,8 +150,8 @@ export const FALLBACK_PRODUCTS = [
   },
   {
     id: 7,
-    name: "Emerald Sovereign Herringbone Choker",
-    slug: "emerald-sovereign-herringbone-choker",
+    name: "Emerald Green Chain Pendant",
+    slug: "emerald-green-chain-pendant",
     price: 899,
     original_price: 1099,
     category: "Necklaces",
@@ -294,8 +294,8 @@ export const FALLBACK_PRODUCTS = [
   },
   {
     id: 13,
-    name: "Laurel Wreath Golden Foliage Ring",
-    slug: "laurel-wreath-golden-foliage-ring",
+    name: "Golden Leaf Ring",
+    slug: "golden-leaf-ring",
     price: 499,
     original_price: 699,
     category: "Rings",
@@ -606,8 +606,8 @@ export const FALLBACK_PRODUCTS = [
   },
   {
     id: 26,
-    name: "Kaleidoscope Prism Gemstone Station Choker",
-    slug: "kaleidoscope-prism-gemstone-station-choker",
+    name: "Multi Color Prism Necklace",
+    slug: "multi-color-prism-necklace",
     price: 849,
     original_price: 1199,
     category: "Necklaces",

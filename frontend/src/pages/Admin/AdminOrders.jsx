@@ -70,7 +70,7 @@ export default function AdminOrders() {
           created_at: new Date(Date.now() - 8 * 3600000).toISOString(),
           items: [
             { id: 2, product_name: 'Onyx Solitaire Medallion Necklace', quantity: 1, price: '699.00', image_url: '/products/4/1.jpeg' },
-            { id: 3, product_name: 'Emerald Sovereign Herringbone Choker', quantity: 1, price: '899.00', image_url: '/products/7/1.jpeg' }
+            { id: 3, product_name: 'Emerald Green Chain Pendant', quantity: 1, price: '899.00', image_url: '/products/7/1.jpeg' }
           ]
         },
         {

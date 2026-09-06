@@ -129,11 +129,6 @@ export default function FooterGlow({
                   Contact Us
                 </Link>
               </li>
-              <li>
-                <Link to="/admin" className="footer-glow__link">
-                  Admin Suite
-                </Link>
-              </li>
             </ul>
           </div>
 

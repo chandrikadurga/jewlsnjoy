@@ -8,11 +8,15 @@ import logging
 import urllib.request
 from decimal import Decimal
 from django.conf import settings
+from django.contrib.auth import authenticate, get_user_model
+from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.db.models import Sum, Q, Count
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+admin_signer = TimestampSigner(salt='jewlsnjoy-admin-auth')
 
 logger = logging.getLogger(__name__)
 
@@ -274,7 +278,84 @@ class CustomerOrderTrackView(APIView):
 
 
 
-# ─── Admin Dashboard Views ────────────────────────────────────────────────────
+# ─── Admin Authentication & Dashboard Views ───────────────────────────────────
+
+class AdminLoginView(APIView):
+    """
+    POST /api/admin/login/
+    Authenticates store administrator with username/email and password.
+    Returns signed session token and admin profile.
+    """
+    def post(self, request):
+        username_or_email = request.data.get('username') or request.data.get('email')
+        password = request.data.get('password')
+
+        if not username_or_email or not password:
+            return Response(
+                {'error': 'Username or email and password are required.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        username_or_email = str(username_or_email).strip()
+        User = get_user_model()
+        user = None
+
+        # If an email was provided, look up the username
+        if '@' in username_or_email:
+            user_obj = User.objects.filter(email__iexact=username_or_email).first()
+            if user_obj:
+                user = authenticate(request, username=user_obj.username, password=password)
+
+        if not user:
+            user = authenticate(request, username=username_or_email, password=password)
+
+        if not user or not (user.is_staff or user.is_superuser):
+            return Response(
+                {'error': 'Invalid administrator credentials or unauthorized access.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        # Generate a signed timestamped token valid for 24h
+        token_payload = f"{user.id}:{user.username}"
+        signed_token = admin_signer.sign(token_payload)
+
+        return Response({
+            'success': True,
+            'token': signed_token,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'name': user.get_full_name() or user.username,
+                'is_staff': user.is_staff,
+                'is_superuser': user.is_superuser,
+            },
+            'message': 'Admin authenticated successfully.'
+        })
+
+
+class AdminVerifyTokenView(APIView):
+    """
+    POST /api/admin/verify/
+    Verifies admin session token validity.
+    """
+    def post(self, request):
+        token = request.data.get('token')
+        if not token:
+            return Response({'valid': False, 'error': 'Token missing'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            val = admin_signer.unsign(token, max_age=86400)  # 24 hours
+            parts = val.split(':', 1)
+            user_id = parts[0]
+            User = get_user_model()
+            user = User.objects.filter(id=user_id, is_staff=True).first()
+            if not user:
+                return Response({'valid': False, 'error': 'Admin user not found'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'valid': True, 'username': user.username, 'email': user.email})
+        except (BadSignature, SignatureExpired):
+            return Response({'valid': False, 'error': 'Session expired or invalid signature'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 class AdminStatsView(APIView):
     """

@@ -79,9 +79,13 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to automatically attach Supabase JWT Bearer token if available
 api.interceptors.request.use(async (config) => {
   try {
+    const adminToken = sessionStorage.getItem('admin_token');
+    if (adminToken && config.url && config.url.includes('/api/admin/')) {
+      config.headers['X-Admin-Token'] = adminToken;
+    }
+
     if (!config.headers.Authorization) {
       const { data } = await supabase.auth.getSession();
       const token = data?.session?.access_token;
@@ -236,6 +240,14 @@ export const paymentApi = {
 // ─── Admin API ─────────────────────────────────────────────────
 
 export const adminApi = {
+  login: async (credentials) => {
+    const response = await api.post('/api/admin/login/', credentials);
+    return response.data;
+  },
+  verify: async (token) => {
+    const response = await api.post('/api/admin/verify/', { token });
+    return response.data;
+  },
   getStats: async () => {
     const response = await api.get('/api/admin/stats/');
     return response.data;

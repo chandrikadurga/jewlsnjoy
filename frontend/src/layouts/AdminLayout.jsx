@@ -9,8 +9,10 @@ import {
   Menu,
   X,
   Bell,
-  ShieldCheck
+  ShieldCheck,
+  LogOut
 } from 'lucide-react';
+import AdminLogin from '../pages/Admin/AdminLogin';
 import logoImg from '../assets/logo.jpeg';
 import './AdminLayout.css';
 
@@ -18,11 +20,32 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
+  const [adminUser, setAdminUser] = useState(() => {
+    try {
+      const isAuth = sessionStorage.getItem('admin_authenticated') === 'true';
+      const stored = sessionStorage.getItem('admin_user');
+      return isAuth && stored ? JSON.parse(stored) : (isAuth ? { username: 'admin' } : null);
+    } catch {
+      return null;
+    }
+  });
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('admin_authenticated');
+    sessionStorage.removeItem('admin_token');
+    sessionStorage.removeItem('admin_user');
+    setAdminUser(null);
+  };
+
   const navItems = [
     { to: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true },
     { to: '/admin/products', label: 'Product Catalog', icon: Package },
     { to: '/admin/orders', label: 'Orders & Sales', icon: ShoppingBag },
   ];
+
+  if (!adminUser) {
+    return <AdminLogin onLoginSuccess={(user) => setAdminUser(user || { username: 'admin' })} />;
+  }
 
   return (
     <div className="admin-root">
@@ -91,6 +114,15 @@ export default function AdminLayout() {
             <span className="admin-status-dot" />
             <span>SQLite DB Connected</span>
           </div>
+          <button
+            type="button"
+            className="admin-sidebar__logout-btn"
+            onClick={handleLogout}
+            title="Sign out of Admin Suite"
+          >
+            <LogOut size={15} />
+            <span>Sign Out Admin</span>
+          </button>
         </div>
       </aside>
 
@@ -123,12 +155,25 @@ export default function AdminLayout() {
               <span>Jewels &apos;n&apos; Joys Luxury</span>
             </div>
             <div className="admin-user-pill">
-              <div className="admin-user-avatar">AD</div>
+              <div className="admin-user-avatar">
+                {((adminUser?.name || adminUser?.username || 'AD').slice(0, 2)).toUpperCase()}
+              </div>
               <div className="admin-user-info">
-                <span className="admin-user-name">Store Admin</span>
-                <span className="admin-user-role">Administrator</span>
+                <span className="admin-user-name">{adminUser?.name || adminUser?.username || 'Store Admin'}</span>
+                <span className="admin-user-role">
+                  {adminUser?.is_superuser ? 'Super Administrator' : 'Administrator'}
+                </span>
               </div>
             </div>
+            <button
+              type="button"
+              className="admin-logout-btn"
+              onClick={handleLogout}
+              title="Sign out and lock Admin Suite"
+            >
+              <LogOut size={15} />
+              <span>Sign Out</span>
+            </button>
           </div>
         </header>
 

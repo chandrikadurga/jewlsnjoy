@@ -49,7 +49,7 @@
 .about-mission__img {
   width: 100%;
   border-radius: var(--radius-xl);
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   box-shadow: var(--shadow-md);
 }
@@ -129,8 +129,8 @@
   }
 
   .about-mission__img {
-    aspect-ratio: 4 / 3;
-    max-height: 380px;
+    aspect-ratio: 1 / 1;
+    max-height: 480px;
   }
 
   .about-values__grid {

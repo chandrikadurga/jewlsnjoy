@@ -1,5 +1,6 @@
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Check, ExternalLink } from 'lucide-react';
+import { ArrowRight, Star, Check, ExternalLink, Play, Pause, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
 import heroImg from '../../assets/products/1/3.jpeg';
@@ -271,6 +272,132 @@ function CustomerReviewsSection() {
   );
 }
 
+// Video Showcase Section (Reels)
+const REEL_VIDEOS = [
+  {
+    id: 1,
+    src: '/videos/1.mp4',
+    title: 'Signature Radiance',
+    tag: '18K Gold Plated',
+    desc: 'Crafted with premium PVD coating for everlasting warmth and brilliance.',
+  },
+  {
+    id: 2,
+    src: '/videos/2.mp4',
+    title: 'Waterproof Perfection',
+    tag: 'Anti-Tarnish',
+    desc: 'Shower, swim, and live freely without losing your golden glow.',
+  },
+  {
+    id: 3,
+    src: '/videos/3.mp4',
+    title: 'Handcrafted Artistry',
+    tag: 'Bespoke Design',
+    desc: 'Delicate stone settings designed for effortless everyday layering.',
+  },
+  {
+    id: 4,
+    src: '/videos/4.mp4',
+    title: 'Unboxing The Joy',
+    tag: 'Luxury Boxed',
+    desc: 'Delivered in our signature keepsake box, ready to gift or treasure.',
+  },
+];
+
+function ReelCard({ item }) {
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const toggleMute = (e) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    videoRef.current.muted = !videoRef.current.muted;
+    setIsMuted(videoRef.current.muted);
+  };
+
+  return (
+    <div className="home-reel-card" onClick={togglePlay}>
+      <video
+        ref={videoRef}
+        src={item.src}
+        className="home-reel-video"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+      />
+
+      {/* Top Overlay Badge & Sound Toggle */}
+      <div className="home-reel-top">
+        <span className="home-reel-tag">
+          <Sparkles size={11} /> {item.tag}
+        </span>
+        <button
+          type="button"
+          className="home-reel-mute-btn"
+          onClick={toggleMute}
+          aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+          title={isMuted ? 'Click to unmute' : 'Mute'}
+        >
+          {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+        </button>
+      </div>
+
+      {/* Paused Overlay Indicator */}
+      {!isPlaying && (
+        <div className="home-reel-paused-overlay">
+          <div className="home-reel-play-icon">
+            <Play size={24} fill="currentColor" />
+          </div>
+        </div>
+      )}
+
+      {/* Bottom Information */}
+      <div className="home-reel-bottom">
+        <h3 className="home-reel-title">{item.title}</h3>
+        <p className="home-reel-desc">{item.desc}</p>
+      </div>
+    </div>
+  );
+}
+
+function VideoReelsSection() {
+  return (
+    <section className="section home-reels-section" aria-labelledby="reels-title">
+      <div className="container">
+        <div className="section-header">
+          <span className="eyebrow">Jewellery in Motion</span>
+          <h2 className="section-title" id="reels-title">
+            See Jewels &apos;n&apos; Joys in Real Life
+          </h2>
+          <p className="section-desc">
+            Witness the mirror-like polish, waterproof resistance, and subtle movement of our handcrafted pieces.
+          </p>
+        </div>
+
+        <div className="home-reels-grid">
+          {REEL_VIDEOS.map((item) => (
+            <ReelCard key={item.id} item={item} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // CTA Banner
 function CTABanner() {
   return (
@@ -342,6 +469,9 @@ export default function Home() {
 
       {/* Verified Customer Reviews with Clickable Product Links */}
       <CustomerReviewsSection />
+
+      {/* Video Reels Section — inserted right between CustomerReviewsSection and StorePerks */}
+      <VideoReelsSection />
 
       <StorePerks />
       <CTABanner />

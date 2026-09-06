@@ -5,8 +5,7 @@
  * Base URL is read from VITE_API_BASE_URL env variable.
  * 
  * Architecture:
- *   React → Axios → Django REST API → Mock Data (now)
- *   React → Axios → Django REST API → PostgreSQL (later)
+ *   React Frontend → Axios → Django REST API → Live Database (PostgreSQL / SQLite)
  */
 
 import axios from 'axios';

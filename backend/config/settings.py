@@ -66,8 +66,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
-# Database — SQLite used ONLY for Django admin/session infrastructure
-# Product data comes from products/mock_data.py
+# Database — PostgreSQL in production (Supabase) when DATABASE_URL is configured, else SQLite locally.
+# The database is the single source of truth for all Products, Categories, Orders, and Reviews.
 import dj_database_url
 
 # Database — Supabase PostgreSQL when DATABASE_URL is set, else SQLite fallback

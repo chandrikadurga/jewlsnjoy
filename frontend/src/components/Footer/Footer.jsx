@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import logoImg from '../../assets/logo.jpeg';
+import logoImg from '../../assets/footer-logo.png';
 import './Footer.css';
 
 export default function FooterGlow({

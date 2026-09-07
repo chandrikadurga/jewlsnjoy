@@ -16,8 +16,8 @@ class PaymentOrderItemSerializer(serializers.Serializer):
 
 class PaymentOrderCreateSerializer(serializers.Serializer):
     """
-    Serializer for creating a server-validated Cashfree payment order.
-    Prices from client are strictly IGNORED; prices are queried from Django Product table.
+    Serializer for creating a server-validated Razorpay payment order.
+    Prices from client are strictly IGNORED; prices are queried directly from Django Product table.
     """
     customer_name = serializers.CharField(max_length=150)
     customer_email = serializers.EmailField()
@@ -45,7 +45,10 @@ class PaymentOrderCreateSerializer(serializers.Serializer):
 
 class PaymentVerifySerializer(serializers.Serializer):
     """
-    Input serializer for server-side Cashfree payment verification.
+    Input serializer for server-side Razorpay payment verification.
     """
     order_number = serializers.CharField(max_length=100)
+    razorpay_order_id = serializers.CharField(max_length=100)
+    razorpay_payment_id = serializers.CharField(max_length=100)
+    razorpay_signature = serializers.CharField(max_length=255)
     cashfree_order_id = serializers.CharField(max_length=100, required=False, allow_blank=True)

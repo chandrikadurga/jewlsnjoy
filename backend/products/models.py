@@ -137,10 +137,15 @@ class Order(models.Model):
 
     total_amount = models.DecimalField(max_digits=12, decimal_places=2)
     currency = models.CharField(max_length=10, default='INR')
-    payment_method = models.CharField(max_length=50, default='Cashfree')
+    payment_method = models.CharField(max_length=50, default='Razorpay')
     payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES, default='pending')
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='order_placed')
     
+    razorpay_order_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
+    razorpay_signature = models.CharField(max_length=255, blank=True, default='')
+
+    # Historical Cashfree fields (preserved for backward compatibility with past orders)
     cashfree_order_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
     cashfree_payment_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
     cashfree_payment_session_id = models.CharField(max_length=255, blank=True, default='')

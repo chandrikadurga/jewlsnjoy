@@ -26,12 +26,12 @@ export default function Checkout() {
   const [confirmedPaymentId, setConfirmedPaymentId] = useState('');
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState('');
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('cashfree');
+  const [paymentMethod, setPaymentMethod] = useState('razorpay');
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState({ type: '', text: '' });
   const [copied, setCopied] = useState(false);
-  const [cashfreeConfig, setCashfreeConfig] = useState({ environment: 'sandbox', is_configured: false });
+  const [razorpayConfig, setRazorpayConfig] = useState({ key_id: '', environment: 'test', is_configured: false });
   const [orderError, setOrderError] = useState('');
 
   const [form, setForm] = useState({
@@ -65,11 +65,11 @@ export default function Checkout() {
   const total = Math.max(0, cartTotal - discountAmount + rawShipping + codFee);
   const amountForFreeShipping = Math.max(0, 999 - cartTotal);
 
-  // Pre-fetch Cashfree configuration from backend
+  // Pre-fetch payment gateway configuration from backend
   useEffect(() => {
     paymentService.getConfig()
-      .then((cfg) => setCashfreeConfig(cfg))
-      .catch((err) => console.warn('Cashfree config fetch error:', err));
+      .then((cfg) => setRazorpayConfig(cfg))
+      .catch((err) => console.warn('Payment gateway config fetch error:', err));
   }, []);
 
   const handleChange = (e) => {
@@ -185,7 +185,7 @@ export default function Checkout() {
       return;
     }
 
-    // ── Cashfree Online Payment Path ──────────────────────────────────
+    // ── Razorpay Online Payment Path ──────────────────────────────────
     try {
       const checkoutPayload = {
         customer_name: `${form.firstName} ${form.lastName}`.trim(),
@@ -203,44 +203,86 @@ export default function Checkout() {
         })),
       };
 
-      const cfOrder = await paymentService.createPaymentOrder(checkoutPayload);
+      const rzpOrder = await paymentService.createPaymentOrder(checkoutPayload);
 
-      if (!cfOrder || !cfOrder.payment_session_id) {
-        throw new Error(cfOrder?.error || 'Failed to initialize payment session with Cashfree.');
+      const rzpOrderId = rzpOrder?.order_id || rzpOrder?.razorpay_order_id;
+      if (!rzpOrder || !rzpOrderId) {
+        throw new Error(rzpOrder?.error || 'Failed to initialize payment order with Razorpay.');
       }
 
-      // Open Cashfree Web Checkout Modal
+      const effectiveKeyId = rzpOrder.key_id || razorpayConfig.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID;
+      if (!effectiveKeyId) {
+        throw new Error('Razorpay public key ID is not configured.');
+      }
+
+      let paymentResponse = null;
+
+      // Open Razorpay Standard Checkout Modal
       const checkoutResult = await paymentService.openCheckout({
-        paymentSessionId: cfOrder.payment_session_id,
-        mode: cashfreeConfig.environment || 'sandbox',
+        keyId: effectiveKeyId,
+        orderId: rzpOrderId,
+        amount: rzpOrder.amount,
+        currency: rzpOrder.currency || 'INR',
+        customerDetails: {
+          name: `${form.firstName} ${form.lastName}`.trim(),
+          email: cleanEmail,
+          phone: form.phone,
+        },
+        notes: {
+          order_number: rzpOrder.order_number,
+        },
+        onSuccess: (res) => {
+          paymentResponse = res;
+        },
+        onError: (err) => {
+          console.warn('Razorpay checkout error callback:', err);
+        },
+        onDismiss: () => {
+          console.info('Razorpay checkout modal closed by user.');
+        },
       });
 
       if (checkoutResult && checkoutResult.error) {
-        console.warn('Cashfree checkout notice:', checkoutResult.error);
+        const errorMsg = checkoutResult.error.description || checkoutResult.error.message || 'Payment was cancelled or failed.';
+        setOrderError(errorMsg);
+        alert(errorMsg);
+        return;
+      }
+
+      const payId = paymentResponse?.razorpay_payment_id || checkoutResult?.razorpay_payment_id;
+      const ordId = paymentResponse?.razorpay_order_id || checkoutResult?.razorpay_order_id || rzpOrderId;
+      const sig = paymentResponse?.razorpay_signature || checkoutResult?.razorpay_signature;
+
+      if (!payId || !sig) {
+        // Customer dismissed checkout modal or payment was not completed
+        console.info('Razorpay checkout closed or payment incomplete.');
+        return;
       }
 
       // Verify payment authoritatively on Django backend
       const verifyResult = await paymentService.verifyPayment(
-        cfOrder.order_number,
-        cfOrder.cashfree_order_id
+        rzpOrder.order_number,
+        ordId,
+        payId,
+        sig
       );
 
       if (verifyResult && verifyResult.verified && verifyResult.payment_status === 'paid') {
         const orderData = verifyResult.order || {};
-        setConfirmedOrderNumber(orderData.order_number || cfOrder.order_number);
-        setConfirmedPaymentMethod('Cashfree');
-        setConfirmedPaymentId(orderData.cashfree_payment_id || '');
+        setConfirmedOrderNumber(orderData.order_number || rzpOrder.order_number);
+        setConfirmedPaymentMethod('Razorpay');
+        setConfirmedPaymentId(orderData.razorpay_payment_id || payId || '');
         setSubmitted(true);
         clearCart();
       } else if (verifyResult && verifyResult.payment_status === 'failed') {
-        setOrderError(verifyResult.message || 'Payment was not completed. Please try again.');
-        alert(verifyResult.message || 'Payment was not completed. Please try again.');
+        const failMsg = verifyResult.error || verifyResult.message || 'Payment verification failed. Please try again.';
+        setOrderError(failMsg);
+        alert(failMsg);
       } else {
-        // Customer closed modal or payment is still pending/cancelled
-        console.info('Cashfree checkout modal closed or payment pending.');
+        console.info('Payment verification response pending or modal closed.');
       }
     } catch (err) {
-      console.error('Cashfree payment processing error:', err);
+      console.error('Razorpay payment processing error:', err);
       const msg = getErrorText(err);
       setOrderError(`Payment processing error: ${msg}`);
       alert(`Payment processing error: ${msg}`);
@@ -310,7 +352,7 @@ export default function Checkout() {
               <div className="checkout-success__dp-item">
                 <strong>Payment Mode:</strong>
                 <span className="checkout-success__pm-badge">
-                  {confirmedPaymentMethod || 'Cashfree'}
+                  {confirmedPaymentMethod || 'Razorpay'}
                   {confirmedPaymentId && <small> ({confirmedPaymentId})</small>}
                 </span>
               </div>
@@ -455,7 +497,7 @@ export default function Checkout() {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
               </svg>
-              <span>256-Bit SSL Encrypted & Cashfree Protected</span>
+              <span>256-Bit SSL Encrypted & Razorpay Protected</span>
             </div>
           </div>
           <Link to="/shop" className="checkout-page__back">
@@ -643,24 +685,24 @@ export default function Checkout() {
                   <span className="checkout-section__step">3</span>
                   <div className="checkout-section__title-group">
                     <h2 className="checkout-section__title">Payment Method</h2>
-                    <p className="checkout-section__subtitle">All major payment options supported via Cashfree & Cash on Delivery</p>
+                    <p className="checkout-section__subtitle">All major payment options supported via Razorpay & Cash on Delivery</p>
                   </div>
                 </div>
 
                 <div className="checkout-payment-options">
-                  {/* Cashfree Option */}
-                  <label className={`checkout-pay-option ${paymentMethod === 'cashfree' ? 'active' : ''}`}>
+                  {/* Razorpay Option */}
+                  <label className={`checkout-pay-option ${paymentMethod === 'razorpay' ? 'active' : ''}`}>
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="cashfree"
-                      checked={paymentMethod === 'cashfree'}
-                      onChange={() => setPaymentMethod('cashfree')}
+                      value="razorpay"
+                      checked={paymentMethod === 'razorpay'}
+                      onChange={() => setPaymentMethod('razorpay')}
                     />
                     <div className="checkout-pay-option__content">
                       <div className="checkout-pay-option__top">
                         <div className="checkout-pay-option__title-row">
-                          <span className="checkout-pay-option__name">Cashfree Secure</span>
+                          <span className="checkout-pay-option__name">Razorpay Secure</span>
                           <span className="checkout-pay-option__tag">Recommended</span>
                         </div>
                         <span className="checkout-pay-option__brands">UPI • Cards • NetBanking • Wallets</span>
@@ -697,7 +739,7 @@ export default function Checkout() {
                 <div className="checkout-payment-note">
                   <div className="checkout-payment-note__icon">✦</div>
                   <p>
-                    <strong>Cashfree 256-Bit Protection:</strong> Payments are processed through Cashfree’s banking-grade encrypted infrastructure. Your payment credentials are never stored on our servers.
+                    <strong>Razorpay 256-Bit Protection:</strong> Payments are processed through Razorpay’s banking-grade encrypted infrastructure. Your payment credentials are never stored on our servers.
                   </p>
                 </div>
               </section>
@@ -714,7 +756,7 @@ export default function Checkout() {
                 </div>
                 <div className="checkout-trust-pill">
                   <span className="checkout-trust-pill__icon">✦</span>
-                  <span>Cashfree Verified Merchant</span>
+                  <span>Razorpay Verified Merchant</span>
                 </div>
               </div>
 
@@ -741,15 +783,15 @@ export default function Checkout() {
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
-                    <span className="checkout-spinner-label">Connecting to Cashfree...</span>
-                  ) : paymentMethod === 'cashfree' ? (
-                    <span>Pay with Cashfree • ₹{total.toLocaleString('en-IN')}</span>
+                    <span className="checkout-spinner-label">Connecting to Razorpay...</span>
+                  ) : paymentMethod === 'razorpay' ? (
+                    <span>Pay with Razorpay • ₹{total.toLocaleString('en-IN')}</span>
                   ) : (
                     <span>Confirm COD Order • ₹{total.toLocaleString('en-IN')}</span>
                   )}
                 </button>
                 <p className="checkout-guarantee-micro">
-                  🔒 Encrypted with 256-bit SSL. Cashfree PCI-DSS Level 1 Compliant.
+                  🔒 Encrypted with 256-bit SSL. Razorpay PCI-DSS Level 1 Compliant.
                 </p>
               </div>
             </form>

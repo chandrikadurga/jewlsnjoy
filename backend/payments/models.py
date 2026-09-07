@@ -3,7 +3,7 @@ from django.db import models
 
 class PaymentTransaction(models.Model):
     """
-    Stores authoritative Cashfree payment transactions and webhook events.
+    Stores authoritative payment transactions and webhook events.
     Ensures complete idempotency and auditability across payment attempts.
     """
     STATUS_CHOICES = [
@@ -21,7 +21,13 @@ class PaymentTransaction(models.Model):
         null=True,
         blank=True
     )
-    cashfree_order_id = models.CharField(max_length=100, db_index=True)
+    # Razorpay Transaction Identifiers
+    razorpay_order_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
+    razorpay_signature = models.CharField(max_length=255, blank=True, default='')
+
+    # Historical Cashfree fields (preserved for backward compatibility)
+    cashfree_order_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
     cashfree_payment_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
     payment_session_id = models.CharField(max_length=255, blank=True, default='')
     
@@ -29,7 +35,7 @@ class PaymentTransaction(models.Model):
     currency = models.CharField(max_length=10, default='INR')
     
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='pending')
-    payment_method = models.CharField(max_length=50, blank=True, default='')
+    payment_method = models.CharField(max_length=50, blank=True, default='Razorpay')
     
     event_type = models.CharField(max_length=100, blank=True, default='')
     error_message = models.TextField(blank=True, default='')
@@ -42,7 +48,8 @@ class PaymentTransaction(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"CF Txn {self.cashfree_order_id} ({self.status}) - ₹{self.amount}"
+        txn_id = self.razorpay_order_id or self.cashfree_order_id or 'TXN'
+        return f"Payment Txn {txn_id} ({self.status}) - ₹{self.amount}"
 
 
 class WebhookLog(models.Model):
@@ -51,6 +58,8 @@ class WebhookLog(models.Model):
     """
     event_id = models.CharField(max_length=120, blank=True, default='', db_index=True)
     event_type = models.CharField(max_length=100, blank=True, default='')
+    razorpay_order_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
     cashfree_order_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
     signature = models.CharField(max_length=255, blank=True, default='')
     is_valid_signature = models.BooleanField(default=False)
@@ -62,4 +71,5 @@ class WebhookLog(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Webhook {self.event_type} - {self.cashfree_order_id} (Processed: {self.processed})"
+        order_ref = self.razorpay_order_id or self.cashfree_order_id or 'N/A'
+        return f"Webhook {self.event_type} - {order_ref} (Processed: {self.processed})"

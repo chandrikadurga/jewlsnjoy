@@ -218,17 +218,19 @@ export const orderApi = {
   },
 };
 
-// ─── Payment API (Cashfree) ────────────────────────────────────
+// ─── Payment API (Razorpay) ────────────────────────────────────
 
 export const paymentApi = {
   createPaymentOrder: async (checkoutPayload, config = {}) => {
     const response = await api.post('/api/payments/create/', checkoutPayload, config);
     return response.data;
   },
-  verifyPayment: async (orderNumber, cashfreeOrderId = '', config = {}) => {
+  verifyPayment: async (orderNumber, razorpayOrderId = '', razorpayPaymentId = '', razorpaySignature = '', config = {}) => {
     const response = await api.post('/api/payments/verify/', {
       order_number: orderNumber,
-      cashfree_order_id: cashfreeOrderId,
+      razorpay_order_id: razorpayOrderId,
+      razorpay_payment_id: razorpayPaymentId,
+      razorpay_signature: razorpaySignature,
     }, config);
     return response.data;
   },

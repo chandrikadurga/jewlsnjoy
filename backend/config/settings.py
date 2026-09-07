@@ -174,12 +174,11 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 if DEBUG or os.getenv('CORS_ALLOW_ALL', 'False').lower() in ('true', '1', 't'):
     CORS_ALLOW_ALL_ORIGINS = True
 
-# Cashfree Payment Gateway Configuration
-CASHFREE_CLIENT_ID = os.getenv('CASHFREE_CLIENT_ID', '').strip()
-CASHFREE_CLIENT_SECRET = os.getenv('CASHFREE_CLIENT_SECRET', '').strip()
-CASHFREE_ENV = os.getenv('CASHFREE_ENV', 'sandbox').strip().lower()  # 'sandbox' or 'production'
-CASHFREE_API_VERSION = os.getenv('CASHFREE_API_VERSION', '2023-08-01').strip()
-CASHFREE_WEBHOOK_SECRET = os.getenv('CASHFREE_WEBHOOK_SECRET', '').strip()
+# Razorpay Payment Gateway Configuration
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '').strip()
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '').strip()
+RAZORPAY_ENV = os.getenv('RAZORPAY_ENV', 'test').strip().lower()  # 'test' or 'live'
+RAZORPAY_WEBHOOK_SECRET = os.getenv('RAZORPAY_WEBHOOK_SECRET', '').strip()
 
 # Supabase Auth Configuration
 SUPABASE_URL = os.getenv('SUPABASE_URL', 'https://hlxffdtkghzednkpwxlb.supabase.co')

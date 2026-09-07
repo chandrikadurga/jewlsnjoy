@@ -1,192 +1,206 @@
-import base64
 import hashlib
 import hmac
 import logging
-import re
-import requests
+from decimal import Decimal
 from django.conf import settings
+import razorpay
 
 logger = logging.getLogger(__name__)
 
 
-def get_cashfree_base_url():
+def get_razorpay_client():
     """
-    Returns the Cashfree PG API base URL based on environment setting.
+    Initializes and returns the official Razorpay Python Client.
+    Credentials are read from Django settings (populated via environment variables).
     """
-    env = getattr(settings, 'CASHFREE_ENV', 'sandbox').strip().lower()
-    if env == 'production':
-        return 'https://api.cashfree.com/pg'
-    return 'https://sandbox.cashfree.com/pg'
+    key_id = getattr(settings, 'RAZORPAY_KEY_ID', '').strip()
+    key_secret = getattr(settings, 'RAZORPAY_KEY_SECRET', '').strip()
+
+    if not key_id or not key_secret:
+        logger.error("Razorpay API credentials missing from Django settings (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET).")
+        return None
+
+    try:
+        return razorpay.Client(auth=(key_id, key_secret))
+    except Exception as exc:
+        logger.error("Failed to initialize Razorpay Client: %s", str(exc))
+        return None
 
 
-def get_cashfree_headers():
+def create_razorpay_order(order_number, order_amount, customer_details, notes=None):
     """
-    Returns required Cashfree PG API headers.
-    """
-    client_id = getattr(settings, 'CASHFREE_CLIENT_ID', '').strip()
-    client_secret = getattr(settings, 'CASHFREE_CLIENT_SECRET', '').strip()
-    api_version = getattr(settings, 'CASHFREE_API_VERSION', '2023-08-01').strip() or '2023-08-01'
-
-    return {
-        'x-client-id': client_id,
-        'x-client-secret': client_secret,
-        'x-api-version': api_version,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-    }
-
-
-def sanitize_customer_id(uid, email=''):
-    """
-    Cashfree customer_id allows alphanumeric characters, hyphens, and underscores (max 50 chars).
-    """
-    raw_id = (uid or email or 'guest_customer').strip()
-    clean_id = re.sub(r'[^a-zA-Z0-9_-]', '_', raw_id)[:50]
-    return clean_id or 'customer_1'
-
-
-def sanitize_phone(phone):
-    """
-    Cashfree expects a valid phone number (10 digits for Indian numbers).
-    """
-    digits = re.sub(r'[^\d]', '', str(phone or ''))
-    if len(digits) >= 10:
-        return digits[-10:]
-    # Fallback to test phone if empty or invalid format in test environment
-    return '9999999999'
-
-
-def create_cashfree_order(order_id, order_amount, customer_details, return_url=None, note="Jewels 'n' Joys Order"):
-    """
-    Creates a Cashfree Payment Order via Cashfree PG REST API v2023-08-01.
+    Creates a Razorpay Order server-side via the official Razorpay SDK.
+    The amount is authoritatively converted to paise (safe integer).
+    
     Returns:
         dict: {
             'success': bool,
-            'cf_order_id': str,
-            'order_id': str,
-            'payment_session_id': str,
-            'order_status': str,
+            'razorpay_order_id': str,
+            'amount': int (in paise),
+            'currency': str,
             'data': dict,
             'error': str (if failed)
         }
     """
-    client_id = getattr(settings, 'CASHFREE_CLIENT_ID', '').strip()
-    client_secret = getattr(settings, 'CASHFREE_CLIENT_SECRET', '').strip()
-
-    if not client_id or not client_secret:
+    client = get_razorpay_client()
+    if not client:
         return {
             'success': False,
-            'error': 'Cashfree credentials not configured in Django environment.',
+            'error': 'Razorpay gateway credentials are not configured on the server.',
         }
 
-    base_url = get_cashfree_base_url()
-    url = f"{base_url}/orders"
-    headers = get_cashfree_headers()
+    # Authoritative calculation of amount in paise (1 INR = 100 paise)
+    amount_decimal = Decimal(str(order_amount))
+    amount_in_paise = int(round(amount_decimal * 100))
 
-    amount = round(float(order_amount), 2)
-    cust_id = sanitize_customer_id(customer_details.get('customer_id'), customer_details.get('customer_email'))
-    cust_phone = sanitize_phone(customer_details.get('customer_phone'))
-    cust_email = customer_details.get('customer_email') or 'customer@jewlsnjoy.com'
-    cust_name = customer_details.get('customer_name') or 'Valued Customer'
+    if amount_in_paise <= 0:
+        return {
+            'success': False,
+            'error': 'Invalid order amount for Razorpay order creation.',
+        }
 
-    payload = {
-        'order_id': str(order_id),
-        'order_amount': amount,
-        'order_currency': 'INR',
-        'customer_details': {
-            'customer_id': cust_id,
-            'customer_email': cust_email,
-            'customer_phone': cust_phone,
-            'customer_name': cust_name,
-        },
-        'order_note': note or "Jewels 'n' Joys Order",
+    order_payload = {
+        'amount': amount_in_paise,
+        'currency': 'INR',
+        'receipt': str(order_number)[:40],
+        'notes': {
+            'order_number': str(order_number),
+            'customer_name': str(customer_details.get('customer_name', ''))[:50],
+            'customer_email': str(customer_details.get('customer_email', ''))[:50],
+            'customer_phone': str(customer_details.get('customer_phone', ''))[:30],
+        }
     }
-
-    if return_url:
-        payload['order_meta'] = {
-            'return_url': return_url
-        }
+    if notes and isinstance(notes, dict):
+        order_payload['notes'].update(notes)
 
     try:
-        response = requests.post(url, json=payload, headers=headers, timeout=15)
-        resp_json = response.json()
+        razorpay_order = client.order.create(data=order_payload)
+        rzp_order_id = razorpay_order.get('id', '')
 
-        if response.status_code in (200, 201):
-            return {
-                'success': True,
-                'cf_order_id': str(resp_json.get('cf_order_id', '')),
-                'order_id': resp_json.get('order_id', str(order_id)),
-                'payment_session_id': resp_json.get('payment_session_id', ''),
-                'order_status': resp_json.get('order_status', 'ACTIVE'),
-                'data': resp_json,
-            }
-        else:
-            error_msg = resp_json.get('message') or resp_json.get('error') or f"HTTP {response.status_code}"
-            logger.error("Cashfree order creation error: %s - %s", response.status_code, resp_json)
+        if not rzp_order_id:
+            logger.error("Razorpay order creation returned no ID: %s", razorpay_order)
             return {
                 'success': False,
-                'error': f"Cashfree API Error: {error_msg}",
-                'data': resp_json,
+                'error': 'Razorpay order creation did not return an order ID.',
+                'data': razorpay_order,
             }
-    except requests.RequestException as exc:
-        logger.error("Cashfree API network connection failed: %s", str(exc))
+
+        logger.info("Created Razorpay Order %s for Order #%s (₹%s = %s paise)", 
+                    rzp_order_id, order_number, order_amount, amount_in_paise)
+
+        return {
+            'success': True,
+            'razorpay_order_id': rzp_order_id,
+            'amount': amount_in_paise,
+            'currency': razorpay_order.get('currency', 'INR'),
+            'data': razorpay_order,
+        }
+    except Exception as exc:
+        logger.error("Razorpay order creation exception for %s: %s", order_number, str(exc))
         return {
             'success': False,
-            'error': f"Cashfree connection failed: {str(exc)}",
+            'error': f"Failed to create Razorpay order: {str(exc)}",
         }
 
 
-def get_cashfree_order_payments(cashfree_order_id):
+def verify_razorpay_signature(razorpay_order_id, razorpay_payment_id, razorpay_signature):
     """
-    Authoritatively queries Cashfree for all payments attempted on an order.
-    GET /orders/{order_id}/payments
-    Returns list of payment records or empty list if unavailable/failed.
+    Authoritatively verifies the Razorpay payment signature using RAZORPAY_KEY_SECRET.
+    Signature = HMAC-SHA256(order_id + '|' + payment_id, key_secret)
     """
-    base_url = get_cashfree_base_url()
-    url = f"{base_url}/orders/{cashfree_order_id}/payments"
-    headers = get_cashfree_headers()
-
-    try:
-        response = requests.get(url, headers=headers, timeout=15)
-        if response.status_code == 200:
-            data = response.json()
-            if isinstance(data, list):
-                return data
-            return []
-        logger.warning("Cashfree get payments failed: %s - %s", response.status_code, response.text)
-        return []
-    except requests.RequestException as exc:
-        logger.error("Cashfree query payments error: %s", str(exc))
-        return []
-
-
-def verify_webhook_signature(timestamp, raw_body_bytes, signature):
-    """
-    Verifies Cashfree webhook signature using HMAC-SHA256.
-    Signature = Base64(HMAC-SHA256(timestamp + raw_body, secret_key))
-    """
-    if not timestamp or not signature:
+    key_secret = getattr(settings, 'RAZORPAY_KEY_SECRET', '').strip()
+    if not key_secret:
+        logger.error("RAZORPAY_KEY_SECRET not configured. Cannot verify payment signature.")
         return False
 
-    secret_key = (
-        getattr(settings, 'CASHFREE_WEBHOOK_SECRET', '').strip() or
-        getattr(settings, 'CASHFREE_CLIENT_SECRET', '').strip()
-    )
-    if not secret_key:
-        logger.warning("Cashfree webhook verification attempted without secret key configured.")
+    if not razorpay_order_id or not razorpay_payment_id or not razorpay_signature:
+        logger.warning("Missing required fields for Razorpay signature verification.")
         return False
 
     try:
-        if isinstance(timestamp, str):
-            timestamp_bytes = timestamp.encode('utf-8')
-        else:
-            timestamp_bytes = bytes(timestamp)
-
-        data = timestamp_bytes + raw_body_bytes
-        computed = hmac.new(secret_key.encode('utf-8'), data, hashlib.sha256).digest()
-        computed_b64 = base64.b64encode(computed).decode('utf-8')
-
-        return hmac.compare_digest(computed_b64, signature)
+        client = get_razorpay_client()
+        if client:
+            client.utility.verify_payment_signature({
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature,
+            })
+            return True
+    except razorpay.errors.SignatureVerificationError:
+        logger.warning("Razorpay utility signature verification failed for order %s / payment %s",
+                       razorpay_order_id, razorpay_payment_id)
+        return False
     except Exception as exc:
-        logger.error("Webhook signature calculation exception: %s", str(exc))
+        logger.warning("Razorpay SDK verification exception, falling back to manual HMAC: %s", str(exc))
+
+    # Cryptographic HMAC-SHA256 fallback
+    try:
+        payload = f"{razorpay_order_id}|{razorpay_payment_id}".encode('utf-8')
+        generated_signature = hmac.new(
+            key_secret.encode('utf-8'),
+            payload,
+            hashlib.sha256
+        ).hexdigest()
+
+        return hmac.compare_digest(generated_signature, razorpay_signature)
+    except Exception as exc:
+        logger.error("HMAC signature verification failed with exception: %s", str(exc))
         return False
+
+
+def fetch_razorpay_payment(razorpay_payment_id):
+    """
+    Authoritatively queries Razorpay API directly for the payment details.
+    Ensures payment amount, status, currency, and order_id match our database.
+    """
+    client = get_razorpay_client()
+    if not client:
+        return None
+
+    try:
+        payment = client.payment.fetch(razorpay_payment_id)
+        return payment
+    except Exception as exc:
+        logger.error("Failed to fetch Razorpay payment %s: %s", razorpay_payment_id, str(exc))
+        return None
+
+
+def verify_razorpay_webhook_signature(raw_body_bytes, signature):
+    """
+    Verifies Razorpay webhook signature using the configured RAZORPAY_WEBHOOK_SECRET.
+    Signature = HMAC-SHA256(raw_request_body, webhook_secret)
+    """
+    webhook_secret = (
+        getattr(settings, 'RAZORPAY_WEBHOOK_SECRET', '').strip() or
+        getattr(settings, 'RAZORPAY_KEY_SECRET', '').strip()
+    )
+
+    if not webhook_secret or not signature:
+        logger.warning("Webhook verification attempted without secret or signature.")
+        return False
+
+    client = get_razorpay_client()
+    if client:
+        try:
+            raw_body_str = raw_body_bytes.decode('utf-8') if isinstance(raw_body_bytes, bytes) else str(raw_body_bytes)
+            client.utility.verify_webhook_signature(raw_body_str, signature, webhook_secret)
+            return True
+        except razorpay.errors.SignatureVerificationError:
+            logger.warning("Razorpay utility webhook signature check failed.")
+            return False
+        except Exception as exc:
+            logger.warning("Razorpay SDK webhook verification exception, using direct HMAC: %s", str(exc))
+
+    try:
+        body = raw_body_bytes if isinstance(raw_body_bytes, bytes) else raw_body_bytes.encode('utf-8')
+        generated = hmac.new(
+            webhook_secret.encode('utf-8'),
+            body,
+            hashlib.sha256
+        ).hexdigest()
+
+        return hmac.compare_digest(generated, signature)
+    except Exception as exc:
+        logger.error("Webhook HMAC verification exception: %s", str(exc))
+        return False
+

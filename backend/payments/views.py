@@ -1,6 +1,5 @@
 import json
 import logging
-import time
 import uuid
 from decimal import Decimal
 from django.conf import settings
@@ -18,9 +17,10 @@ from products.views import get_authenticated_supabase_user
 from .models import PaymentTransaction, WebhookLog
 from .serializers import PaymentOrderCreateSerializer, PaymentVerifySerializer
 from .services import (
-    create_cashfree_order,
-    get_cashfree_order_payments,
-    verify_webhook_signature,
+    create_razorpay_order,
+    fetch_razorpay_payment,
+    verify_razorpay_signature,
+    verify_razorpay_webhook_signature,
 )
 
 logger = logging.getLogger(__name__)
@@ -45,30 +45,33 @@ def decrement_order_inventory(order):
                     )
 
 
-class CashfreeConfigView(APIView):
+class RazorpayConfigView(APIView):
     """
     GET /api/payments/config/
-    Returns non-sensitive Cashfree public configuration.
-    Secrets are NEVER returned to the browser.
+    Returns non-sensitive Razorpay public configuration (key_id, environment).
+    Secrets (RAZORPAY_KEY_SECRET) are NEVER returned to the browser.
     """
     def get(self, request):
-        client_id = getattr(settings, 'CASHFREE_CLIENT_ID', '').strip()
-        env = getattr(settings, 'CASHFREE_ENV', 'sandbox').strip().lower()
+        key_id = getattr(settings, 'RAZORPAY_KEY_ID', '').strip()
+        env = getattr(settings, 'RAZORPAY_ENV', 'test').strip().lower()
+        has_secret = bool(getattr(settings, 'RAZORPAY_KEY_SECRET', '').strip())
+
         return Response({
+            'key_id': key_id,
             'environment': env,
-            'is_configured': bool(client_id),
+            'is_configured': bool(key_id and has_secret),
         })
 
 
-class CashfreeCreateOrderView(APIView):
+class RazorpayCreateOrderView(APIView):
     """
     POST /api/payments/create/
     Zero-Trust Endpoint:
-    1. Authenticates customer via Supabase JWT if present (guest allowed if token absent).
-    2. Strictly validates products & quantities against the database.
-    3. Calculates authoritative totals server-side (frontend prices are ignored).
-    4. Creates a pending Django Order & registers a Cashfree payment session.
-    5. Returns payment_session_id for React Cashfree modal checkout.
+    1. Authenticates customer via Supabase JWT (derives verified UID, guest allowed if token absent).
+    2. Strictly validates products & stock availability against the Django database.
+    3. Calculates authoritative totals server-side (frontend prices/amounts are strictly ignored).
+    4. Creates a pending Django Order & registers a Razorpay order via Razorpay SDK (amount in paise).
+    5. Returns order_id, amount in paise, currency, and public key_id for React Razorpay Checkout.
     """
     def post(self, request):
         auth_user = get_authenticated_supabase_user(request)
@@ -123,8 +126,6 @@ class CashfreeCreateOrderView(APIView):
         grand_total = subtotal + shipping_cost
 
         order_num = f"ORD-{uuid.uuid4().hex[:6].upper()}"
-        # Unique Cashfree Order ID containing internal order number and timestamp
-        cashfree_order_id = f"{order_num}_{int(time.time())}"
 
         # ─── Persist Django Order with Status "Pending" ─────────────────────────
         order = Order.objects.create(
@@ -140,10 +141,9 @@ class CashfreeCreateOrderView(APIView):
             country=validated_data.get('country', 'India'),
             total_amount=grand_total,
             currency='INR',
-            payment_method='Cashfree',
+            payment_method='Razorpay',
             payment_status='pending',
             status='order_placed',
-            cashfree_order_id=cashfree_order_id,
             notes=validated_data.get('notes', ''),
         )
 
@@ -157,65 +157,70 @@ class CashfreeCreateOrderView(APIView):
                 image_url=item_info['image_url'],
             )
 
-        # ─── Call Cashfree REST API ───────────────────────────────────────────
+        # ─── Call Razorpay Order Creation API ─────────────────────────────────
         customer_payload = {
-            'customer_id': verified_uid or validated_data['customer_email'],
             'customer_email': validated_data['customer_email'],
             'customer_phone': validated_data.get('customer_phone', ''),
             'customer_name': validated_data['customer_name'],
         }
 
-        cf_result = create_cashfree_order(
-            order_id=cashfree_order_id,
+        rzp_result = create_razorpay_order(
+            order_number=order_num,
             order_amount=grand_total,
             customer_details=customer_payload,
-            note=f"Order #{order_num} from Jewels 'n' Joys"
+            notes={'order_number': order_num, 'customer_email': validated_data['customer_email']}
         )
 
-        if not cf_result.get('success'):
+        if not rzp_result.get('success'):
             order.payment_status = 'failed'
             order.save(update_fields=['payment_status'])
-            logger.error("Failed to create Cashfree order for %s: %s", order_num, cf_result.get('error'))
+            logger.error("Failed to create Razorpay order for %s: %s", order_num, rzp_result.get('error'))
             return Response(
                 {
-                    'error': cf_result.get('error', 'Unable to initiate payment with Cashfree. Please check configuration.')
+                    'error': rzp_result.get('error', 'Unable to initiate payment with Razorpay. Please check gateway configuration.')
                 },
                 status=status.HTTP_502_BAD_GATEWAY
             )
 
-        payment_session_id = cf_result.get('payment_session_id', '')
-        order.cashfree_payment_session_id = payment_session_id
-        order.save(update_fields=['cashfree_payment_session_id'])
+        rzp_order_id = rzp_result.get('razorpay_order_id', '')
+        amount_in_paise = rzp_result.get('amount', int(round(grand_total * 100)))
+
+        order.razorpay_order_id = rzp_order_id
+        order.save(update_fields=['razorpay_order_id'])
 
         PaymentTransaction.objects.create(
             order=order,
-            cashfree_order_id=cashfree_order_id,
-            payment_session_id=payment_session_id,
+            razorpay_order_id=rzp_order_id,
             amount=grand_total,
             currency='INR',
             status='pending',
-            payment_method='Cashfree',
-            raw_response=cf_result.get('data', {}),
+            payment_method='Razorpay',
+            raw_response=rzp_result.get('data', {}),
         )
 
+        key_id = getattr(settings, 'RAZORPAY_KEY_ID', '').strip()
+
         return Response({
+            'success': True,
             'order_number': order.order_number,
-            'cashfree_order_id': cashfree_order_id,
-            'payment_session_id': payment_session_id,
-            'total_amount': float(grand_total),
+            'order_id': rzp_order_id,
+            'razorpay_order_id': rzp_order_id,
+            'amount': amount_in_paise,
             'currency': 'INR',
+            'key_id': key_id,
+            'total_amount': float(grand_total),
         }, status=status.HTTP_201_CREATED)
 
 
-class CashfreeVerifyPaymentView(APIView):
+class RazorpayVerifyPaymentView(APIView):
     """
     POST /api/payments/verify/
-    Verifies payment authoritatively directly against Cashfree PG servers.
-    Zero-Trust Security:
-    - Never trusts payment status sent from client browser.
-    - Validates order ownership (prevents Customer A verifying Customer B's order).
-    - Queries Cashfree API for actual captured payment, verifying amount & currency.
-    - Atomically updates inventory upon verified success.
+    Verifies payment authoritatively against Razorpay:
+    - Verifies cryptographic HMAC-SHA256 signature using RAZORPAY_KEY_SECRET.
+    - Validates order ownership (prevents Customer A from manipulating Customer B's order).
+    - Queries Razorpay API authoritatively for payment status, amount, and order matching.
+    - Atomically updates order to 'paid' and decrements inventory exactly once.
+    - Idempotent: safe against duplicate requests, network retries, and browser refreshes.
     """
     def post(self, request):
         auth_user = get_authenticated_supabase_user(request)
@@ -225,18 +230,22 @@ class CashfreeVerifyPaymentView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        order_number = serializer.validated_data['order_number']
-        order = Order.objects.filter(order_number=order_number).first()
+        validated = serializer.validated_data
+        order_number = validated['order_number']
+        rzp_order_id = validated.get('razorpay_order_id') or validated.get('cashfree_order_id', '')
+        rzp_payment_id = validated.get('razorpay_payment_id', '')
+        rzp_signature = validated.get('razorpay_signature', '')
 
+        order = Order.objects.filter(order_number=order_number).first()
         if not order:
             return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Order Ownership Check: If order is tied to a user, caller must match
+        # Order Ownership Check: If order is associated with a customer UID, caller must match
         if order.user_id and order.user_id != verified_uid:
             # Return 404 to avoid leaking existence of orders
             return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # If order already confirmed paid, return immediately (idempotent)
+        # Idempotent: If order is already confirmed paid, return success immediately
         if order.payment_status == 'paid':
             return Response({
                 'verified': True,
@@ -244,102 +253,108 @@ class CashfreeVerifyPaymentView(APIView):
                 'order': OrderSerializer(order).data,
             })
 
-        cf_order_id = order.cashfree_order_id
-        if not cf_order_id:
+        # Match Razorpay Order ID with recorded order
+        expected_rzp_order_id = order.razorpay_order_id
+        if expected_rzp_order_id and rzp_order_id and expected_rzp_order_id != rzp_order_id:
+            logger.critical("Order mismatch: Order %s expected Razorpay order %s, got %s",
+                            order.order_number, expected_rzp_order_id, rzp_order_id)
+            return Response({'error': 'Order reference mismatch. Verification failed.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # ─── 1. Verify Cryptographic Signature ────────────────────────────────
+        is_signature_valid = verify_razorpay_signature(
+            razorpay_order_id=rzp_order_id or expected_rzp_order_id,
+            razorpay_payment_id=rzp_payment_id,
+            razorpay_signature=rzp_signature,
+        )
+
+        if not is_signature_valid:
+            logger.warning("Invalid Razorpay payment signature for order %s", order_number)
+            order.payment_status = 'failed'
+            order.save(update_fields=['payment_status', 'updated_at'])
             return Response({
                 'verified': False,
-                'payment_status': order.payment_status,
-                'message': 'No Cashfree order associated with this order.',
+                'error': 'Invalid payment signature. Verification failed.',
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Query Cashfree API directly for payments on this order
-        payments = get_cashfree_order_payments(cf_order_id)
-        successful_payment = None
+        # ─── 2. Authoritative Fetch from Razorpay API ─────────────────────────
+        payment_data = fetch_razorpay_payment(rzp_payment_id)
+        if payment_data:
+            payment_status = payment_data.get('status', '').lower()
+            payment_amount_paise = int(payment_data.get('amount', 0))
+            expected_amount_paise = int(round(order.total_amount * 100))
+            payment_currency = payment_data.get('currency', 'INR').upper()
 
-        for p in payments:
-            if p.get('payment_status') == 'SUCCESS':
-                successful_payment = p
-                break
-
-        if successful_payment:
-            payment_amount = Decimal(str(successful_payment.get('payment_amount', 0)))
-            payment_currency = str(successful_payment.get('payment_currency', 'INR')).upper()
-            cf_payment_id = str(successful_payment.get('cf_payment_id', ''))
-
-            # Amount Validation: reject if paid amount doesn't match server order amount
-            if payment_amount != order.total_amount or payment_currency != 'INR':
-                logger.critical(
-                    "Amount mismatch detected! Order %s expected %s %s, got %s %s",
-                    order.order_number, order.total_amount, order.currency, payment_amount, payment_currency
-                )
+            # Amount validation
+            if payment_amount_paise != expected_amount_paise or payment_currency != 'INR':
+                logger.critical("Amount mismatch on %s: expected %s paise, got %s paise",
+                                order.order_number, expected_amount_paise, payment_amount_paise)
                 order.payment_status = 'failed'
-                order.save(update_fields=['payment_status'])
+                order.save(update_fields=['payment_status', 'updated_at'])
                 return Response({
                     'verified': False,
                     'error': 'Payment amount mismatch. Verification failed.',
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            # Mark as paid and update inventory
+            if payment_status not in ('captured', 'authorized'):
+                order.payment_status = 'failed'
+                order.save(update_fields=['payment_status', 'updated_at'])
+                return Response({
+                    'verified': False,
+                    'payment_status': payment_status,
+                    'error': f"Payment status is {payment_status}.",
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+        # ─── 3. Mark as Paid and Decrement Inventory Exactly Once ─────────────
+        with transaction.atomic():
             order.payment_status = 'paid'
-            order.cashfree_payment_id = cf_payment_id
-            order.save(update_fields=['payment_status', 'cashfree_payment_id', 'updated_at'])
+            order.status = 'confirmed'
+            order.razorpay_payment_id = rzp_payment_id
+            order.razorpay_signature = rzp_signature
+            if rzp_order_id and not order.razorpay_order_id:
+                order.razorpay_order_id = rzp_order_id
+            order.save(update_fields=['payment_status', 'status', 'razorpay_payment_id', 'razorpay_signature', 'razorpay_order_id', 'updated_at'])
 
             decrement_order_inventory(order)
 
-            PaymentTransaction.objects.update_or_create(
-                cashfree_order_id=cf_order_id,
-                defaults={
-                    'order': order,
-                    'cashfree_payment_id': cf_payment_id,
-                    'amount': payment_amount,
-                    'currency': payment_currency,
-                    'status': 'paid',
-                    'payment_method': str(successful_payment.get('payment_group', 'Cashfree')),
-                    'raw_response': successful_payment,
-                }
-            )
+        PaymentTransaction.objects.update_or_create(
+            razorpay_order_id=rzp_order_id or order.razorpay_order_id,
+            defaults={
+                'order': order,
+                'razorpay_payment_id': rzp_payment_id,
+                'razorpay_signature': rzp_signature,
+                'amount': order.total_amount,
+                'currency': 'INR',
+                'status': 'paid',
+                'payment_method': 'Razorpay',
+                'raw_response': payment_data or {'verified_by_signature': True},
+            }
+        )
 
-            logger.info("Order %s successfully verified as paid (CF Payment ID: %s)", order.order_number, cf_payment_id)
-
-            return Response({
-                'verified': True,
-                'payment_status': 'paid',
-                'order': OrderSerializer(order).data,
-            })
-
-        # Check if any payment explicitly failed
-        failed_payment = next((p for p in payments if p.get('payment_status') == 'FAILED'), None)
-        if failed_payment:
-            order.payment_status = 'failed'
-            order.save(update_fields=['payment_status', 'updated_at'])
-            return Response({
-                'verified': False,
-                'payment_status': 'failed',
-                'message': 'Payment failed. Please try again.',
-            })
+        logger.info("Order %s successfully verified as paid (Razorpay Payment ID: %s)",
+                    order.order_number, rzp_payment_id)
 
         return Response({
-            'verified': False,
-            'payment_status': order.payment_status,
-            'message': 'Payment is still pending or was cancelled.',
+            'verified': True,
+            'payment_status': 'paid',
+            'order': OrderSerializer(order).data,
         })
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class CashfreeWebhookView(APIView):
+class RazorpayWebhookView(APIView):
     """
     POST /api/payments/webhook/
-    Asynchronous Cashfree Webhook Listener.
+    Asynchronous Razorpay Webhook Listener.
     Validates HMAC-SHA256 signature, logs event, and idempotently updates order & inventory.
     """
     def post(self, request):
         raw_body = request.body
-        timestamp = request.headers.get('x-webhook-timestamp', '')
-        signature = request.headers.get('x-webhook-signature', '')
+        signature = request.headers.get('x-razorpay-signature', '')
 
-        is_valid = verify_webhook_signature(timestamp, raw_body, signature)
+        is_valid = verify_razorpay_webhook_signature(raw_body, signature)
         if not is_valid:
-            logger.warning("Rejected invalid Cashfree webhook signature.")
+            logger.warning("Rejected invalid Razorpay webhook signature.")
             return Response({'error': 'Invalid webhook signature'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -347,47 +362,54 @@ class CashfreeWebhookView(APIView):
         except json.JSONDecodeError:
             return Response({'error': 'Malformed JSON payload'}, status=status.HTTP_400_BAD_REQUEST)
 
-        event_type = payload.get('type', '')
-        event_time = payload.get('event_time', '')
-        data = payload.get('data', {})
+        event_type = payload.get('event', '')
+        event_id = payload.get('event_id') or ''
+        payload_entity = payload.get('payload', {})
 
-        cf_order_data = data.get('order', {})
-        cf_payment_data = data.get('payment', {})
+        payment_entity = payload_entity.get('payment', {}).get('entity', {})
+        order_entity = payload_entity.get('order', {}).get('entity', {})
 
-        cf_order_id = cf_order_data.get('order_id') or data.get('order_id', '')
-        cf_payment_id = str(cf_payment_data.get('cf_payment_id', ''))
-        payment_status_str = cf_payment_data.get('payment_status', '')
+        rzp_order_id = payment_entity.get('order_id') or order_entity.get('id', '')
+        rzp_payment_id = payment_entity.get('id', '')
 
-        # Idempotency log
-        event_id = f"{cf_order_id}_{cf_payment_id}_{event_type}"
-        if WebhookLog.objects.filter(event_id=event_id, processed=True).exists():
-            logger.info("Webhook event %s already processed. Skipping duplicate.", event_id)
+        # Unique event idempotency check
+        log_event_id = event_id or f"{rzp_order_id}_{rzp_payment_id}_{event_type}"
+        if WebhookLog.objects.filter(event_id=log_event_id, processed=True).exists():
+            logger.info("Webhook event %s already processed. Skipping duplicate.", log_event_id)
             return Response({'status': 'already_processed'}, status=status.HTTP_200_OK)
 
         webhook_log = WebhookLog.objects.create(
-            event_id=event_id,
+            event_id=log_event_id,
             event_type=event_type,
-            cashfree_order_id=cf_order_id,
+            razorpay_order_id=rzp_order_id,
+            razorpay_payment_id=rzp_payment_id,
             signature=signature,
             is_valid_signature=True,
             payload=payload,
         )
 
-        order = Order.objects.filter(cashfree_order_id=cf_order_id).first()
-        if not order and '_' in cf_order_id:
-            # Fallback: extract base order number if formatted like ORD-XXXXXX_timestamp
-            base_order_num = cf_order_id.rsplit('_', 1)[0]
-            order = Order.objects.filter(order_number=base_order_num).first()
+        # Locate corresponding internal order
+        order = None
+        if rzp_order_id:
+            order = Order.objects.filter(razorpay_order_id=rzp_order_id).first()
+
+        if not order:
+            order_num = payment_entity.get('notes', {}).get('order_number') or order_entity.get('receipt')
+            if order_num:
+                order = Order.objects.filter(order_number=order_num).first()
 
         if order:
-            if payment_status_str == 'SUCCESS' or event_type == 'PAYMENT_SUCCESS_WEBHOOK':
+            if event_type in ('payment.captured', 'order.paid'):
                 if order.payment_status != 'paid':
-                    order.payment_status = 'paid'
-                    order.cashfree_payment_id = cf_payment_id
-                    order.save(update_fields=['payment_status', 'cashfree_payment_id', 'updated_at'])
-                    decrement_order_inventory(order)
-                    logger.info("Webhook marked Order %s as paid (CF: %s)", order.order_number, cf_payment_id)
-            elif payment_status_str == 'FAILED' or event_type == 'PAYMENT_FAILED_WEBHOOK':
+                    with transaction.atomic():
+                        order.payment_status = 'paid'
+                        order.status = 'confirmed'
+                        if rzp_payment_id:
+                            order.razorpay_payment_id = rzp_payment_id
+                        order.save(update_fields=['payment_status', 'status', 'razorpay_payment_id', 'updated_at'])
+                        decrement_order_inventory(order)
+                    logger.info("Webhook marked Order %s as paid (Razorpay: %s)", order.order_number, rzp_payment_id)
+            elif event_type == 'payment.failed':
                 if order.payment_status == 'pending':
                     order.payment_status = 'failed'
                     order.save(update_fields=['payment_status', 'updated_at'])

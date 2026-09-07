@@ -299,6 +299,13 @@ const REEL_VIDEOS = [
     tag: 'Luxury Boxed',
     desc: 'Delivered in our signature keepsake box, ready to gift or treasure.',
   },
+  {
+    id: 5,
+    src: '/videos/5.mp4',
+    title: 'Everyday Sparkle',
+    tag: 'Daily Luxury',
+    desc: 'Effortless elegance designed to seamlessly complement your daily style.',
+  },
 ];
 
 function ReelCard({ item }) {

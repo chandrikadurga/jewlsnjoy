@@ -12,7 +12,7 @@ const SIGNATURE_COLLECTIONS = [
     count: '45+ Styles',
     image: '/products/1/3.jpeg',
     link: '/shop?category=Necklaces',
-    featuredTag: 'Bestseller Edit',
+    featuredTag: 'Bestseller',
   },
   {
     id: 'earrings',
@@ -135,7 +135,6 @@ export default function Collections() {
       <section className="collections-categories-section">
         <div className="container">
           <div className="section-header">
-            <span className="eyebrow">Signature Edits</span>
             <h2 className="section-title">Shop by Collection</h2>
             <p className="section-desc">
               Explore our themed edits crafted with long-lasting PVD plating and timeless elegance.

@@ -12,7 +12,7 @@ const SIGNATURE_COLLECTIONS = [
     count: '45+ Styles',
     image: '/products/1/3.jpeg',
     link: '/shop?category=Necklaces',
-    featuredTag: 'Bestseller',
+    featuredTag: 'Bestseller Necklace',
   },
   {
     id: 'earrings',

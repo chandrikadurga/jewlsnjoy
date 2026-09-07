@@ -115,16 +115,6 @@ export default function FooterGlow({
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="footer-glow__link">
-                  Sustainability
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="footer-glow__link">
-                  Careers
-                </Link>
-              </li>
-              <li>
                 <Link to="/contact" className="footer-glow__link">
                   Contact Us
                 </Link>

@@ -153,8 +153,8 @@ export default function FooterGlow({
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="footer-glow__link">
-                  Contact Support
+                <Link to="/orders" className="footer-glow__link">
+                  Track Order
                 </Link>
               </li>
             </ul>

@@ -105,7 +105,7 @@ class PaymentConfigView(APIView):
     """
     def get(self, request):
         provider = getattr(settings, 'PAYMENT_PROVIDER', 'manual_upi').strip().lower()
-        upi_id = getattr(settings, 'UPI_ID', 'jewlsnjoy@upi').strip()
+        upi_id = getattr(settings, 'UPI_ID', '6395673529@pthdfc').strip()
         payee_name = getattr(settings, 'UPI_PAYEE_NAME', "Jewels 'n' Joys").strip()
         qr_url = getattr(settings, 'UPI_QR_CODE_URL', '/assets/upi-qr.png').strip()
 

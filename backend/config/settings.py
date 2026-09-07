@@ -185,7 +185,7 @@ RAZORPAY_ENV = os.getenv('RAZORPAY_ENV', 'test').strip().lower()  # 'test' or 'l
 RAZORPAY_WEBHOOK_SECRET = os.getenv('RAZORPAY_WEBHOOK_SECRET', '').strip()
 
 # Manual UPI Store Configuration
-UPI_ID = os.getenv('UPI_ID', 'jewlsnjoy@upi').strip()
+UPI_ID = os.getenv('UPI_ID', '6395673529@pthdfc').strip()
 UPI_PAYEE_NAME = os.getenv('UPI_PAYEE_NAME', "Jewels 'n' Joys").strip()
 UPI_QR_CODE_URL = os.getenv('UPI_QR_CODE_URL', '/payment_qr.jpeg').strip()
 

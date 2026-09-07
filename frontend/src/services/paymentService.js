@@ -70,7 +70,7 @@ export const paymentService = {
       return {
         active_provider: data.active_provider || 'manual_upi',
         manual_upi: data.manual_upi || {
-          upi_id: 'jewlsnjoy@upi',
+          upi_id: '6395673529@pthdfc',
           payee_name: "Jewels 'n' Joys",
           qr_image_url: '/payment_qr.jpeg',
           instructions: [],
@@ -81,7 +81,7 @@ export const paymentService = {
       return {
         active_provider: 'manual_upi',
         manual_upi: {
-          upi_id: 'jewlsnjoy@upi',
+          upi_id: '6395673529@pthdfc',
           payee_name: "Jewels 'n' Joys",
           qr_image_url: '/payment_qr.jpeg',
           instructions: [],

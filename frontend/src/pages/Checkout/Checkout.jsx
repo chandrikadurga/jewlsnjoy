@@ -34,7 +34,7 @@ export default function Checkout() {
   const [paymentConfig, setPaymentConfig] = useState({
     active_provider: 'manual_upi',
     manual_upi: {
-      upi_id: 'jewlsnjoy@upi',
+      upi_id: '6395673529@pthdfc',
       payee_name: "Jewels 'n' Joys",
       qr_image_url: '/payment_qr.jpeg',
       instructions: []
@@ -161,7 +161,7 @@ export default function Checkout() {
   };
 
   const handleCopyUpiId = () => {
-    const upiId = paymentConfig.manual_upi?.upi_id || 'jewlsnjoy@upi';
+    const upiId = paymentConfig.manual_upi?.upi_id || '6395673529@pthdfc';
     navigator.clipboard.writeText(upiId);
     setUpiCopied(true);
     setTimeout(() => setUpiCopied(false), 2500);
@@ -702,7 +702,7 @@ export default function Checkout() {
 
                   <div className="manual-upi-id-bar">
                     <span className="manual-upi-id-label">UPI ID:</span>
-                    <span className="manual-upi-id-val">{paymentConfig.manual_upi?.upi_id || 'jewlsnjoy@upi'}</span>
+                    <span className="manual-upi-id-val">{paymentConfig.manual_upi?.upi_id || '6395673529@pthdfc'}</span>
                     <button
                       type="button"
                       className="manual-upi-copy-btn"
@@ -715,7 +715,7 @@ export default function Checkout() {
 
                   <div>
                     <a
-                      href={`upi://pay?pa=${encodeURIComponent(paymentConfig.manual_upi?.upi_id || 'jewlsnjoy@upi')}&pn=${encodeURIComponent(paymentConfig.manual_upi?.payee_name || "Jewels 'n' Joys")}&am=${pendingOrder.total_amount || total}&cu=INR`}
+                      href={`upi://pay?pa=${encodeURIComponent(paymentConfig.manual_upi?.upi_id || '6395673529@pthdfc')}&pn=${encodeURIComponent(paymentConfig.manual_upi?.payee_name || "Jewels 'n' Joys")}&am=${pendingOrder.total_amount || total}&cu=INR`}
                       className="btn btn-gold manual-upi-app-btn"
                     >
                       <span>⚡ Open in UPI App (GPay / PhonePe / Paytm)</span>

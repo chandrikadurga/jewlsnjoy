@@ -71,7 +71,7 @@ class ManualUPIPaymentsTests(TestCase):
         data = res.json()
         self.assertEqual(data.get('active_provider'), 'manual_upi')
         self.assertIn('manual_upi', data)
-        self.assertEqual(data['manual_upi']['upi_id'], 'jewlsnjoy@upi')
+        self.assertEqual(data['manual_upi']['upi_id'], '6395673529@pthdfc')
         self.assertIn('instructions', data['manual_upi'])
         self.assertIn('razorpay', data)
 

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Check, ExternalLink, Play, Pause, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
+import FAQSection from '../../components/FAQ/FAQSection';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
 import heroImg from '../../assets/hero-necklaces.png';
 import storyMainImg from '../../assets/products/3/2.jpeg';
@@ -478,6 +479,7 @@ export default function Home() {
       <VideoReelsSection />
 
       <StorePerks />
+      <FAQSection />
       <CTABanner />
     </div>
   );

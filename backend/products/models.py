@@ -106,6 +106,7 @@ class ProductImage(models.Model):
 class Order(models.Model):
     STATUS_CHOICES = [
         ('order_placed', 'Order Placed'),
+        ('awaiting_payment_verification', 'Awaiting Payment Verification'),
         ('confirmed', 'Confirmed'),
         ('processing', 'Processing'),
         ('shipped', 'Shipped'),
@@ -129,7 +130,9 @@ class Order(models.Model):
 
     PAYMENT_STATUS_CHOICES = [
         ('pending', 'Pending'),
+        ('pending_verification', 'Pending Verification'),
         ('paid', 'Paid'),
+        ('rejected', 'Rejected'),
         ('failed', 'Failed'),
         ('refunded', 'Refunded'),
         ('partially_refunded', 'Partially Refunded'),
@@ -139,7 +142,7 @@ class Order(models.Model):
     currency = models.CharField(max_length=10, default='INR')
     payment_method = models.CharField(max_length=50, default='Razorpay')
     payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES, default='pending')
-    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='order_placed')
+    status = models.CharField(max_length=35, choices=STATUS_CHOICES, default='order_placed')
     
     razorpay_order_id = models.CharField(max_length=100, blank=True, default='', db_index=True)
     razorpay_payment_id = models.CharField(max_length=100, blank=True, default='', db_index=True)

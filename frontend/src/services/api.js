@@ -10,7 +10,11 @@
 
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// Automatically route to local Django backend when running frontend on localhost
+const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const BASE_URL = isLocalhost
+  ? 'http://localhost:8000'
+  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000');
 
 // Map products whose angle 1 was a mobile screenshot to their clean 1080x1080 square photo
 const COVER_OVERRIDE = {
@@ -82,7 +86,7 @@ const api = axios.create({
 api.interceptors.request.use(async (config) => {
   try {
     const adminToken = sessionStorage.getItem('admin_token');
-    if (adminToken && config.url && config.url.includes('/api/admin/')) {
+    if (adminToken && config.url && (config.url.includes('/admin/') || config.url.includes('/payments/admin/'))) {
       config.headers['X-Admin-Token'] = adminToken;
     }
 
@@ -282,6 +286,51 @@ export const adminApi = {
   },
   updateOrderStatus: async (id, status) => {
     const response = await api.patch(`/api/admin/orders/${id}/`, { status });
+    return response.data;
+  },
+  getPaymentVerifications: async (params = {}) => {
+    const response = await api.get('/api/payments/admin/verifications/', { params: { ...params, _t: Date.now() } });
+    return response.data;
+  },
+  approvePaymentVerification: async (id) => {
+    const response = await api.post(`/api/payments/admin/verifications/${id}/approve/`);
+    return response.data;
+  },
+  rejectPaymentVerification: async (id, reason) => {
+    const response = await api.post(`/api/payments/admin/verifications/${id}/reject/`, { reason });
+    return response.data;
+  },
+  createShipment: async (orderId, payload = {}) => {
+    const response = await api.post(`/api/shipping/admin/orders/${orderId}/create/`, payload);
+    return response.data;
+  },
+  refreshShipmentTracking: async (orderId) => {
+    const response = await api.post(`/api/shipping/admin/orders/${orderId}/refresh/`);
+    return response.data;
+  },
+  getShipmentLabel: async (orderId) => {
+    const response = await api.get(`/api/shipping/admin/orders/${orderId}/label/`);
+    return response.data;
+  },
+  requestShipmentPickup: async (orderId) => {
+    const response = await api.post(`/api/shipping/admin/orders/${orderId}/pickup/`);
+    return response.data;
+  },
+};
+
+// ─── Shipping API ──────────────────────────────────────────────
+
+export const shippingApi = {
+  checkServiceability: async (pincode, paymentMode = 'Prepaid') => {
+    const response = await api.post('/api/shipping/serviceability/', {
+      pincode: String(pincode).trim(),
+      payment_mode: paymentMode,
+    });
+    return response.data;
+  },
+  getOrderShipment: async (orderNumber) => {
+    const cleanNum = encodeURIComponent(String(orderNumber || '').trim());
+    const response = await api.get(`/api/shipping/orders/${cleanNum}/`);
     return response.data;
   },
 };

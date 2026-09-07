@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import { orderApi } from '../../services/api';
+import { orderApi, shippingApi } from '../../services/api';
 import paymentService from '../../services/paymentService';
 import './Checkout.css';
 
@@ -26,18 +26,67 @@ export default function Checkout() {
   const [confirmedPaymentId, setConfirmedPaymentId] = useState('');
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState('');
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('razorpay');
+  const [paymentMethod, setPaymentMethod] = useState('manual_upi');
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState({ type: '', text: '' });
   const [copied, setCopied] = useState(false);
+  const [paymentConfig, setPaymentConfig] = useState({
+    active_provider: 'manual_upi',
+    manual_upi: {
+      upi_id: 'jewlsnjoy@upi',
+      payee_name: "Jewels 'n' Joys",
+      qr_image_url: '/payment_qr.jpeg',
+      instructions: []
+    },
+    razorpay: { key_id: '', environment: 'test', is_configured: false }
+  });
   const [razorpayConfig, setRazorpayConfig] = useState({ key_id: '', environment: 'test', is_configured: false });
   const [orderError, setOrderError] = useState('');
+
+  // Manual UPI State
+  const [isManualUpiStep, setIsManualUpiStep] = useState(false);
+  const [pendingOrder, setPendingOrder] = useState(null);
+  const [transactionId, setTransactionId] = useState('');
+  const [screenshotFile, setScreenshotFile] = useState(null);
+  const [screenshotPreview, setScreenshotPreview] = useState('');
+  const [isSubmittingProof, setIsSubmittingProof] = useState(false);
+  const [proofError, setProofError] = useState('');
+  const [upiCopied, setUpiCopied] = useState(false);
+  const [isPendingVerification, setIsPendingVerification] = useState(false);
 
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', phone: '',
     address: '', city: '', state: '', postalCode: '',
   });
+
+  // Delhivery Pincode Serviceability State
+  const [shippingServiceability, setShippingServiceability] = useState(null);
+  const [checkingServiceability, setCheckingServiceability] = useState(false);
+
+  // Check Delhivery serviceability when a valid 6-digit Indian PIN code is entered
+  useEffect(() => {
+    const pin = (form.postalCode || '').trim();
+    if (/^[1-9][0-9]{5}$/.test(pin)) {
+      setCheckingServiceability(true);
+      const timer = setTimeout(() => {
+        shippingApi.checkServiceability(pin, paymentMethod === 'cod' ? 'COD' : 'Prepaid')
+          .then((res) => {
+            setShippingServiceability(res);
+          })
+          .catch(() => {
+            setShippingServiceability(null);
+          })
+          .finally(() => {
+            setCheckingServiceability(false);
+          });
+      }, 400);
+      return () => clearTimeout(timer);
+    } else {
+      setShippingServiceability(null);
+      setCheckingServiceability(false);
+    }
+  }, [form.postalCode, paymentMethod]);
 
   // Pre-fill user data if logged in
   useEffect(() => {
@@ -68,8 +117,19 @@ export default function Checkout() {
   // Pre-fetch payment gateway configuration from backend
   useEffect(() => {
     paymentService.getConfig()
-      .then((cfg) => setRazorpayConfig(cfg))
-      .catch((err) => console.warn('Payment gateway config fetch error:', err));
+      .then((cfg) => {
+        setPaymentConfig(cfg);
+        setRazorpayConfig(cfg.razorpay || cfg);
+        if (cfg?.active_provider === 'razorpay' && (cfg.razorpay?.is_configured || cfg.key_id)) {
+          setPaymentMethod('razorpay');
+        } else {
+          setPaymentMethod('manual_upi');
+        }
+      })
+      .catch((err) => {
+        console.warn('Payment gateway config fetch error:', err);
+        setPaymentMethod('manual_upi');
+      });
   }, []);
 
   const handleChange = (e) => {
@@ -97,6 +157,73 @@ export default function Checkout() {
       navigator.clipboard.writeText(confirmedOrderNumber);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  const handleCopyUpiId = () => {
+    const upiId = paymentConfig.manual_upi?.upi_id || 'jewlsnjoy@upi';
+    navigator.clipboard.writeText(upiId);
+    setUpiCopied(true);
+    setTimeout(() => setUpiCopied(false), 2500);
+  };
+
+  const handleScreenshotChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setProofError('Image file size must be 5 MB or less.');
+      return;
+    }
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setProofError('Only JPG, PNG, and WEBP image formats are supported.');
+      return;
+    }
+
+    setProofError('');
+    setScreenshotFile(file);
+    const previewUrl = URL.createObjectURL(file);
+    setScreenshotPreview(previewUrl);
+  };
+
+  const handleManualUpiProofSubmit = async (e) => {
+    e.preventDefault();
+    if (isSubmittingProof || !pendingOrder) return;
+
+    const cleanTxnId = transactionId.trim();
+    if (!cleanTxnId || cleanTxnId.length < 4) {
+      setProofError('Please enter a valid UPI Transaction / UTR ID (at least 4 characters).');
+      return;
+    }
+    if (!screenshotFile) {
+      setProofError('Please upload a screenshot of your successful UPI payment.');
+      return;
+    }
+
+    setProofError('');
+    setIsSubmittingProof(true);
+
+    try {
+      await paymentService.submitManualUPIProof({
+        orderNumber: pendingOrder.order_number,
+        transactionId: cleanTxnId,
+        screenshotFile: screenshotFile,
+      });
+
+      setConfirmedOrderNumber(pendingOrder.order_number);
+      setConfirmedPaymentMethod('Pay via UPI (QR Code)');
+      setConfirmedPaymentId(cleanTxnId);
+      setIsPendingVerification(true);
+      setSubmitted(true);
+      clearCart();
+    } catch (err) {
+      console.error('Failed to submit manual UPI proof:', err);
+      const msg = err.response?.data?.error || err.message || 'Unable to submit payment proof. Please try again.';
+      setProofError(msg);
+    } finally {
+      setIsSubmittingProof(false);
     }
   };
 
@@ -160,6 +287,29 @@ export default function Checkout() {
       }
       return err.message || 'Server connection issue. Please make sure the Django backend is running on port 8000.';
     };
+
+    // ── Manual UPI / QR Payment Path (Temporary Active Fallback) ────────
+    if (paymentMethod === 'manual_upi') {
+      try {
+        const res = await orderApi.create({
+          ...baseOrderPayload,
+          payment_method: 'manual_upi',
+          payment_status: 'pending',
+          status: 'order_placed',
+        });
+        setPendingOrder(res);
+        setIsManualUpiStep(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        console.error('Manual UPI order initiation error:', err);
+        const msg = getErrorText(err);
+        setOrderError(`Could not initiate order: ${msg}`);
+        alert(`Could not initiate order: ${msg}`);
+      } finally {
+        setIsSubmitting(false);
+      }
+      return;
+    }
 
     // ── Cash On Delivery Path ─────────────────────────────────────────
     if (paymentMethod === 'cod') {
@@ -325,11 +475,17 @@ export default function Checkout() {
               <span className="checkout-success__sparkle">✦</span>
             </div>
             
-            <span className="checkout-success__pill">Order Confirmed</span>
+            <span className={`checkout-success__pill ${isPendingVerification ? 'checkout-success__pill--pending' : ''}`} style={isPendingVerification ? { background: '#fef3c7', color: '#92400e', borderColor: '#fde68a' } : {}}>
+              {isPendingVerification ? 'Payment Proof Submitted' : 'Order Confirmed'}
+            </span>
             <h1 className="checkout-success__title">Thank You, {form.firstName || 'Valued Client'}!</h1>
             
             <p className="checkout-success__sub">
-              Your order has been registered with <strong>Jewels &apos;n&apos; Joys</strong>. We are hand-packing your jewellery with care.
+              {isPendingVerification ? (
+                <>Your payment screenshot and transaction reference have been received for <strong>Jewels &apos;n&apos; Joys</strong>. Our team will verify the payment and confirm your order shortly.</>
+              ) : (
+                <>Your order has been registered with <strong>Jewels &apos;n&apos; Joys</strong>. We are hand-packing your jewellery with care.</>
+              )}
             </p>
 
             <div className="checkout-success__reference-box">
@@ -352,8 +508,14 @@ export default function Checkout() {
               <div className="checkout-success__dp-item">
                 <strong>Payment Mode:</strong>
                 <span className="checkout-success__pm-badge">
-                  {confirmedPaymentMethod || 'Razorpay'}
-                  {confirmedPaymentId && <small> ({confirmedPaymentId})</small>}
+                  {confirmedPaymentMethod || 'Pay via UPI (QR Code)'}
+                  {confirmedPaymentId && <small> (Ref: {confirmedPaymentId})</small>}
+                </span>
+              </div>
+              <div className="checkout-success__dp-item">
+                <strong>Payment Status:</strong>
+                <span style={{ color: isPendingVerification ? '#b45309' : '#15803d', fontWeight: 600 }}>
+                  {isPendingVerification ? '⏳ Awaiting Admin Verification' : '✓ Confirmed'}
                 </span>
               </div>
               {form.address && (
@@ -383,7 +545,9 @@ export default function Checkout() {
               </Link>
               <a
                 href={`https://wa.me/919457650897?text=${encodeURIComponent(
-                  `Hello Jewels 'n' Joys! I just placed order ${confirmedOrderNumber}. Could you share delivery updates?`
+                  isPendingVerification
+                    ? `Hello Jewels 'n' Joys! I have submitted payment proof for order ${confirmedOrderNumber} (UPI Ref: ${confirmedPaymentId}). Please verify my order.`
+                    : `Hello Jewels 'n' Joys! I just placed order ${confirmedOrderNumber}. Could you share delivery updates?`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -508,7 +672,191 @@ export default function Checkout() {
         <div className="checkout-layout">
           {/* Main Form Column */}
           <div className="checkout-form-col">
-            <form className="checkout-form" onSubmit={handleSubmit} noValidate>
+            {isManualUpiStep && pendingOrder ? (
+              <div className="manual-upi-card">
+                <div className="manual-upi-badge">Step 2 of 2: Payment Verification</div>
+                <h2 className="manual-upi-title">Scan QR &amp; Complete Payment</h2>
+                <p className="manual-upi-subtitle">
+                  Order <strong>#{pendingOrder.order_number}</strong> has been created. Please complete your UPI payment to verify and confirm your order.
+                </p>
+
+                {/* Amount Highlight Banner */}
+                <div className="manual-upi-amount-banner">
+                  <div className="manual-upi-amount-left">
+                    <span>Total Payable Amount</span>
+                    <strong>₹{(pendingOrder.total_amount || total).toLocaleString('en-IN')}</strong>
+                  </div>
+                  <div className="manual-upi-amount-note">
+                    Pay exact amount to prevent verification delays
+                  </div>
+                </div>
+
+                {/* QR Code Section */}
+                <div className="manual-upi-qr-wrap">
+                  <div className="manual-upi-qr-frame">
+                    <img
+                      src={paymentConfig.manual_upi?.qr_image_url || '/payment_qr.jpeg'}
+                      alt="Jewels 'n' Joys UPI QR Code"
+                    />
+                  </div>
+
+                  <div className="manual-upi-id-bar">
+                    <span className="manual-upi-id-label">UPI ID:</span>
+                    <span className="manual-upi-id-val">{paymentConfig.manual_upi?.upi_id || 'jewlsnjoy@upi'}</span>
+                    <button
+                      type="button"
+                      className="manual-upi-copy-btn"
+                      onClick={handleCopyUpiId}
+                      aria-label="Copy UPI ID"
+                    >
+                      {upiCopied ? '✓ Copied' : 'Copy'}
+                    </button>
+                  </div>
+
+                  <div>
+                    <a
+                      href={`upi://pay?pa=${encodeURIComponent(paymentConfig.manual_upi?.upi_id || 'jewlsnjoy@upi')}&pn=${encodeURIComponent(paymentConfig.manual_upi?.payee_name || "Jewels 'n' Joys")}&am=${pendingOrder.total_amount || total}&cu=INR`}
+                      className="btn btn-gold manual-upi-app-btn"
+                    >
+                      <span>⚡ Open in UPI App (GPay / PhonePe / Paytm)</span>
+                    </a>
+                  </div>
+                </div>
+
+                {/* Steps List */}
+                <div className="manual-upi-steps-box">
+                  <div className="manual-upi-steps-title">Instructions to complete &amp; verify</div>
+                  <ul className="manual-upi-steps-list">
+                    <li className="manual-upi-step-item">
+                      <span className="manual-upi-step-num">1</span>
+                      <span>Scan the QR code above or tap &quot;Open in UPI App&quot; using Google Pay, PhonePe, Paytm, CRED or your bank UPI app.</span>
+                    </li>
+                    <li className="manual-upi-step-item">
+                      <span className="manual-upi-step-num">2</span>
+                      <span>Transfer exactly <strong>₹{(pendingOrder.total_amount || total).toLocaleString('en-IN')}</strong>.</span>
+                    </li>
+                    <li className="manual-upi-step-item">
+                      <span className="manual-upi-step-num">3</span>
+                      <span>Enter the 12-digit UPI Reference / UTR / Transaction ID below.</span>
+                    </li>
+                    <li className="manual-upi-step-item">
+                      <span className="manual-upi-step-num">4</span>
+                      <span>Upload a screenshot of the successful payment confirmation screen.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Form to submit proof */}
+                <form className="manual-upi-form" onSubmit={handleManualUpiProofSubmit}>
+                  {proofError && (
+                    <div style={{
+                      padding: '12px 16px',
+                      background: '#fef2f2',
+                      border: '1px solid #f87171',
+                      borderRadius: '8px',
+                      color: '#991b1b',
+                      fontSize: '13px',
+                      lineHeight: '1.5',
+                    }}>
+                      <strong>Submission Error:</strong> {proofError}
+                    </div>
+                  )}
+
+                  <div className="manual-upi-field">
+                    <label htmlFor="transactionId">
+                      UPI Reference / UTR Number <span className="req">*</span>
+                    </label>
+                    <input
+                      id="transactionId"
+                      type="text"
+                      required
+                      placeholder="e.g. 423589123456 or T240907123456"
+                      value={transactionId}
+                      onChange={(e) => setTransactionId(e.target.value)}
+                    />
+                    <small style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>
+                      Found in your UPI app payment receipt / details screen
+                    </small>
+                  </div>
+
+                  <div className="manual-upi-field">
+                    <label>
+                      Payment Screenshot / Receipt <span className="req">*</span>
+                    </label>
+                    <div className="manual-upi-dropzone">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={handleScreenshotChange}
+                      />
+                      <div style={{ pointerEvents: 'none' }}>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" strokeWidth="1.5" style={{ margin: '0 auto 8px', display: 'block' }}>
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="17 8 12 3 7 8"></polyline>
+                          <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p style={{ margin: 0, fontWeight: 600, color: 'var(--color-brown)' }}>
+                          Click or drag payment screenshot here
+                        </p>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--color-muted)' }}>
+                          PNG, JPG, WEBP up to 5MB
+                        </span>
+                      </div>
+                    </div>
+
+                    {screenshotPreview && (
+                      <div className="manual-upi-file-selected">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <img src={screenshotPreview} alt="Screenshot Preview" className="manual-upi-file-thumb" />
+                          <div>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-brown)' }}>
+                              {screenshotFile?.name}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--color-muted)' }}>
+                              {screenshotFile?.size ? `${(screenshotFile.size / 1024).toFixed(1)} KB` : ''}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setScreenshotFile(null);
+                            setScreenshotPreview('');
+                          }}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#dc2626',
+                            cursor: 'pointer',
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn btn-gold btn-lg btn-full"
+                    disabled={isSubmittingProof}
+                  >
+                    {isSubmittingProof ? 'Verifying & Submitting...' : 'Submit Payment Proof'}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="manual-upi-back-btn"
+                    onClick={() => setIsManualUpiStep(false)}
+                  >
+                    ← Edit Delivery Details / Change Payment Option
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <form className="checkout-form" onSubmit={handleSubmit} noValidate>
 
               {/* Step 1: Customer Contact */}
               <section className="checkout-section">
@@ -564,12 +912,13 @@ export default function Checkout() {
                       id="email"
                       name="email"
                       type="email"
+                      inputMode="email"
                       required
                       autoComplete="email"
                       className="checkout-field__input"
                       value={form.email}
                       onChange={handleChange}
-                      placeholder="name@example.com"
+                      placeholder="priya@example.com"
                     />
                   </div>
                   <div className="checkout-field">
@@ -653,6 +1002,27 @@ export default function Checkout() {
                       onChange={handleChange}
                       placeholder="6-digit PIN"
                     />
+                    {checkingServiceability && (
+                      <span style={{ display: 'block', fontSize: '0.74rem', color: 'var(--color-muted)', marginTop: '4px' }}>
+                        Checking Delhivery serviceability...
+                      </span>
+                    )}
+                    {!checkingServiceability && shippingServiceability && (
+                      <div style={{ marginTop: '5px', fontSize: '0.76rem', lineHeight: '1.4' }}>
+                        {shippingServiceability.serviceable ? (
+                          <span style={{ color: '#15803d', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '500' }}>
+                            <span>✓</span> Delivery available{shippingServiceability.city ? ` to ${shippingServiceability.city}` : ''} via Delhivery
+                            {!shippingServiceability.cod_available && (
+                              <span style={{ color: '#b45309', marginLeft: '4px' }}>(Prepaid Only)</span>
+                            )}
+                          </span>
+                        ) : (
+                          <span style={{ color: '#b91c1c', fontWeight: '500' }}>
+                            ✕ PIN {form.postalCode} is currently not serviceable.
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -685,33 +1055,62 @@ export default function Checkout() {
                   <span className="checkout-section__step">3</span>
                   <div className="checkout-section__title-group">
                     <h2 className="checkout-section__title">Payment Method</h2>
-                    <p className="checkout-section__subtitle">All major payment options supported via Razorpay & Cash on Delivery</p>
+                    <p className="checkout-section__subtitle">
+                      Pay via direct UPI QR code with zero fees or Cash on Delivery
+                    </p>
                   </div>
                 </div>
 
                 <div className="checkout-payment-options">
-                  {/* Razorpay Option */}
-                  <label className={`checkout-pay-option ${paymentMethod === 'razorpay' ? 'active' : ''}`}>
+                  {/* Manual UPI Option (Always available as primary store payment) */}
+                  <label className={`checkout-pay-option ${paymentMethod === 'manual_upi' ? 'active' : ''}`}>
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="razorpay"
-                      checked={paymentMethod === 'razorpay'}
-                      onChange={() => setPaymentMethod('razorpay')}
+                      value="manual_upi"
+                      checked={paymentMethod === 'manual_upi'}
+                      onChange={() => setPaymentMethod('manual_upi')}
                     />
                     <div className="checkout-pay-option__content">
                       <div className="checkout-pay-option__top">
                         <div className="checkout-pay-option__title-row">
-                          <span className="checkout-pay-option__name">Razorpay Secure</span>
+                          <span className="checkout-pay-option__name">Pay via UPI (QR Code)</span>
                           <span className="checkout-pay-option__tag">Recommended</span>
                         </div>
-                        <span className="checkout-pay-option__brands">UPI • Cards • NetBanking • Wallets</span>
+                        <span className="checkout-pay-option__brands">GPay • PhonePe • Paytm • CRED • Any UPI App</span>
                       </div>
                       <p className="checkout-pay-option__desc">
-                        Instant, 100% secure payment with Google Pay, PhonePe, Paytm, BHIM, Credit/Debit Cards, EMI, and NetBanking.
+                        Scan our store QR code on the next screen. Instant transfer with 0% gateway fees.
                       </p>
                     </div>
                   </label>
+
+                  {/* Razorpay Option */}
+                  {(paymentConfig.active_provider === 'razorpay' || paymentConfig.razorpay?.is_configured) && (
+                    <label className={`checkout-pay-option ${paymentMethod === 'razorpay' ? 'active' : ''}`}>
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="razorpay"
+                        checked={paymentMethod === 'razorpay'}
+                        onChange={() => setPaymentMethod('razorpay')}
+                      />
+                      <div className="checkout-pay-option__content">
+                        <div className="checkout-pay-option__top">
+                          <div className="checkout-pay-option__title-row">
+                            <span className="checkout-pay-option__name">Razorpay Secure</span>
+                            {paymentConfig.active_provider === 'razorpay' && (
+                              <span className="checkout-pay-option__tag">Recommended</span>
+                            )}
+                          </div>
+                          <span className="checkout-pay-option__brands">UPI • Cards • NetBanking • Wallets</span>
+                        </div>
+                        <p className="checkout-pay-option__desc">
+                          Instant, 100% secure payment with Google Pay, PhonePe, Paytm, BHIM, Credit/Debit Cards, EMI, and NetBanking.
+                        </p>
+                      </div>
+                    </label>
+                  )}
 
                   {/* Cash on Delivery Option */}
                   <label className={`checkout-pay-option ${paymentMethod === 'cod' ? 'active' : ''}`}>
@@ -739,7 +1138,15 @@ export default function Checkout() {
                 <div className="checkout-payment-note">
                   <div className="checkout-payment-note__icon">✦</div>
                   <p>
-                    <strong>Razorpay 256-Bit Protection:</strong> Payments are processed through Razorpay’s banking-grade encrypted infrastructure. Your payment credentials are never stored on our servers.
+                    {paymentMethod === 'manual_upi' ? (
+                      <>
+                        <strong>Direct Store Verification:</strong> Payment is verified directly by the Jewels &apos;n&apos; Joys store team. You will receive a QR code and instant upload form on the next step.
+                      </>
+                    ) : (
+                      <>
+                        <strong>Razorpay 256-Bit Protection:</strong> Payments are processed through Razorpay’s banking-grade encrypted infrastructure. Your payment credentials are never stored on our servers.
+                      </>
+                    )}
                   </p>
                 </div>
               </section>
@@ -756,7 +1163,7 @@ export default function Checkout() {
                 </div>
                 <div className="checkout-trust-pill">
                   <span className="checkout-trust-pill__icon">✦</span>
-                  <span>Razorpay Verified Merchant</span>
+                  <span>Verified Merchant</span>
                 </div>
               </div>
 
@@ -783,7 +1190,9 @@ export default function Checkout() {
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
-                    <span className="checkout-spinner-label">Connecting to Razorpay...</span>
+                    <span className="checkout-spinner-label">Processing...</span>
+                  ) : paymentMethod === 'manual_upi' ? (
+                    <span>Proceed to UPI Payment • ₹{total.toLocaleString('en-IN')}</span>
                   ) : paymentMethod === 'razorpay' ? (
                     <span>Pay with Razorpay • ₹{total.toLocaleString('en-IN')}</span>
                   ) : (
@@ -791,10 +1200,13 @@ export default function Checkout() {
                   )}
                 </button>
                 <p className="checkout-guarantee-micro">
-                  🔒 Encrypted with 256-bit SSL. Razorpay PCI-DSS Level 1 Compliant.
+                  {paymentMethod === 'manual_upi'
+                    ? '🔒 Verified UPI Payment • Direct Store Settlement • Instant Proof Upload'
+                    : '🔒 Encrypted with 256-bit SSL. Razorpay PCI-DSS Level 1 Compliant.'}
                 </p>
               </div>
             </form>
+            )}
           </div>
 
           {/* Desktop Order Summary Column */}

@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     # Local
     'products',
     'payments',
+    'shipping',
 ]
 
 MIDDLEWARE = [
@@ -174,13 +175,34 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 if DEBUG or os.getenv('CORS_ALLOW_ALL', 'False').lower() in ('true', '1', 't'):
     CORS_ALLOW_ALL_ORIGINS = True
 
-# Razorpay Payment Gateway Configuration
+# Active Payment Gateway Provider: 'manual_upi' (temporary active fallback), 'razorpay', or 'cashfree'
+PAYMENT_PROVIDER = os.getenv('PAYMENT_PROVIDER', 'manual_upi').strip().lower()
+
+# Razorpay Payment Gateway Configuration (Preserved for future activation)
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '').strip()
 RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '').strip()
 RAZORPAY_ENV = os.getenv('RAZORPAY_ENV', 'test').strip().lower()  # 'test' or 'live'
 RAZORPAY_WEBHOOK_SECRET = os.getenv('RAZORPAY_WEBHOOK_SECRET', '').strip()
 
-# Supabase Auth Configuration
-SUPABASE_URL = os.getenv('SUPABASE_URL', 'https://hlxffdtkghzednkpwxlb.supabase.co')
-SUPABASE_ANON_KEY = os.getenv('SUPABASE_PUBLISHABLE_KEY', os.getenv('SUPABASE_ANON_KEY', 'sb_publishable_Q7YuMERgjfL5BcbmeBvGQw_irH77xJQ'))
+# Manual UPI Store Configuration
+UPI_ID = os.getenv('UPI_ID', 'jewlsnjoy@upi').strip()
+UPI_PAYEE_NAME = os.getenv('UPI_PAYEE_NAME', "Jewels 'n' Joys").strip()
+UPI_QR_CODE_URL = os.getenv('UPI_QR_CODE_URL', '/payment_qr.jpeg').strip()
+
+# Supabase Auth & Storage Configuration
+SUPABASE_URL = os.getenv('SUPABASE_URL', 'https://hlxffdtkghzednkpwxlb.supabase.co').rstrip('/')
+SUPABASE_ANON_KEY = os.getenv('SUPABASE_PUBLISHABLE_KEY', os.getenv('SUPABASE_ANON_KEY', 'sb_publishable_Q7YuMERgjfL5BcbmeBvGQw_irH77xJQ')).strip()
+SUPABASE_SECRET_KEY = os.getenv('SUPABASE_SECRET_KEY', os.getenv('SUPABASE_SERVICE_ROLE_KEY', '')).strip()
+SUPABASE_STORAGE_BUCKET = os.getenv('SUPABASE_STORAGE_BUCKET', 'payment-proofs').strip()
+
+# Delhivery One Shipping & Logistics Configuration
+DELHIVERY_ENABLED = os.getenv('DELHIVERY_ENABLED', 'True').lower() in ('true', '1', 't')
+DELHIVERY_ENV = os.getenv('DELHIVERY_ENV', 'sandbox').strip().lower()  # 'sandbox' or 'production'
+DELHIVERY_API_TOKEN = os.getenv('DELHIVERY_API_TOKEN', '').strip()
+DELHIVERY_API_BASE_URL = os.getenv('DELHIVERY_API_BASE_URL', '').strip()
+DELHIVERY_PICKUP_LOCATION = os.getenv('DELHIVERY_PICKUP_LOCATION', 'JewelsNJoysWarehouse').strip()
+DELHIVERY_DEFAULT_WEIGHT_G = int(os.getenv('DELHIVERY_DEFAULT_WEIGHT_G', '200'))
+DELHIVERY_DEFAULT_LENGTH_CM = float(os.getenv('DELHIVERY_DEFAULT_LENGTH_CM', '10.0'))
+DELHIVERY_DEFAULT_BREADTH_CM = float(os.getenv('DELHIVERY_DEFAULT_BREADTH_CM', '10.0'))
+DELHIVERY_DEFAULT_HEIGHT_CM = float(os.getenv('DELHIVERY_DEFAULT_HEIGHT_CM', '5.0'))
 

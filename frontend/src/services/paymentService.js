@@ -66,10 +66,49 @@ export const paymentService = {
   getConfig: async () => {
     try {
       const res = await api.get('/api/payments/config/');
-      return res.data;
+      const data = res.data || {};
+      return {
+        active_provider: data.active_provider || 'manual_upi',
+        manual_upi: data.manual_upi || {
+          upi_id: 'jewlsnjoy@upi',
+          payee_name: "Jewels 'n' Joys",
+          qr_image_url: '/payment_qr.jpeg',
+          instructions: [],
+        },
+        razorpay: data.razorpay || data || { key_id: '', environment: 'test', is_configured: false },
+      };
     } catch (err) {
-      return { key_id: '', environment: 'test', is_configured: false };
+      return {
+        active_provider: 'manual_upi',
+        manual_upi: {
+          upi_id: 'jewlsnjoy@upi',
+          payee_name: "Jewels 'n' Joys",
+          qr_image_url: '/payment_qr.jpeg',
+          instructions: [],
+        },
+        razorpay: { key_id: '', environment: 'test', is_configured: false },
+      };
     }
+  },
+
+  /**
+   * Submits manual UPI payment proof (Transaction / UTR ID & screenshot)
+   * to backend zero-trust verification endpoint.
+   */
+  submitManualUPIProof: async ({ orderNumber, transactionId, screenshotFile }) => {
+    const headers = await getAuthHeaders();
+    const formData = new FormData();
+    formData.append('order_number', orderNumber);
+    formData.append('transaction_id', transactionId);
+    formData.append('payment_screenshot', screenshotFile);
+
+    const res = await api.post('/api/payments/manual-upi/submit/', formData, {
+      headers: {
+        ...headers,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
   },
 
   /**

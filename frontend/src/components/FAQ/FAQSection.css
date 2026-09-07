@@ -1,0 +1,188 @@
+/* =============================================================
+   Jewels N' Joys — FAQ Accordion Component
+   Matches mobile reference styling with luxury brand tokens
+   ============================================================= */
+
+.faq-section {
+  position: relative;
+  z-index: 10;
+  padding: 4rem 0 3.5rem 0;
+}
+
+.faq-section__header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 2.5rem auto;
+}
+
+.faq-section__title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-brown, #2B211D);
+  margin: 0.5rem 0 0.5rem 0;
+  text-transform: uppercase;
+}
+
+.faq-section__desc {
+  font-size: 0.9375rem;
+  color: var(--color-brown-light, #5C4A3E);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Accordion Container */
+.faq-accordion-wrap {
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Individual Accordion Card */
+.faq-item {
+  border-radius: 16px;
+  border: 1.5px solid rgba(198, 161, 91, 0.32);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 16px -2px rgba(43, 33, 29, 0.04),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95);
+  transition: all var(--transition-base, 250ms ease);
+  overflow: hidden;
+}
+
+.faq-item:hover {
+  border-color: rgba(198, 161, 91, 0.6);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 6px 20px -2px rgba(198, 161, 91, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 1);
+}
+
+.faq-item--open {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: var(--color-gold, #C6A15B);
+  box-shadow:
+    0 10px 28px -4px rgba(198, 161, 91, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+}
+
+/* Card Trigger Header */
+.faq-item__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  user-select: none;
+  transition: background var(--transition-fast, 150ms ease);
+}
+
+.faq-item__question {
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-brown, #2B211D);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+.faq-item__icon-wrap {
+  flex-shrink: 0;
+  width: 1.85rem;
+  height: 1.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(247, 239, 230, 0.7);
+  border: 1.5px solid rgba(198, 161, 91, 0.4);
+  color: var(--color-gold, #C6A15B);
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.faq-item:hover .faq-item__icon-wrap {
+  border-color: var(--color-gold, #C6A15B);
+}
+
+.faq-item--open .faq-item__icon-wrap {
+  background: var(--color-gold, #C6A15B);
+  color: #ffffff;
+  border-color: var(--color-gold, #C6A15B);
+  box-shadow: 0 2px 8px rgba(198, 161, 91, 0.35);
+}
+
+/* Card Content / Body */
+.faq-item__content {
+  padding: 0 1.5rem 1.35rem 1.5rem;
+  animation: faqSlideDown 200ms ease-out forwards;
+}
+
+.faq-item__divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(198, 161, 91, 0.22);
+  margin-bottom: 1rem;
+}
+
+.faq-item__answer {
+  font-size: 0.9375rem;
+  line-height: 1.68;
+  color: var(--color-brown-light, #5C4A3E);
+  margin: 0;
+}
+
+.faq-inline-link {
+  color: var(--color-gold, #C6A15B);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-gold, #C6A15B);
+  transition: color var(--transition-fast, 150ms ease);
+}
+
+.faq-inline-link:hover {
+  color: var(--color-brown, #2B211D);
+}
+
+@keyframes faqSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .faq-section {
+    padding: 2.75rem 0 2rem 0;
+  }
+  .faq-section__title {
+    font-size: 1.85rem;
+  }
+  .faq-item__trigger {
+    padding: 1.125rem 1.25rem;
+  }
+  .faq-item__question {
+    font-size: 0.9375rem;
+  }
+  .faq-item__content {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+  }
+  .faq-item__answer {
+    font-size: 0.875rem;
+    line-height: 1.62;
+  }
+}

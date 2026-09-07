@@ -52,3 +52,48 @@ class PaymentVerifySerializer(serializers.Serializer):
     razorpay_payment_id = serializers.CharField(max_length=100)
     razorpay_signature = serializers.CharField(max_length=255)
     cashfree_order_id = serializers.CharField(max_length=100, required=False, allow_blank=True)
+
+
+class ManualUPISubmitSerializer(serializers.Serializer):
+    """
+    Validates customer manual UPI payment proof submission.
+    Requires order_number, transaction/UTR reference ID, and screenshot file.
+    """
+    order_number = serializers.CharField(max_length=100, required=False)
+    order_id = serializers.CharField(max_length=100, required=False)
+    transaction_id = serializers.CharField(max_length=100)
+    payment_screenshot = serializers.FileField()
+
+    def validate_transaction_id(self, value):
+        val = (value or '').strip()
+        if not val or len(val) < 4:
+            raise serializers.ValidationError("Please provide a valid UPI Transaction / UTR ID (at least 4 characters).")
+        if len(val) > 100:
+            raise serializers.ValidationError("Transaction ID cannot exceed 100 characters.")
+        return val
+
+    def validate(self, data):
+        order_ref = (data.get('order_number') or data.get('order_id') or '').strip()
+        if not order_ref:
+            raise serializers.ValidationError({"order_number": "Order number or ID is required."})
+        data['order_number'] = order_ref
+        return data
+
+
+class PaymentVerificationSerializer(serializers.ModelSerializer):
+    """
+    Public and admin representation of a PaymentVerification record.
+    """
+    order_number = serializers.CharField(source='order.order_number', read_only=True)
+    customer_name = serializers.CharField(source='order.customer_name', read_only=True)
+    customer_email = serializers.CharField(source='order.customer_email', read_only=True)
+
+    class Meta:
+        from .models import PaymentVerification
+        model = PaymentVerification
+        fields = [
+            'id', 'order_number', 'customer_name', 'customer_email',
+            'payment_method', 'transaction_id', 'amount', 'currency',
+            'status', 'rejection_reason', 'submitted_at', 'verified_at'
+        ]
+        read_only_fields = fields

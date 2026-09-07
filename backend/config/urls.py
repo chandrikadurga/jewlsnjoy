@@ -32,9 +32,14 @@ def api_root(request):
             'admin_products': '/api/admin/products/',
             'admin_orders': '/api/admin/orders/',
             'django_admin': '/admin/',
+            'shipping_serviceability': '/api/shipping/serviceability/',
+            'shipping_order_track': '/api/shipping/orders/<order_number>/',
         }
     })
 
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', api_root, name='api-index'),
@@ -44,5 +49,9 @@ urlpatterns = [
     path('api/categories/', include('products.category_urls')),
     path('api/orders/', include('products.order_urls')),
     path('api/payments/', include('payments.urls')),
+    path('api/shipping/', include('shipping.urls')),
     path('api/admin/', include('products.admin_urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

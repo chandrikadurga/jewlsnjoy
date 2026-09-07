@@ -27,7 +27,7 @@ const TRACKING_STEPS = [
 function getStepIndex(status) {
   if (!status) return 0;
   const s = status.toLowerCase();
-  if (s === 'pending' || s === 'order_placed') return 0;
+  if (s === 'pending' || s === 'order_placed' || s === 'awaiting_payment_verification') return 0;
   if (s === 'confirmed') return 1;
   if (s === 'processing') return 2;
   if (s === 'shipped') return 3;
@@ -66,21 +66,17 @@ export default function OrderDetail() {
   };
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate(`/login?redirect=/orders/${encodeURIComponent(orderId || '')}`, { replace: true });
-      return;
-    }
-    if (user && orderId) {
+    if (orderId) {
       fetchOrder(true);
     }
-  }, [user, authLoading, orderId, navigate]);
+  }, [orderId]);
 
   const handleRefresh = () => {
     setRefreshing(true);
     fetchOrder(false);
   };
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
       <div className="order-detail-page">
         <div className="container" style={{ textAlign: 'center', padding: '6rem 0' }}>
@@ -98,11 +94,11 @@ export default function OrderDetail() {
             <AlertCircle size={48} color="var(--color-error, #9b3c3c)" strokeWidth={1.5} style={{ margin: '0 auto 1rem auto' }} />
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', color: 'var(--color-brown)', margin: '0 0 0.5rem 0' }}>Order Not Found</h2>
             <p style={{ color: 'var(--color-muted)', marginBottom: '1.5rem', maxWidth: '400px', margin: '0 auto 1.5rem auto' }}>
-              We could not find order <strong>#{orderId}</strong> under your verified account. Please verify the order number or check your orders list.
+              We could not find order <strong>#{orderId}</strong>. Please check your order ID from your confirmation email/receipt and try again.
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <Link to="/orders" className="order-track-btn">
-                View My Orders
+                Track Another Order
               </Link>
               <Link to="/shop" className="account-signout-btn">
                 Continue Shopping
@@ -155,6 +151,44 @@ export default function OrderDetail() {
             <div>
               <strong style={{ display: 'block', fontSize: '1rem' }}>Order Cancelled</strong>
               <span>This order was cancelled. If you have questions or need a refund inquiry, please contact our support team.</span>
+            </div>
+          </div>
+        )}
+
+        {/* Payment Verification Pending Banner */}
+        {order.status === 'awaiting_payment_verification' && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            background: '#fffbeb',
+            border: '1px solid #fde68a',
+            borderRadius: '12px',
+            padding: '1.25rem 1.5rem',
+            marginBottom: '1.5rem',
+            color: '#92400e',
+          }}>
+            <Clock size={28} style={{ flexShrink: 0, color: '#d97706' }} />
+            <div>
+              <strong style={{ display: 'block', fontSize: '1rem', marginBottom: '0.25rem' }}>
+                Payment Verification in Progress
+              </strong>
+              <span style={{ fontSize: '0.875rem', lineHeight: '1.45' }}>
+                We have received your UPI payment screenshot and reference. Our team is manually verifying the transaction with our bank account. Once verified, your order status will update to <strong>Confirmed</strong>.
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Payment Rejected Banner */}
+        {order.payment_status === 'rejected' && (
+          <div className="order-cancelled-banner" style={{ background: '#fef2f2', borderColor: '#fca5a5', marginBottom: '1.5rem' }}>
+            <AlertCircle size={24} color="#dc2626" />
+            <div>
+              <strong style={{ display: 'block', fontSize: '1rem', color: '#991b1b' }}>Payment Verification Unsuccessful</strong>
+              <span style={{ color: '#7f1d1d' }}>
+                We could not verify the transaction with the provided details. Please reach out to our team on WhatsApp (+91 9457650897) with your payment receipt for instant assistance.
+              </span>
             </div>
           </div>
         )}
@@ -284,6 +318,39 @@ export default function OrderDetail() {
                 <span>Payment Method</span>
                 <span>{order.payment_method} ({order.payment_status})</span>
               </div>
+              {order.shipment && order.shipment.awb_number && (
+                <>
+                  <div className="order-info-row" style={{ borderTop: '1px dashed var(--color-border)', paddingTop: '0.75rem', marginTop: '0.75rem' }}>
+                    <span>Shipping Carrier</span>
+                    <strong style={{ color: 'var(--color-brown)' }}>Delhivery Express</strong>
+                  </div>
+                  <div className="order-info-row">
+                    <span>AWB Number</span>
+                    <span style={{ fontFamily: 'monospace', fontWeight: '600', color: 'var(--color-gold)' }}>
+                      {order.shipment.awb_number}
+                    </span>
+                  </div>
+                  <div className="order-info-row">
+                    <span>Shipment Status</span>
+                    <span style={{ textTransform: 'capitalize', fontWeight: '500' }}>
+                      {order.shipment.provider_status || order.shipment.shipment_status?.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  {order.shipment.tracking_url && (
+                    <div style={{ marginTop: '0.75rem', textAlign: 'right' }}>
+                      <a
+                        href={order.shipment.tracking_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="order-track-btn"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', padding: '6px 12px' }}
+                      >
+                        Track on Delhivery ↗
+                      </a>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

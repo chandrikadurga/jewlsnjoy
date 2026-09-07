@@ -147,9 +147,36 @@ export default function FooterGlow({
                   Track Order
                 </Link>
               </li>
+              <li>
+                <Link to="/faq" className="footer-glow__link">
+                  FAQs
+                </Link>
+              </li>
             </ul>
           </div>
         </nav>
+      </div>
+
+      {/* Secure Payment Methods Strip */}
+      <div className="footer-payment-strip" aria-label="Accepted payment methods">
+        <div className="footer-payment-strip__header">
+          <svg className="footer-payment-strip__lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span className="footer-payment-strip__title">Secure Payments</span>
+        </div>
+        <div className="footer-payment-strip__badges">
+          <span className="footer-payment-badge" title="UPI Payment (Google Pay, PhonePe, Paytm, CRED, BHIM)">
+            <span className="footer-payment-badge__icon-symbol">⚡</span>
+            <span className="footer-payment-badge__text">UPI</span>
+          </span>
+          <span className="footer-payment-strip__sep" aria-hidden="true">•</span>
+          <span className="footer-payment-badge" title="Cash on Delivery available on eligible orders">
+            <span className="footer-payment-badge__icon-symbol">📦</span>
+            <span className="footer-payment-badge__text">COD</span>
+          </span>
+        </div>
       </div>
 
       {/* Copyright & Legal Links */}

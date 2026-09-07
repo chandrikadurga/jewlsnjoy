@@ -126,6 +126,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
+    payment_verification = serializers.SerializerMethodField()
+    shipment = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -135,9 +137,59 @@ class OrderSerializer(serializers.ModelSerializer):
             'total_amount', 'currency', 'payment_method', 'payment_status', 'status',
             'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature',
             'cashfree_order_id', 'cashfree_payment_id', 'cashfree_payment_session_id',
-            'notes', 'created_at', 'updated_at', 'items',
+            'notes', 'created_at', 'updated_at', 'items', 'payment_verification', 'shipment',
         ]
         read_only_fields = ['id', 'order_number', 'user_id', 'created_at', 'updated_at']
+
+    def get_shipment(self, obj):
+        try:
+            sh = getattr(obj, 'shipment', None)
+            if not sh:
+                return None
+            return {
+                'id': sh.id,
+                'provider': sh.provider,
+                'awb_number': sh.awb_number,
+                'shipment_status': sh.shipment_status,
+                'provider_status': sh.provider_status,
+                'payment_mode': sh.payment_mode,
+                'cod_amount': str(sh.cod_amount),
+                'tracking_url': sh.tracking_url,
+                'label_url': sh.label_url,
+                'pickup_location': sh.pickup_location,
+                'pickup_token_number': sh.pickup_token_number,
+                'tracking_events': sh.tracking_events,
+                'last_synced_at': sh.last_synced_at.isoformat() if sh.last_synced_at else None,
+                'created_at': sh.created_at.isoformat() if sh.created_at else None,
+            }
+        except Exception:
+            return None
+
+    def get_payment_verification(self, obj):
+        try:
+            verifs = getattr(obj, 'manual_payment_verifications', None)
+            pv = verifs.first() if verifs is not None else None
+            if not pv:
+                return None
+            from payments.storage import create_signed_proof_url
+            proof_url = None
+            if pv.payment_proof_path:
+                proof_url = create_signed_proof_url(pv.payment_proof_path, expires_in=3600)
+            return {
+                'id': pv.id,
+                'order_id': obj.id,
+                'order_number': obj.order_number,
+                'transaction_id': pv.transaction_id,
+                'payment_proof_url': proof_url,
+                'amount': str(pv.amount),
+                'currency': pv.currency,
+                'status': pv.status,
+                'submitted_at': pv.submitted_at.isoformat() if pv.submitted_at else None,
+                'verified_at': pv.verified_at.isoformat() if pv.verified_at else None,
+                'rejection_reason': pv.rejection_reason,
+            }
+        except Exception:
+            return None
 
 
 class OrderCreateSerializer(serializers.Serializer):

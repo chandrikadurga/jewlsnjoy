@@ -279,20 +279,19 @@ class CustomerOrderListView(APIView):
 class CustomerOrderTrackView(APIView):
     """
     GET /api/orders/track/<str:order_number>/
-    Returns order tracking details for authenticated customer.
-    Requires Bearer token matching Order.user_id.
-    Always returns 404 NOT FOUND (never 403) on unauthorized or missing orders
-    to avoid leaking whether an order number exists.
+    Returns order tracking details by order_number or numeric order ID.
+    Works for both guest customers and authenticated users without requiring login/signup.
     """
     def get(self, request, order_number):
-        auth_user = get_authenticated_supabase_user(request)
-        if not auth_user or not auth_user.get('uid'):
-            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+        clean_num = str(order_number or '').strip()
+        if not clean_num:
+            return Response({'error': 'Order number is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user_uid = auth_user['uid']
-        clean_num = order_number.strip()
+        # Lookup by order_number (e.g. ORD-XXXXXX), or by primary key ID if purely numeric
+        order = Order.objects.filter(order_number__iexact=clean_num).prefetch_related('items').first()
+        if not order and clean_num.isdigit():
+            order = Order.objects.filter(pk=int(clean_num)).prefetch_related('items').first()
 
-        order = Order.objects.filter(order_number__iexact=clean_num, user_id=user_uid).prefetch_related('items').first()
         if not order:
             return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -551,7 +550,7 @@ class AdminOrderListView(APIView):
     GET /api/admin/orders/
     """
     def get(self, request):
-        orders = Order.objects.prefetch_related('items').all()
+        orders = Order.objects.prefetch_related('items', 'manual_payment_verifications').all().order_by('-created_at')
         status_filter = request.query_params.get('status')
         if status_filter and status_filter != 'all':
             orders = orders.filter(status=status_filter.lower())

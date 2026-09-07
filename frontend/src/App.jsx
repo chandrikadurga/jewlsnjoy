@@ -12,6 +12,7 @@ import About from './pages/About/About';
 import Contact from './pages/Contact/Contact';
 import Checkout from './pages/Checkout/Checkout';
 import Policies from './pages/Policies/Policies';
+import FAQ from './pages/FAQ/FAQ';
 import NotFound from './pages/NotFound';
 
 // Customer Account & Wishlist Pages
@@ -45,6 +46,7 @@ function App() {
                 <Route path="/about"         element={<About />} />
                 <Route path="/contact"       element={<Contact />} />
                 <Route path="/checkout"      element={<Checkout />} />
+                <Route path="/faq"           element={<FAQ />} />
                 <Route path="/policies"        element={<Policies />} />
                 <Route path="/return-policy"   element={<Policies />} />
                 <Route path="/privacy-policy"  element={<Policies />} />

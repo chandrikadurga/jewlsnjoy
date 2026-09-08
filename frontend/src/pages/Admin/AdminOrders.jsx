@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   Search,
   ShoppingBag,
@@ -148,14 +148,38 @@ export default function AdminOrders() {
   }, []);
 
   const [modalVerifLoading, setModalVerifLoading] = useState(false);
+  const hasFetchedVerifRef = useRef(new Set());
 
-  const resolveProofUrl = (url) => {
-    if (!url) return '';
+  const resolveProofUrl = useCallback((url) => {
+    if (!url || typeof url !== 'string') return '';
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    return `http://localhost:8000${url.startsWith('/') ? '' : '/'}${url}`;
-  };
+    if (url.startsWith('supabase://')) {
+      const cleanPath = url.replace('supabase://', '');
+      const sbUrl = import.meta.env.VITE_SUPABASE_URL || 'https://hlxffdtkghzednkpwxlb.supabase.co';
+      return `${sbUrl.replace(/\/$/, '')}/storage/v1/object/public/${cleanPath}`;
+    }
+    if (url.startsWith('local://')) {
+      const clean = url.replace('local://', '').replace(/^\/+/, '');
+      const base = import.meta.env.VITE_API_BASE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8000' : '');
+      return `${base.replace(/\/$/, '')}/media/${clean}`;
+    }
+    const base = import.meta.env.VITE_API_BASE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8000' : '');
+    return `${base.replace(/\/$/, '')}${url.startsWith('/') ? '' : '/'}${url}`;
+  }, []);
 
-  const getVerificationForOrder = (order) => {
+  // O(1) memoized lookup map for verifications
+  const verificationsMap = useMemo(() => {
+    const map = new Map();
+    if (!Array.isArray(verifications)) return map;
+    verifications.forEach((v) => {
+      if (v.order_number) map.set(String(v.order_number).trim().toLowerCase(), v);
+      if (v.order_id) map.set(String(v.order_id), v);
+      if (v.order) map.set(String(v.order), v);
+    });
+    return map;
+  }, [verifications]);
+
+  const getVerificationForOrder = useCallback((order) => {
     if (!order) return null;
     if (order.payment_verification && (order.payment_verification.transaction_id || order.payment_verification.payment_proof_url)) {
       return {
@@ -165,11 +189,7 @@ export default function AdminOrders() {
     }
     const orderNum = String(order.order_number || '').trim().toLowerCase();
     const orderId = String(order.id || '');
-    const found = verifications.find((v) => {
-      const vNum = String(v.order_number || '').trim().toLowerCase();
-      const vOrderId = String(v.order_id || v.order || '');
-      return (vNum && vNum === orderNum) || (vOrderId && vOrderId === orderId);
-    });
+    const found = verificationsMap.get(orderNum) || verificationsMap.get(orderId);
     if (found) {
       return {
         ...found,
@@ -177,7 +197,7 @@ export default function AdminOrders() {
       };
     }
     return null;
-  };
+  }, [verificationsMap, resolveProofUrl]);
 
   const selectedOrderVerif = selectedOrder ? getVerificationForOrder(selectedOrder) : null;
   const isSelectedOrderManualUpi = Boolean(
@@ -189,10 +209,12 @@ export default function AdminOrders() {
     )
   );
 
-  // When opening an order that uses manual UPI, ensure verifications are freshly fetched
+  // When opening an order that uses manual UPI, ensure verifications are fetched at most once per order
   useEffect(() => {
     if (!selectedOrder) return;
-    if (isSelectedOrderManualUpi && !selectedOrderVerif) {
+    const key = selectedOrder.order_number || String(selectedOrder.id);
+    if (isSelectedOrderManualUpi && !selectedOrderVerif && !hasFetchedVerifRef.current.has(key)) {
+      hasFetchedVerifRef.current.add(key);
       setModalVerifLoading(true);
       adminApi.getPaymentVerifications()
         .then((data) => {
@@ -307,11 +329,13 @@ export default function AdminOrders() {
     });
   };
 
-  const pendingVerificationCount = orders.filter(
-    (o) => o.status === 'awaiting_payment_verification' || o.payment_status === 'pending_verification'
-  ).length;
+  const pendingVerificationCount = useMemo(() => {
+    return orders.filter(
+      (o) => o.status === 'awaiting_payment_verification' || o.payment_status === 'pending_verification'
+    ).length;
+  }, [orders]);
 
-  const STATUS_TABS = [
+  const STATUS_TABS = useMemo(() => [
     { id: 'All', label: 'All' },
     { id: 'awaiting_payment_verification', label: 'Awaiting Verification', count: pendingVerificationCount },
     { id: 'pending', label: 'Pending' },
@@ -320,27 +344,31 @@ export default function AdminOrders() {
     { id: 'shipped', label: 'Shipped' },
     { id: 'delivered', label: 'Delivered' },
     { id: 'cancelled', label: 'Cancelled' },
-  ];
+  ], [pendingVerificationCount]);
 
-  const filteredOrders = orders.filter((o) => {
-    let statusMatch = false;
-    if (activeTab === 'All') {
-      statusMatch = true;
-    } else if (activeTab === 'awaiting_payment_verification') {
-      statusMatch =
-        o.status === 'awaiting_payment_verification' ||
-        o.payment_status === 'pending_verification';
-    } else {
-      statusMatch = o.status?.toLowerCase() === activeTab.toLowerCase();
-    }
-    const q = searchQuery.toLowerCase();
-    const searchMatch =
-      !q ||
-      o.order_number?.toLowerCase().includes(q) ||
-      o.customer_name?.toLowerCase().includes(q) ||
-      (o.customer_email && o.customer_email.toLowerCase().includes(q));
-    return statusMatch && searchMatch;
-  });
+  const filteredOrders = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    const activeTabLower = activeTab.toLowerCase();
+    return orders.filter((o) => {
+      let statusMatch = false;
+      if (activeTab === 'All') {
+        statusMatch = true;
+      } else if (activeTab === 'awaiting_payment_verification') {
+        statusMatch =
+          o.status === 'awaiting_payment_verification' ||
+          o.payment_status === 'pending_verification';
+      } else {
+        statusMatch = o.status?.toLowerCase() === activeTabLower;
+      }
+      if (!statusMatch) return false;
+      if (!q) return true;
+      return (
+        o.order_number?.toLowerCase().includes(q) ||
+        o.customer_name?.toLowerCase().includes(q) ||
+        (o.customer_email && o.customer_email.toLowerCase().includes(q))
+      );
+    });
+  }, [orders, activeTab, searchQuery]);
 
   return (
     <div className="admin-orders-page">
@@ -572,6 +600,144 @@ export default function AdminOrders() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Order Cards (Optimized, lightweight, 60fps mobile list) */}
+        <div className="admin-mobile-orders">
+          {filteredOrders.length === 0 ? (
+            <div className="admin-mobile-empty">No orders found</div>
+          ) : (
+            filteredOrders.map((order) => {
+              const verification = getVerificationForOrder(order);
+              const isAwaiting =
+                order.status === 'awaiting_payment_verification' ||
+                order.payment_status === 'pending_verification';
+
+              return (
+                <div
+                  key={order.id}
+                  className={`admin-mobile-order-card ${isAwaiting ? 'admin-mobile-order-card--awaiting' : ''}`}
+                >
+                  <div className="admin-mobile-order-header">
+                    <div className="admin-mobile-order-id-wrap">
+                      <span
+                        className="admin-order-link"
+                        onClick={() => setSelectedOrder(order)}
+                      >
+                        {order.order_number}
+                      </span>
+                      {isAwaiting && (
+                        <span className="admin-verification-badge--pending admin-mobile-awaiting-badge">
+                          Verify Proof
+                        </span>
+                      )}
+                    </div>
+                    <select
+                      value={order.status}
+                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                      className={`admin-status-select admin-status-select--${order.status}`}
+                    >
+                      <option value="awaiting_payment_verification">Awaiting</option>
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+
+                  <div className="admin-mobile-order-customer">
+                    <span className="admin-customer-name">{order.customer_name}</span>
+                    <span className="admin-mobile-date">{formatDate(order.created_at)}</span>
+                  </div>
+
+                  <div className="admin-mobile-order-meta">
+                    <span className="admin-mobile-total">{formatCurrency(order.total_amount)}</span>
+                    <div className="admin-mobile-tags">
+                      <span className="admin-payment-pill">
+                        {order.payment_method === 'manual_upi' ? 'UPI (QR)' : (order.payment_method || 'Online')}
+                      </span>
+                      <span className={`admin-paystatus-pill admin-paystatus-pill--${order.payment_status}`}>
+                        {order.payment_status === 'paid'
+                          ? 'Paid'
+                          : order.payment_status === 'pending_verification'
+                          ? 'Reviewing'
+                          : order.payment_status === 'rejected'
+                          ? 'Rejected'
+                          : (order.payment_status || 'Pending')}
+                      </span>
+                    </div>
+                  </div>
+
+                  {verification && (
+                    <div className="admin-mobile-verif-box">
+                      <div className="admin-mobile-verif-left">
+                        {verification.payment_proof_url ? (
+                          <div
+                            className="admin-proof-thumb-preview"
+                            onClick={() =>
+                              setLightboxData({
+                                url: resolveProofUrl(verification.payment_proof_url),
+                                orderNumber: order.order_number,
+                                utr: verification.transaction_id,
+                                amount: verification.amount,
+                              })
+                            }
+                            title="Click to zoom screenshot"
+                          >
+                            <img
+                              src={resolveProofUrl(verification.payment_proof_url)}
+                              alt="Proof"
+                              className="admin-proof-thumb-img"
+                              loading="lazy"
+                            />
+                            <div className="admin-proof-thumb-hover">
+                              <ZoomIn size={12} />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="admin-proof-no-thumb" title="No screenshot">
+                            <ImageIcon size={14} />
+                          </div>
+                        )}
+                        <div className="admin-mobile-utr">
+                          <span className="admin-mobile-utr-label">UTR:</span>
+                          <span className="admin-mobile-utr-val" title={verification.transaction_id}>
+                            {verification.transaction_id || 'Not Provided'}
+                          </span>
+                        </div>
+                      </div>
+                      {verification.transaction_id && (
+                        <button
+                          type="button"
+                          className="admin-copy-utr-btn"
+                          onClick={(e) => handleCopyUtr(verification.transaction_id, e)}
+                          title="Copy UTR"
+                        >
+                          {copiedUtr === verification.transaction_id ? (
+                            <Check size={12} color="#4ade80" />
+                          ) : (
+                            <Copy size={12} />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="admin-mobile-order-actions">
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn--secondary admin-btn--sm admin-mobile-details-btn"
+                      onClick={() => setSelectedOrder(order)}
+                    >
+                      View Details &amp; Packing Slip
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
 
       {/* Order Detail / Packing Slip Modal */}
@@ -685,7 +851,7 @@ export default function AdminOrders() {
                               className="admin-modal-screenshot-container"
                               onClick={() =>
                                 setLightboxData({
-                                  url: selectedOrderVerif.payment_proof_url,
+                                  url: resolveProofUrl(selectedOrderVerif.payment_proof_url),
                                   orderNumber: selectedOrder.order_number,
                                   utr: selectedOrderVerif.transaction_id,
                                   amount: selectedOrderVerif.amount,
@@ -694,7 +860,7 @@ export default function AdminOrders() {
                               title="Click to zoom screenshot"
                             >
                               <img
-                                src={selectedOrderVerif.payment_proof_url}
+                                src={resolveProofUrl(selectedOrderVerif.payment_proof_url)}
                                 alt="Customer Payment Receipt"
                                 className="admin-modal-screenshot-img"
                               />
@@ -704,7 +870,7 @@ export default function AdminOrders() {
                               </div>
                             </div>
                             <a
-                              href={selectedOrderVerif.payment_proof_url}
+                              href={resolveProofUrl(selectedOrderVerif.payment_proof_url)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="admin-modal-open-tab-link"
@@ -982,7 +1148,7 @@ export default function AdminOrders() {
               </div>
               <div className="admin-lightbox-tools">
                 <a
-                  href={lightboxData.url}
+                  href={resolveProofUrl(lightboxData.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="admin-btn admin-btn--secondary admin-btn--sm"
@@ -1002,7 +1168,7 @@ export default function AdminOrders() {
             </div>
             <div className="admin-lightbox-body">
               <img
-                src={lightboxData.url}
+                src={resolveProofUrl(lightboxData.url)}
                 alt="Payment Screenshot High Resolution"
                 className="admin-lightbox-img"
               />

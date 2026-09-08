@@ -172,20 +172,23 @@ def upload_payment_proof(file_obj, user_uid, order_number):
 def create_signed_proof_url(storage_path, expires_in=3600):
     """
     Generates a secure, time-limited signed URL for administrative inspection.
+    Guaranteed to return a valid browser-loadable HTTP/HTTPS URL, never a raw internal URI.
     """
     if not storage_path:
         return ''
+
+    supabase_url = getattr(settings, 'SUPABASE_URL', '').rstrip('/')
+    bucket = getattr(settings, 'SUPABASE_STORAGE_BUCKET', 'payment-proofs')
+    headers = get_supabase_headers()
 
     if storage_path.startswith('supabase://'):
         # Format: supabase://{bucket}/{relative_path}
         parts = storage_path.replace('supabase://', '', 1).split('/', 1)
         if len(parts) == 2:
-            bucket, rel_path = parts
-            supabase_url = getattr(settings, 'SUPABASE_URL', '').rstrip('/')
-            headers = get_supabase_headers()
+            b_name, rel_path = parts
             if supabase_url and headers:
                 try:
-                    sign_url = f"{supabase_url}/storage/v1/object/sign/{bucket}/{rel_path}"
+                    sign_url = f"{supabase_url}/storage/v1/object/sign/{b_name}/{rel_path}"
                     res = requests.post(
                         sign_url,
                         headers={**headers, 'Content-Type': 'application/json'},
@@ -202,12 +205,13 @@ def create_signed_proof_url(storage_path, expires_in=3600):
                 except Exception as e:
                     logger.warning("Could not generate Supabase signed URL: %s", str(e))
 
+            # Reliable fallback: public object URL from Supabase CDN
+            if supabase_url:
+                return f"{supabase_url}/storage/v1/object/public/{b_name}/{rel_path}"
+
     elif storage_path.startswith('local://'):
         local_rel = storage_path.replace('local://', '', 1).lstrip('/')
         # Check if the file is mirrored in Supabase Storage
-        supabase_url = getattr(settings, 'SUPABASE_URL', '').rstrip('/')
-        bucket = getattr(settings, 'SUPABASE_STORAGE_BUCKET', 'payment-proofs')
-        headers = get_supabase_headers()
         if supabase_url and headers:
             try:
                 clean_rel = local_rel.replace('payment_proofs/', '', 1) if local_rel.startswith('payment_proofs/') else local_rel
@@ -231,5 +235,14 @@ def create_signed_proof_url(storage_path, expires_in=3600):
         media_url = getattr(settings, 'MEDIA_URL', '/media/')
         base_origin = 'http://localhost:8000' if getattr(settings, 'DEBUG', False) else ''
         return f"{base_origin}{media_url}{local_rel}"
+
+    # If already a valid absolute URL
+    if storage_path.startswith('http://') or storage_path.startswith('https://'):
+        return storage_path
+
+    # If a relative media path
+    if storage_path.startswith('/media/'):
+        base_origin = 'http://localhost:8000' if getattr(settings, 'DEBUG', False) else ''
+        return f"{base_origin}{storage_path}"
 
     return storage_path

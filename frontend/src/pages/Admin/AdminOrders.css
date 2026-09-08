@@ -806,4 +806,250 @@
   to { opacity: 1; transform: scale(1); }
 }
 
+/* ─── Mobile Orders Cards (Hidden on Desktop) ─── */
+.admin-mobile-orders {
+  display: none;
+}
+
+/* ─── Mobile Performance & Responsive Overhauls ─── */
+@media (max-width: 768px) {
+  /* Disable expensive backdrop blurs on mobile for fluid 60fps scrolling */
+  .admin-lightbox-backdrop,
+  .admin-modal-backdrop {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(14, 10, 8, 0.94) !important;
+  }
+
+  /* Orders Bar & Search */
+  .admin-orders-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .admin-orders-search {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .admin-status-tabs {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    padding: 0.35rem;
+  }
+
+  .admin-status-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-tab-btn {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.78rem;
+  }
+
+  /* Hide the heavy 8-column table on mobile */
+  .admin-table-wrap {
+    display: none !important;
+  }
+
+  /* Show high-performance native card layout on mobile */
+  .admin-mobile-orders {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.25rem 0;
+    contain: content;
+  }
+
+  .admin-mobile-order-card {
+    background: #1b1511;
+    border: 1px solid rgba(194, 163, 112, 0.18);
+    border-radius: 10px;
+    padding: 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    contain: layout style;
+  }
+
+  .admin-mobile-order-card--awaiting {
+    border-color: rgba(245, 158, 11, 0.4);
+    background: linear-gradient(180deg, #221a13 0%, #1a1410 100%);
+  }
+
+  .admin-mobile-order-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .admin-mobile-order-id-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .admin-mobile-awaiting-badge {
+    padding: 2px 6px;
+    font-size: 0.68rem;
+    border-radius: 4px;
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+  }
+
+  .admin-mobile-order-customer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.82rem;
+  }
+
+  .admin-mobile-date {
+    font-size: 0.72rem;
+    color: rgba(247, 239, 230, 0.45);
+  }
+
+  .admin-mobile-order-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.65rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 6px;
+    border: 1px solid rgba(194, 163, 112, 0.08);
+  }
+
+  .admin-mobile-total {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #c2a370;
+  }
+
+  .admin-mobile-tags {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .admin-mobile-verif-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(194, 163, 112, 0.06);
+    border: 1px solid rgba(194, 163, 112, 0.2);
+    border-radius: 6px;
+    padding: 0.5rem 0.65rem;
+  }
+
+  .admin-mobile-verif-left {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+  }
+
+  .admin-mobile-utr {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .admin-mobile-utr-label {
+    font-size: 0.62rem;
+    color: rgba(247, 239, 230, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .admin-mobile-utr-val {
+    font-size: 0.76rem;
+    font-family: monospace;
+    color: #c2a370;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+  }
+
+  .admin-mobile-order-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .admin-mobile-details-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.5rem;
+    font-size: 0.78rem;
+  }
+
+  .admin-mobile-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: rgba(247, 239, 230, 0.5);
+    font-size: 0.85rem;
+  }
+
+  /* Modal responsiveness */
+  .admin-modal--order {
+    max-width: 96vw;
+    width: 96vw;
+    max-height: 92vh;
+  }
+
+  .admin-order-modal-body {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .admin-order-details-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .admin-verification-body {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .admin-modal-screenshot-container {
+    height: 190px;
+  }
+
+  .admin-verification-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .admin-btn--approve,
+  .admin-btn--reject {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Lightbox on mobile */
+  .admin-lightbox-dialog {
+    max-width: 96vw;
+    width: 96vw;
+    max-height: 94vh;
+  }
+
+  .admin-lightbox-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .admin-lightbox-img {
+    max-height: 65vh;
+  }
+}
+
 

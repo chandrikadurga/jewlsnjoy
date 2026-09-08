@@ -445,7 +445,7 @@ export default function Checkout() {
                 Track Order Status
               </Link>
               <a
-                href={`https://wa.me/919457650897?text=${encodeURIComponent(
+                href={`https://wa.me/917251070150?text=${encodeURIComponent(
                   `Hello Jewels 'n' Joys! I just placed order ${confirmedOrderNumber}. Could you share delivery updates?`
                 )}`}
                 target="_blank"

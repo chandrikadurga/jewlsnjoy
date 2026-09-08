@@ -187,7 +187,7 @@ export default function OrderDetail() {
             <div>
               <strong style={{ display: 'block', fontSize: '1rem', color: '#991b1b' }}>Payment Verification Unsuccessful</strong>
               <span style={{ color: '#7f1d1d' }}>
-                We could not verify the transaction with the provided details. Please reach out to our team on WhatsApp (+91 9457650897) with your payment receipt for instant assistance.
+                We could not verify the transaction with the provided details. Please reach out to our team on WhatsApp (+91 7251070150) with your payment receipt for instant assistance.
               </span>
             </div>
           </div>

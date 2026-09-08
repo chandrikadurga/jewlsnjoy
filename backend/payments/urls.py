@@ -24,8 +24,9 @@ urlpatterns = [
     path('admin/verifications/<int:pk>/approve/', AdminPaymentApproveView.as_view(), name='admin-verifications-approve'),
     path('admin/verifications/<int:pk>/reject/', AdminPaymentRejectView.as_view(), name='admin-verifications-reject'),
 
-    # Preserved Razorpay Endpoints
+    # Razorpay Endpoints
     path('create/', RazorpayCreateOrderView.as_view(), name='payment-create'),
     path('verify/', RazorpayVerifyPaymentView.as_view(), name='payment-verify'),
     path('webhook/', RazorpayWebhookView.as_view(), name='payment-webhook'),
+    path('razorpay/webhook/', RazorpayWebhookView.as_view(), name='payment-razorpay-webhook'),
 ]

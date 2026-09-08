@@ -199,8 +199,8 @@ SUPABASE_STORAGE_BUCKET = os.getenv('SUPABASE_STORAGE_BUCKET', 'payment-proofs')
 
 # Delhivery One Shipping & Logistics Configuration
 DELHIVERY_ENABLED = os.getenv('DELHIVERY_ENABLED', 'True').lower() in ('true', '1', 't')
-DELHIVERY_ENV = os.getenv('DELHIVERY_ENV', 'sandbox').strip().lower()  # 'sandbox' or 'production'
-DELHIVERY_API_TOKEN = os.getenv('DELHIVERY_API_TOKEN', '').strip()
+DELHIVERY_ENV = (os.getenv('DELHIVERY_ENV', '').strip('\'" ').lower() or ('production' if not DEBUG else 'sandbox'))
+DELHIVERY_API_TOKEN = os.getenv('DELHIVERY_API_TOKEN', '').strip('\'" ')
 DELHIVERY_API_BASE_URL = os.getenv('DELHIVERY_API_BASE_URL', '').strip()
 DELHIVERY_PICKUP_LOCATION = (os.getenv('DELHIVERY_PICKUP_LOCATION', '').strip('\'" ') or 'Arpit Singh')
 DELHIVERY_DEFAULT_WEIGHT_G = int(os.getenv('DELHIVERY_DEFAULT_WEIGHT_G', '200'))

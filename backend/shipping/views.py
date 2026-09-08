@@ -43,6 +43,27 @@ from .utils import (
 logger = logging.getLogger('shipping.views')
 
 
+class AdminDelhiveryStatusView(APIView):
+    """
+    GET /api/shipping/admin/delhivery-status/
+    Diagnostic view to verify active Delhivery configuration on the server.
+    """
+    def get(self, request):
+        is_admin, _ = verify_admin_request(request)
+        if not is_admin:
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+        provider = DelhiveryShippingProvider()
+        return Response({
+            'enabled': provider.enabled,
+            'env': provider.env,
+            'base_url': provider.base_url,
+            'pickup_location': provider.pickup_location,
+            'token_configured': bool(provider.api_token),
+            'token_preview': (provider.api_token[:6] + '...' + provider.api_token[-4:]) if provider.api_token else 'NOT_CONFIGURED',
+        })
+
+
+
 def verify_admin_request(request):
     """
     Validates the custom X-Admin-Token header against admin_signer or static token.

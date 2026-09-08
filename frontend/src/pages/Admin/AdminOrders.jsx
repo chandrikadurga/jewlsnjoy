@@ -62,7 +62,19 @@ export default function AdminOrders() {
       }
       setShippingFeedback({ type: 'success', text: `Dispatched with AWB: ${res.shipment?.awb_number}` });
     } catch (err) {
-      const errText = err.response?.data?.error || 'Failed to dispatch shipment with Delhivery.';
+      const data = err.response?.data;
+      let errText = 'Failed to dispatch shipment with Delhivery.';
+      if (typeof data === 'string') {
+        errText = data;
+      } else if (data?.error) {
+        errText = typeof data.error === 'string' ? data.error : JSON.stringify(data.error);
+      } else if (data?.detail) {
+        errText = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+      } else if (data?.message) {
+        errText = data.message;
+      } else if (err.message) {
+        errText = err.message;
+      }
       setShippingFeedback({ type: 'error', text: errText });
       showToast(errText);
     } finally {

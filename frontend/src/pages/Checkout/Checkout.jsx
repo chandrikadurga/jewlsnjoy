@@ -4,6 +4,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { orderApi, shippingApi } from '../../services/api';
 import paymentService from '../../services/paymentService';
+import { UpiCardIcon, VisaCardIcon, MastercardIcon, PlusMoreIcon } from '../../components/PaymentStrip/PaymentStrip';
 import './Checkout.css';
 
 const INDIAN_STATES = [
@@ -792,7 +793,12 @@ export default function Checkout() {
                           <span className="checkout-pay-option__name">Pay Online</span>
                           <span className="checkout-pay-option__tag">Recommended</span>
                         </div>
-                        <span className="checkout-pay-option__brands">UPI • Cards • NetBanking • Wallets</span>
+                        <div className="checkout-pay-option__badges-row" style={{ display: 'flex', gap: '5px', alignItems: 'center', marginTop: '4px', flexWrap: 'wrap' }}>
+                          <UpiCardIcon />
+                          <VisaCardIcon />
+                          <MastercardIcon />
+                          <PlusMoreIcon count={8} />
+                        </div>
                       </div>
                       <p className="checkout-pay-option__desc">
                         Instant, secure payment powered by Razorpay. Supports Google Pay, PhonePe, Paytm, BHIM, Credit/Debit Cards, and NetBanking.

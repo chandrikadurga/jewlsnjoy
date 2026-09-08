@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import logoImg from '../../assets/footer-logo.png';
+import PaymentStrip from '../PaymentStrip/PaymentStrip';
 import './Footer.css';
 
 export default function FooterGlow({
@@ -158,26 +159,7 @@ export default function FooterGlow({
       </div>
 
       {/* Secure Payment Methods Strip */}
-      <div className="footer-payment-strip" aria-label="Accepted payment methods">
-        <div className="footer-payment-strip__header">
-          <svg className="footer-payment-strip__lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-          <span className="footer-payment-strip__title">Secure Payments</span>
-        </div>
-        <div className="footer-payment-strip__badges">
-          <span className="footer-payment-badge" title="Secure Online Payment powered by Razorpay">
-            <span className="footer-payment-badge__icon-symbol">💳</span>
-            <span className="footer-payment-badge__text">Razorpay</span>
-          </span>
-          <span className="footer-payment-strip__sep" aria-hidden="true">•</span>
-          <span className="footer-payment-badge" title="Cash on Delivery available on eligible orders">
-            <span className="footer-payment-badge__icon-symbol">📦</span>
-            <span className="footer-payment-badge__text">Cash on Delivery</span>
-          </span>
-        </div>
-      </div>
+      <PaymentStrip className="footer-payment-strip" showCod={true} showTitle={true} />
 
       {/* Copyright & Legal Links */}
       <div className="footer-glow__copyright relative z-10 mt-10 text-center text-xs flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6">

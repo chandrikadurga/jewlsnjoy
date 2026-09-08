@@ -1,0 +1,123 @@
+/* =============================================================
+   Jewels 'n' Joys — Payment Assurance Strip (UPI, Visa, Mastercard, +8)
+   ============================================================= */
+
+.payment-assurance-strip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.payment-assurance-strip__header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+}
+
+.payment-assurance-strip__lock {
+  width: 0.8125rem;
+  height: 0.8125rem;
+  color: var(--color-gold, #C6A15B);
+}
+
+.payment-assurance-strip__title {
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-gold, #C6A15B);
+  line-height: 1;
+}
+
+.payment-assurance-strip__cards {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.pay-card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  line-height: 1;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  user-select: none;
+  cursor: default;
+}
+
+.pay-card:hover {
+  transform: translateY(-2px);
+}
+
+.pay-card svg {
+  display: block;
+  width: 46px;
+  height: 28px;
+  border-radius: 5px;
+  box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pay-card--more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 28px;
+  padding: 0 6px;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.08);
+  letter-spacing: -0.02em;
+}
+
+.payment-assurance-strip__sep {
+  color: var(--color-gold, #C6A15B);
+  opacity: 0.5;
+  font-size: 0.75rem;
+  margin: 0 0.1rem;
+}
+
+.payment-assurance-strip__cod-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 0.75rem;
+  height: 28px;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(198, 161, 91, 0.35);
+  box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.04);
+  transition: all 150ms ease;
+}
+
+.payment-assurance-strip__cod-badge:hover {
+  background: #ffffff;
+  border-color: var(--color-gold, #C6A15B);
+  transform: translateY(-1px);
+}
+
+.cod-badge__icon {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.cod-badge__text {
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-brown, #2B211D);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}

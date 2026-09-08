@@ -238,7 +238,7 @@ class RazorpayPaymentsTests(TestCase):
         mock_create_rzp.return_value = {
             'success': True,
             'razorpay_order_id': 'order_mock_123456',
-            'amount': 135000,  # ₹1200 + ₹150 shipping = ₹1350 = 135000 paise
+            'amount': 120000,  # ₹1200 subtotal, free shipping over ₹999 = 120000 paise
             'currency': 'INR',
             'data': {'id': 'order_mock_123456'}
         }
@@ -260,7 +260,7 @@ class RazorpayPaymentsTests(TestCase):
         data = res.json()
         self.assertTrue(data.get('success'))
         self.assertEqual(data.get('order_id'), 'order_mock_123456')
-        self.assertEqual(data.get('amount'), 135000)
+        self.assertEqual(data.get('amount'), 120000)
         self.assertEqual(data.get('currency'), 'INR')
 
         # Check DB Order

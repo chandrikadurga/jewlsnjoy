@@ -190,10 +190,24 @@ export default function Checkout() {
 
     const getErrorText = (err) => {
       if (err.response?.data) {
-        if (typeof err.response.data === 'string') return err.response.data;
-        if (typeof err.response.data === 'object') {
-          return Object.entries(err.response.data)
-            .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(' ') : v}`)
+        const d = err.response.data;
+        if (typeof d === 'string') return d;
+        if (d.error) return typeof d.error === 'string' ? d.error : JSON.stringify(d.error);
+        if (d.message) return typeof d.message === 'string' ? d.message : JSON.stringify(d.message);
+        if (d.detail) return typeof d.detail === 'string' ? d.detail : JSON.stringify(d.detail);
+        if (typeof d === 'object') {
+          return Object.entries(d)
+            .map(([k, v]) => {
+              if (Array.isArray(v)) {
+                return `${k}: ${v.map((x) => {
+                  if (typeof x === 'object' && x !== null) {
+                    return x.non_field_errors?.join(' ') || Object.values(x).flat().join(' ') || JSON.stringify(x);
+                  }
+                  return x;
+                }).join(' ')}`;
+              }
+              return `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`;
+            })
             .join(' | ');
         }
       }
@@ -235,10 +249,12 @@ export default function Checkout() {
         state: form.state,
         postal_code: form.postalCode,
         country: 'India',
+        coupon_code: couponCode.trim().toUpperCase(),
         notes: couponCode ? `Coupon applied: ${couponCode}` : '',
         items: items.map((item) => ({
-          id: item.id,
-          quantity: item.quantity,
+          id: Number(item.product?.id || item.id),
+          product_id: Number(item.product?.id || item.id),
+          quantity: Number(item.quantity || 1),
         })),
       };
 

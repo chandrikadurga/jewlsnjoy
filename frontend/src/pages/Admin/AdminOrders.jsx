@@ -381,11 +381,58 @@ export default function AdminOrders() {
       console.error('Failed to update status on server:', err);
       showToast(`Status updated locally.`);
     }
+
+    const isAwaiting = newStatus === 'awaiting_payment_verification';
+    const isConfirmed = newStatus === 'confirmed';
+    const newPayStatus = isAwaiting ? 'pending_verification' : isConfirmed ? 'paid' : undefined;
+
     setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
+      prev.map((o) => {
+        if (o.id === orderId) {
+          const updatedPayStatus = newPayStatus !== undefined ? newPayStatus : o.payment_status;
+          return {
+            ...o,
+            status: newStatus,
+            payment_status: updatedPayStatus,
+            payment_verification: o.payment_verification
+              ? {
+                  ...o.payment_verification,
+                  status: isAwaiting ? 'pending_verification' : isConfirmed ? 'paid' : o.payment_verification.status,
+                }
+              : o.payment_verification,
+          };
+        }
+        return o;
+      })
     );
+
+    if (isAwaiting || isConfirmed) {
+      setVerifications((prev) =>
+        prev.map((v) => {
+          if (v.order_id === orderId || v.order === orderId) {
+            return { ...v, status: isAwaiting ? 'pending_verification' : 'paid' };
+          }
+          return v;
+        })
+      );
+    }
+
     if (selectedOrder && selectedOrder.id === orderId) {
-      setSelectedOrder((prev) => ({ ...prev, status: newStatus }));
+      setSelectedOrder((prev) => {
+        if (!prev) return null;
+        const updatedPayStatus = newPayStatus !== undefined ? newPayStatus : prev.payment_status;
+        return {
+          ...prev,
+          status: newStatus,
+          payment_status: updatedPayStatus,
+          payment_verification: prev.payment_verification
+            ? {
+                ...prev.payment_verification,
+                status: isAwaiting ? 'pending_verification' : isConfirmed ? 'paid' : prev.payment_verification.status,
+              }
+            : prev.payment_verification,
+        };
+      });
     }
   };
 
@@ -905,21 +952,34 @@ export default function AdminOrders() {
                     <h4 className="admin-verification-title">
                       <Clock size={16} /> Customer Payment Proof &amp; Verification
                     </h4>
-                    <span
-                      className={`admin-verification-badge ${
-                        selectedOrderVerif && (selectedOrderVerif.status === 'approved' || selectedOrderVerif.status === 'paid')
-                          ? 'admin-verification-badge--approved'
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <span
+                        className={`admin-verification-badge ${
+                          selectedOrderVerif && (selectedOrderVerif.status === 'approved' || selectedOrderVerif.status === 'paid')
+                            ? 'admin-verification-badge--approved'
+                            : selectedOrderVerif?.status === 'rejected'
+                            ? 'admin-verification-badge--rejected'
+                            : 'admin-verification-badge--pending'
+                        }`}
+                      >
+                        {selectedOrderVerif && (selectedOrderVerif.status === 'approved' || selectedOrderVerif.status === 'paid')
+                          ? '✓ Verified & Approved'
                           : selectedOrderVerif?.status === 'rejected'
-                          ? 'admin-verification-badge--rejected'
-                          : 'admin-verification-badge--pending'
-                      }`}
-                    >
-                      {selectedOrderVerif && (selectedOrderVerif.status === 'approved' || selectedOrderVerif.status === 'paid')
-                        ? '✓ Verified & Approved'
-                        : selectedOrderVerif?.status === 'rejected'
-                        ? '✗ Rejected'
-                        : '⏳ Pending Review'}
-                    </span>
+                          ? '✗ Rejected'
+                          : '⏳ Pending Review'}
+                      </span>
+                      {selectedOrderVerif && (selectedOrderVerif.status === 'approved' || selectedOrderVerif.status === 'paid' || selectedOrderVerif.status === 'rejected') && (
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--secondary admin-btn--sm"
+                          style={{ fontSize: '0.72rem', padding: '2px 8px' }}
+                          onClick={() => handleStatusChange(selectedOrder.id, 'awaiting_payment_verification')}
+                          title="Reset status back to awaiting verification to test or re-verify"
+                        >
+                          ↺ Reset to Pending
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {modalVerifLoading ? (
@@ -1026,7 +1086,7 @@ export default function AdminOrders() {
                         )}
                       </div>
 
-                      {(!selectedOrderVerif.status || selectedOrderVerif.status === 'pending' || selectedOrderVerif.status === 'pending_verification') && (
+                      {(!selectedOrderVerif.status || selectedOrderVerif.status === 'pending' || selectedOrderVerif.status === 'pending_verification' || selectedOrder.status === 'awaiting_payment_verification') && (
                         <div className="admin-verification-actions">
                           <button
                             type="button"

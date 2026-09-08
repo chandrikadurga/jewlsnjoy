@@ -580,6 +580,19 @@ class AdminOrderDetailView(APIView):
         new_status = request.data.get('status')
         if new_status:
             order.status = new_status
+            pv_qs = getattr(order, 'manual_payment_verifications', None)
+            if new_status == 'awaiting_payment_verification':
+                order.payment_status = 'pending_verification'
+                if pv_qs is not None:
+                    pv_qs.all().update(status='pending_verification')
+            elif new_status == 'confirmed':
+                order.payment_status = 'paid'
+                if pv_qs is not None:
+                    pv_qs.all().update(status='paid')
+            elif new_status == 'cancelled':
+                if pv_qs is not None:
+                    pv_qs.all().update(status='rejected')
+
         if 'notes' in request.data:
             order.notes = request.data.get('notes')
         order.save()

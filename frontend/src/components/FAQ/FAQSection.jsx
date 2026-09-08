@@ -43,8 +43,8 @@ export const FAQ_DATA = [
 ];
 
 export default function FAQSection({ title = "FAQ", subtitle = "Got questions? We're here with clear answers." }) {
-  // Store open question IDs (can toggle multiple open like in screenshot)
-  const [openIds, setOpenIds] = useState(['track-order']);
+  // Store open question IDs (starts completely collapsed by default)
+  const [openIds, setOpenIds] = useState([]);
 
   const toggleItem = (id) => {
     setOpenIds((prev) =>

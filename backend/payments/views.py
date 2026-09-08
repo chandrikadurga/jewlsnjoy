@@ -695,6 +695,11 @@ class AdminPaymentApproveView(APIView):
                         'order_number': order.order_number,
                         'payment_status': 'paid',
                         'status': order.status,
+                        'order': {
+                            'order_number': order.order_number,
+                            'payment_status': 'paid',
+                            'status': order.status,
+                        },
                     })
 
                 verification.status = 'paid'
@@ -718,6 +723,11 @@ class AdminPaymentApproveView(APIView):
                 'order_number': order.order_number,
                 'payment_status': 'paid',
                 'status': 'confirmed',
+                'order': {
+                    'order_number': order.order_number,
+                    'payment_status': 'paid',
+                    'status': 'confirmed',
+                },
             })
         except PaymentVerification.DoesNotExist:
             return Response({'error': 'Payment verification record not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -765,6 +775,11 @@ class AdminPaymentRejectView(APIView):
                 'order_number': order.order_number,
                 'payment_status': 'rejected',
                 'rejection_reason': reason,
+                'order': {
+                    'order_number': order.order_number,
+                    'payment_status': 'rejected',
+                    'status': order.status,
+                },
             })
         except PaymentVerification.DoesNotExist:
             return Response({'error': 'Payment verification record not found.'}, status=status.HTTP_404_NOT_FOUND)

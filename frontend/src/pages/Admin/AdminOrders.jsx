@@ -254,29 +254,58 @@ export default function AdminOrders() {
     try {
       setActionLoadingId(verificationId);
       const res = await adminApi.approvePaymentVerification(verificationId);
-      showToast('Payment verified successfully! Order marked as confirmed & inventory updated.');
+      showToast('Payment verified successfully! Updating...');
 
+      const targetOrderNumber = res.order_number || res.order?.order_number || selectedOrder?.order_number;
+
+      // Update verifications list immediately
       setVerifications((prev) =>
         prev.map((v) => (v.id === verificationId ? { ...v, status: 'paid' } : v))
       );
 
-      if (res.order) {
-        setOrders((prev) =>
-          prev.map((o) =>
-            o.order_number === res.order.order_number
-              ? { ...o, status: 'confirmed', payment_status: 'paid' }
-              : o
-          )
-        );
-        if (selectedOrder && selectedOrder.order_number === res.order.order_number) {
-          setSelectedOrder((prev) => ({ ...prev, status: 'confirmed', payment_status: 'paid' }));
-        }
+      // Update orders list immediately
+      setOrders((prev) =>
+        prev.map((o) => {
+          const matches =
+            (targetOrderNumber && o.order_number === targetOrderNumber) ||
+            (o.payment_verification && o.payment_verification.id === verificationId);
+          if (matches) {
+            return {
+              ...o,
+              status: 'confirmed',
+              payment_status: 'paid',
+              payment_verification: o.payment_verification
+                ? { ...o.payment_verification, status: 'paid' }
+                : { id: verificationId, status: 'paid' },
+            };
+          }
+          return o;
+        })
+      );
+
+      // Update selectedOrder so modal badge reflects verified immediately
+      if (selectedOrder) {
+        setSelectedOrder((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            status: 'confirmed',
+            payment_status: 'paid',
+            payment_verification: prev.payment_verification
+              ? { ...prev.payment_verification, status: 'paid' }
+              : { id: verificationId, status: 'paid' },
+          };
+        });
       }
+
+      // Automatically refresh page and update data after a short notification window
+      setTimeout(() => {
+        window.location.reload();
+      }, 700);
     } catch (err) {
       console.error('Failed to approve payment:', err);
       const msg = err.response?.data?.error || err.message || 'Failed to approve payment.';
       alert(`Approval error: ${msg}`);
-    } finally {
       setActionLoadingId(null);
     }
   };
@@ -289,31 +318,58 @@ export default function AdminOrders() {
     try {
       setActionLoadingId(verificationId);
       const res = await adminApi.rejectPaymentVerification(verificationId, reason);
-      showToast('Payment proof marked as rejected.');
+      showToast('Payment proof marked as rejected! Updating...');
 
+      const targetOrderNumber = res.order_number || res.order?.order_number || selectedOrder?.order_number;
+
+      // Update verifications list immediately
       setVerifications((prev) =>
         prev.map((v) =>
           v.id === verificationId ? { ...v, status: 'rejected', rejection_reason: reason } : v
         )
       );
 
-      if (res.order) {
-        setOrders((prev) =>
-          prev.map((o) =>
-            o.order_number === res.order.order_number
-              ? { ...o, payment_status: 'rejected' }
-              : o
-          )
-        );
-        if (selectedOrder && selectedOrder.order_number === res.order.order_number) {
-          setSelectedOrder((prev) => ({ ...prev, payment_status: 'rejected' }));
-        }
+      // Update orders list immediately
+      setOrders((prev) =>
+        prev.map((o) => {
+          const matches =
+            (targetOrderNumber && o.order_number === targetOrderNumber) ||
+            (o.payment_verification && o.payment_verification.id === verificationId);
+          if (matches) {
+            return {
+              ...o,
+              payment_status: 'rejected',
+              payment_verification: o.payment_verification
+                ? { ...o.payment_verification, status: 'rejected', rejection_reason: reason }
+                : { id: verificationId, status: 'rejected', rejection_reason: reason },
+            };
+          }
+          return o;
+        })
+      );
+
+      // Update selectedOrder so modal badge reflects rejection immediately
+      if (selectedOrder) {
+        setSelectedOrder((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            payment_status: 'rejected',
+            payment_verification: prev.payment_verification
+              ? { ...prev.payment_verification, status: 'rejected', rejection_reason: reason }
+              : { id: verificationId, status: 'rejected', rejection_reason: reason },
+          };
+        });
       }
+
+      // Automatically refresh page and update data after a short notification window
+      setTimeout(() => {
+        window.location.reload();
+      }, 700);
     } catch (err) {
       console.error('Failed to reject payment:', err);
       const msg = err.response?.data?.error || err.message || 'Failed to reject payment.';
       alert(`Rejection error: ${msg}`);
-    } finally {
       setActionLoadingId(null);
     }
   };

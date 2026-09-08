@@ -167,14 +167,14 @@ export default function FooterGlow({
           <span className="footer-payment-strip__title">Secure Payments</span>
         </div>
         <div className="footer-payment-strip__badges">
-          <span className="footer-payment-badge" title="UPI Payment (Google Pay, PhonePe, Paytm, CRED, BHIM)">
-            <span className="footer-payment-badge__icon-symbol">⚡</span>
-            <span className="footer-payment-badge__text">UPI</span>
+          <span className="footer-payment-badge" title="Secure Online Payment powered by Razorpay">
+            <span className="footer-payment-badge__icon-symbol">💳</span>
+            <span className="footer-payment-badge__text">Razorpay</span>
           </span>
           <span className="footer-payment-strip__sep" aria-hidden="true">•</span>
           <span className="footer-payment-badge" title="Cash on Delivery available on eligible orders">
             <span className="footer-payment-badge__icon-symbol">📦</span>
-            <span className="footer-payment-badge__text">COD</span>
+            <span className="footer-payment-badge__text">Cash on Delivery</span>
           </span>
         </div>
       </div>

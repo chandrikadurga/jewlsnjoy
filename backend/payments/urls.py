@@ -13,7 +13,7 @@ from .views import (
 app_name = 'payments'
 
 urlpatterns = [
-    # Gateway Configuration (Active: manual_upi, preserved: razorpay, cashfree)
+    # Gateway Configuration (Active: razorpay)
     path('config/', PaymentConfigView.as_view(), name='payment-config'),
 
     # Manual UPI Payment Submission

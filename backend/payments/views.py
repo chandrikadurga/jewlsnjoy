@@ -109,42 +109,21 @@ class PaymentConfigView(APIView):
     """
     GET /api/payments/config/
     Returns active payment gateway configuration.
-    Currently active: 'manual_upi'
-    Preserved for future reactivation: 'razorpay', 'cashfree'
+    Primary & exclusive online provider: 'razorpay'
     Secrets are NEVER returned to the browser.
     """
     def get(self, request):
-        provider = getattr(settings, 'PAYMENT_PROVIDER', 'manual_upi').strip().lower()
-        upi_id = getattr(settings, 'UPI_ID', '6395673529@pthdfc').strip()
-        payee_name = getattr(settings, 'UPI_PAYEE_NAME', "Jewels 'n' Joys").strip()
-        qr_url = getattr(settings, 'UPI_QR_CODE_URL', '/assets/upi-qr.png').strip()
-
+        provider = getattr(settings, 'PAYMENT_PROVIDER', 'razorpay').strip().lower()
         key_id = getattr(settings, 'RAZORPAY_KEY_ID', '').strip()
         env = getattr(settings, 'RAZORPAY_ENV', 'test').strip().lower()
         has_secret = bool(getattr(settings, 'RAZORPAY_KEY_SECRET', '').strip())
 
         return Response({
             'active_provider': provider,
-            'manual_upi': {
-                'upi_id': upi_id,
-                'payee_name': payee_name,
-                'qr_image_url': qr_url,
-                'instructions': [
-                    "Scan the QR code using Google Pay, PhonePe, Paytm, BHIM, or any UPI app.",
-                    "Pay the exact server-calculated order amount shown on this screen.",
-                    "Complete the payment in your UPI app.",
-                    "Copy the 12-digit UPI Transaction / UTR reference number.",
-                    "Upload a screenshot showing the successful transaction.",
-                    "Submit for review. Our team will verify and confirm your order shortly."
-                ]
-            },
             'razorpay': {
                 'key_id': key_id,
                 'environment': env,
                 'is_configured': bool(key_id and has_secret),
-            },
-            'cashfree': {
-                'is_configured': False,
             },
             # Backward-compatibility shortcuts for existing frontend checks:
             'key_id': key_id,
@@ -326,7 +305,7 @@ class RazorpayVerifyPaymentView(APIView):
 
         validated = serializer.validated_data
         order_number = validated['order_number']
-        rzp_order_id = validated.get('razorpay_order_id') or validated.get('cashfree_order_id', '')
+        rzp_order_id = validated.get('razorpay_order_id', '')
         rzp_payment_id = validated.get('razorpay_payment_id', '')
         rzp_signature = validated.get('razorpay_signature', '')
 

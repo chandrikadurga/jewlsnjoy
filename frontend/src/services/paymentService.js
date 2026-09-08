@@ -68,48 +68,18 @@ export const paymentService = {
       const res = await api.get('/api/payments/config/');
       const data = res.data || {};
       return {
-        active_provider: data.active_provider || 'manual_upi',
-        manual_upi: data.manual_upi || {
-          upi_id: '6395673529@pthdfc',
-          payee_name: "Jewels 'n' Joys",
-          qr_image_url: '/payment_qr.jpeg',
-          instructions: [],
-        },
+        active_provider: data.active_provider || 'razorpay',
         razorpay: data.razorpay || data || { key_id: '', environment: 'test', is_configured: false },
       };
     } catch (err) {
       return {
-        active_provider: 'manual_upi',
-        manual_upi: {
-          upi_id: '6395673529@pthdfc',
-          payee_name: "Jewels 'n' Joys",
-          qr_image_url: '/payment_qr.jpeg',
-          instructions: [],
-        },
+        active_provider: 'razorpay',
         razorpay: { key_id: '', environment: 'test', is_configured: false },
       };
     }
   },
 
-  /**
-   * Submits manual UPI payment proof (Transaction / UTR ID & screenshot)
-   * to backend zero-trust verification endpoint.
-   */
-  submitManualUPIProof: async ({ orderNumber, transactionId, screenshotFile }) => {
-    const headers = await getAuthHeaders();
-    const formData = new FormData();
-    formData.append('order_number', orderNumber);
-    formData.append('transaction_id', transactionId);
-    formData.append('payment_screenshot', screenshotFile);
 
-    const res = await api.post('/api/payments/manual-upi/submit/', formData, {
-      headers: {
-        ...headers,
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return res.data;
-  },
 
   /**
    * Zero-trust payment order creation.
@@ -139,7 +109,7 @@ export const paymentService = {
   }) => {
     const loaded = await loadRazorpaySDK();
     if (!loaded || !window.Razorpay) {
-      throw new Error('Razorpay Checkout SDK could not be loaded. Please check your internet connection.');
+      throw new Error('Online payment is temporarily unavailable. Please try again or choose Cash on Delivery.');
     }
 
     const effectiveKey = keyId || import.meta.env.VITE_RAZORPAY_KEY_ID;

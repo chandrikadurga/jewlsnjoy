@@ -244,9 +244,13 @@ class OrderCreateSerializer(serializers.Serializer):
         else:
             total = sum(parse_price(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
         
-        # Determine payment status
-        if validated_data.get('razorpay_payment_id') or validated_data.get('cashfree_payment_id'):
-            validated_data['payment_status'] = 'paid'
+        # For COD and new orders, payment_status is 'pending' until authoritatively verified
+        pay_method = str(validated_data.get('payment_method', '')).strip().lower()
+        if 'cod' in pay_method or 'cash on delivery' in pay_method:
+            validated_data['payment_status'] = 'pending'
+            validated_data['status'] = 'confirmed'
+        else:
+            validated_data['payment_status'] = validated_data.get('payment_status', 'pending')
 
         order_num = f"ORD-{uuid.uuid4().hex[:6].upper()}"
         user_id = validated_data.pop('user_id', '')

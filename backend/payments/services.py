@@ -170,13 +170,10 @@ def verify_razorpay_webhook_signature(raw_body_bytes, signature):
     Verifies Razorpay webhook signature using the configured RAZORPAY_WEBHOOK_SECRET.
     Signature = HMAC-SHA256(raw_request_body, webhook_secret)
     """
-    webhook_secret = (
-        getattr(settings, 'RAZORPAY_WEBHOOK_SECRET', '').strip() or
-        getattr(settings, 'RAZORPAY_KEY_SECRET', '').strip()
-    )
+    webhook_secret = getattr(settings, 'RAZORPAY_WEBHOOK_SECRET', '').strip()
 
     if not webhook_secret or not signature:
-        logger.warning("Webhook verification attempted without secret or signature.")
+        logger.warning("Webhook verification attempted without RAZORPAY_WEBHOOK_SECRET or signature.")
         return False
 
     client = get_razorpay_client()

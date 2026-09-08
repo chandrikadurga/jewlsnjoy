@@ -175,10 +175,10 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 if DEBUG or os.getenv('CORS_ALLOW_ALL', 'False').lower() in ('true', '1', 't'):
     CORS_ALLOW_ALL_ORIGINS = True
 
-# Active Payment Gateway Provider: 'manual_upi' (temporary active fallback), 'razorpay', or 'cashfree'
-PAYMENT_PROVIDER = os.getenv('PAYMENT_PROVIDER', 'manual_upi').strip().lower()
+# Active Payment Gateway Provider: 'razorpay' (primary online payment gateway)
+PAYMENT_PROVIDER = os.getenv('PAYMENT_PROVIDER', 'razorpay').strip().lower()
 
-# Razorpay Payment Gateway Configuration (Preserved for future activation)
+# Razorpay Payment Gateway Configuration
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '').strip()
 RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '').strip()
 RAZORPAY_ENV = os.getenv('RAZORPAY_ENV', 'test').strip().lower()  # 'test' or 'live'

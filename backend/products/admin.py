@@ -80,10 +80,13 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = [
         'order_number', 'customer_name', 'customer_email',
         'total_amount', 'payment_method', 'payment_status',
-        'upi_transaction_id', 'shipping_awb_display', 'status', 'created_at'
+        'razorpay_payment_id', 'shipping_awb_display', 'status', 'created_at'
     ]
     list_filter = ['status', 'payment_status', 'payment_method', 'created_at']
-    search_fields = ['order_number', 'customer_name', 'customer_email', 'customer_phone']
+    search_fields = [
+        'order_number', 'customer_name', 'customer_email', 'customer_phone',
+        'razorpay_order_id', 'razorpay_payment_id'
+    ]
     list_editable = ['status']
     
     def get_inlines(self, request, obj):

@@ -1156,6 +1156,16 @@ export default function AdminOrders() {
                     Email: {selectedOrder.customer_email || 'N/A'}<br />
                     Phone: {selectedOrder.customer_phone || 'N/A'}<br />
                     Payment: {selectedOrder.payment_method} ({selectedOrder.payment_status || 'Paid'})
+                    {selectedOrder.razorpay_order_id && (
+                      <>
+                        <br />Razorpay Order: <span style={{ fontFamily: 'monospace', color: '#c2a370' }}>{selectedOrder.razorpay_order_id}</span>
+                      </>
+                    )}
+                    {selectedOrder.razorpay_payment_id && (
+                      <>
+                        <br />Razorpay Payment: <span style={{ fontFamily: 'monospace', color: '#c2a370' }}>{selectedOrder.razorpay_payment_id}</span>
+                      </>
+                    )}
                   </p>
                 </div>
               </div>

@@ -51,7 +51,6 @@ class PaymentVerifySerializer(serializers.Serializer):
     razorpay_order_id = serializers.CharField(max_length=100)
     razorpay_payment_id = serializers.CharField(max_length=100)
     razorpay_signature = serializers.CharField(max_length=255)
-    cashfree_order_id = serializers.CharField(max_length=100, required=False, allow_blank=True)
 
 
 class ManualUPISubmitSerializer(serializers.Serializer):

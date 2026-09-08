@@ -247,7 +247,7 @@ def create_signed_proof_url(storage_path, expires_in=3600):
                 pass
 
         media_url = getattr(settings, 'MEDIA_URL', '/media/')
-        base_origin = 'http://localhost:8000' if getattr(settings, 'DEBUG', False) else ''
+        base_origin = 'http://localhost:8000' if getattr(settings, 'DEBUG', False) else 'https://jewlsnjoy.onrender.com'
         return f"{base_origin}{media_url}{local_rel}"
 
     # If already a valid absolute URL
@@ -256,7 +256,7 @@ def create_signed_proof_url(storage_path, expires_in=3600):
 
     # If a relative media path
     if storage_path.startswith('/media/'):
-        base_origin = 'http://localhost:8000' if getattr(settings, 'DEBUG', False) else ''
+        base_origin = 'http://localhost:8000' if getattr(settings, 'DEBUG', False) else 'https://jewlsnjoy.onrender.com'
         return f"{base_origin}{storage_path}"
 
     return storage_path

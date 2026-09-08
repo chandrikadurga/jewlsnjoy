@@ -28,3 +28,11 @@ services:
         value: "test"
       - key: RAZORPAY_WEBHOOK_SECRET
         sync: false
+      - key: SUPABASE_URL
+        value: "https://hlxffdtkghzednkpwxlb.supabase.co"
+      - key: SUPABASE_PUBLISHABLE_KEY
+        value: "sb_publishable_Q7YuMERgjfL5BcbmeBvGQw_irH77xJQ"
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: "payment-proofs"

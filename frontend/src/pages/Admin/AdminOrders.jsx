@@ -180,12 +180,11 @@ export default function AdminOrders() {
       const sbUrl = import.meta.env.VITE_SUPABASE_URL || 'https://hlxffdtkghzednkpwxlb.supabase.co';
       return `${sbUrl.replace(/\/$/, '')}/storage/v1/object/public/${cleanPath}`;
     }
+    const base = import.meta.env.VITE_API_BASE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://jewlsnjoy.onrender.com');
     if (url.startsWith('local://')) {
       const clean = url.replace('local://', '').replace(/^\/+/, '');
-      const base = import.meta.env.VITE_API_BASE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8000' : '');
       return `${base.replace(/\/$/, '')}/media/${clean}`;
     }
-    const base = import.meta.env.VITE_API_BASE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8000' : '');
     return `${base.replace(/\/$/, '')}${url.startsWith('/') ? '' : '/'}${url}`;
   }, []);
 
@@ -634,9 +633,15 @@ export default function AdminOrders() {
                               title="Click to zoom screenshot"
                             >
                               <img
-                                src={verification.payment_proof_url}
+                                src={resolveProofUrl(verification.payment_proof_url)}
                                 alt="Payment Proof"
                                 className="admin-proof-thumb-img"
+                                onError={(e) => {
+                                  if (!e.currentTarget.dataset.retried) {
+                                    e.currentTarget.dataset.retried = 'true';
+                                    e.currentTarget.src = `https://jewlsnjoy.onrender.com/media/payment_proofs/${order.order_number}.svg`;
+                                  }
+                                }}
                               />
                               <div className="admin-proof-thumb-hover">
                                 <ZoomIn size={13} />
@@ -817,6 +822,12 @@ export default function AdminOrders() {
                               alt="Proof"
                               className="admin-proof-thumb-img"
                               loading="lazy"
+                              onError={(e) => {
+                                if (!e.currentTarget.dataset.retried) {
+                                  e.currentTarget.dataset.retried = 'true';
+                                  e.currentTarget.src = `https://jewlsnjoy.onrender.com/media/payment_proofs/${order.order_number}.svg`;
+                                }
+                              }}
                             />
                             <div className="admin-proof-thumb-hover">
                               <ZoomIn size={12} />
@@ -991,6 +1002,12 @@ export default function AdminOrders() {
                                 src={resolveProofUrl(selectedOrderVerif.payment_proof_url)}
                                 alt="Customer Payment Receipt"
                                 className="admin-modal-screenshot-img"
+                                onError={(e) => {
+                                  if (!e.currentTarget.dataset.retried) {
+                                    e.currentTarget.dataset.retried = 'true';
+                                    e.currentTarget.src = `https://jewlsnjoy.onrender.com/media/payment_proofs/${selectedOrder.order_number}.svg`;
+                                  }
+                                }}
                               />
                               <div className="admin-modal-screenshot-zoom-overlay">
                                 <ZoomIn size={22} />
@@ -1299,6 +1316,12 @@ export default function AdminOrders() {
                 src={resolveProofUrl(lightboxData.url)}
                 alt="Payment Screenshot High Resolution"
                 className="admin-lightbox-img"
+                onError={(e) => {
+                  if (!e.currentTarget.dataset.retried) {
+                    e.currentTarget.dataset.retried = 'true';
+                    e.currentTarget.src = `https://jewlsnjoy.onrender.com/media/payment_proofs/${lightboxData.orderNumber}.svg`;
+                  }
+                }}
               />
             </div>
           </div>

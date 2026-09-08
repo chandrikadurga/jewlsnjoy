@@ -274,6 +274,16 @@ class OrderCreateSerializer(serializers.Serializer):
                 quantity=int(item.get('quantity', 1)),
                 image_url=item.get('image_url') or (prod.primary_image_url if prod else '/products/1/1.jpeg')
             )
+
+        # For COD orders, dispatch directly to Delhivery One panel
+        if 'cod' in pay_method or 'cash on delivery' in pay_method:
+            try:
+                from shipping.utils import auto_dispatch_delhivery_shipment
+                auto_dispatch_delhivery_shipment(order)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning("Auto-dispatch error on COD order creation: %s", str(e))
+
         return order
 
 

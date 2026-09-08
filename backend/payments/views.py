@@ -416,6 +416,13 @@ class RazorpayVerifyPaymentView(APIView):
         logger.info("Order %s successfully verified as paid (Razorpay Payment ID: %s)",
                     order.order_number, rzp_payment_id)
 
+        # Automatically manifest order on Delhivery One panel
+        try:
+            from shipping.utils import auto_dispatch_delhivery_shipment
+            auto_dispatch_delhivery_shipment(order)
+        except Exception as e:
+            logger.warning("Auto-dispatch error on payment verification: %s", str(e))
+
         return Response({
             'verified': True,
             'payment_status': 'paid',
@@ -498,6 +505,11 @@ class RazorpayWebhookView(APIView):
                         order.save(update_fields=['payment_status', 'status', 'razorpay_payment_id', 'updated_at'])
                         decrement_order_inventory(order)
                     logger.info("Webhook marked Order %s as paid (Razorpay: %s)", order.order_number, rzp_payment_id)
+                    try:
+                        from shipping.utils import auto_dispatch_delhivery_shipment
+                        auto_dispatch_delhivery_shipment(order)
+                    except Exception as e:
+                        logger.warning("Auto-dispatch error on webhook payment: %s", str(e))
             elif event_type == 'payment.failed':
                 if order.payment_status == 'pending':
                     order.payment_status = 'failed'
@@ -712,6 +724,12 @@ class AdminPaymentApproveView(APIView):
 
                 logger.info("Admin %s approved payment verification #%s for Order %s",
                             admin_user.username, verification.id, order.order_number)
+
+                try:
+                    from shipping.utils import auto_dispatch_delhivery_shipment
+                    auto_dispatch_delhivery_shipment(order)
+                except Exception as e:
+                    logger.warning("Auto-dispatch error on admin payment approval: %s", str(e))
 
             return Response({
                 'success': True,

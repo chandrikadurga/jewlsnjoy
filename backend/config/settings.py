@@ -206,3 +206,7 @@ DELHIVERY_DEFAULT_LENGTH_CM = float(os.getenv('DELHIVERY_DEFAULT_LENGTH_CM', '10
 DELHIVERY_DEFAULT_BREADTH_CM = float(os.getenv('DELHIVERY_DEFAULT_BREADTH_CM', '10.0'))
 DELHIVERY_DEFAULT_HEIGHT_CM = float(os.getenv('DELHIVERY_DEFAULT_HEIGHT_CM', '5.0'))
 
+# Media files (Local fallback uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+

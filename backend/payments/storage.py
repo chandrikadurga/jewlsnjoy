@@ -102,13 +102,13 @@ def ensure_payment_proofs_bucket():
         res = requests.get(check_url, headers=headers, timeout=5)
         if res.status_code == 200:
             return True
-        if res.status_code == 404:
-            # Create private bucket
+        if res.status_code in (400, 404) or 'NoSuchBucket' in res.text or 'not found' in res.text.lower():
+            # Create bucket
             create_url = f"{supabase_url}/storage/v1/bucket"
             create_res = requests.post(
                 create_url,
                 headers={**headers, 'Content-Type': 'application/json'},
-                json={'id': bucket, 'name': bucket, 'public': False},
+                json={'id': bucket, 'name': bucket, 'public': True},
                 timeout=5
             )
             return create_res.status_code in (200, 201)
@@ -204,8 +204,32 @@ def create_signed_proof_url(storage_path, expires_in=3600):
 
     elif storage_path.startswith('local://'):
         local_rel = storage_path.replace('local://', '', 1).lstrip('/')
+        # Check if the file is mirrored in Supabase Storage
+        supabase_url = getattr(settings, 'SUPABASE_URL', '').rstrip('/')
+        bucket = getattr(settings, 'SUPABASE_STORAGE_BUCKET', 'payment-proofs')
+        headers = get_supabase_headers()
+        if supabase_url and headers:
+            try:
+                clean_rel = local_rel.replace('payment_proofs/', '', 1) if local_rel.startswith('payment_proofs/') else local_rel
+                sign_url = f"{supabase_url}/storage/v1/object/sign/{bucket}/{clean_rel}"
+                res = requests.post(
+                    sign_url,
+                    headers={**headers, 'Content-Type': 'application/json'},
+                    json={'expiresIn': int(expires_in)},
+                    timeout=5
+                )
+                if res.status_code == 200:
+                    data = res.json()
+                    signed_part = data.get('signedURL') or data.get('url') or ''
+                    if signed_part:
+                        if signed_part.startswith('http'):
+                            return signed_part
+                        return f"{supabase_url}/storage/v1{signed_part}"
+            except Exception:
+                pass
+
         media_url = getattr(settings, 'MEDIA_URL', '/media/')
-        base_origin = 'http://localhost:8000' if settings.DEBUG else ''
+        base_origin = 'http://localhost:8000' if getattr(settings, 'DEBUG', False) else ''
         return f"{base_origin}{media_url}{local_rel}"
 
     return storage_path

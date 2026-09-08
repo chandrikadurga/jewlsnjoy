@@ -179,10 +179,10 @@ if DEBUG or os.getenv('CORS_ALLOW_ALL', 'False').lower() in ('true', '1', 't'):
 PAYMENT_PROVIDER = os.getenv('PAYMENT_PROVIDER', 'razorpay').strip().lower()
 
 # Razorpay Payment Gateway Configuration
-RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '').strip()
-RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '').strip()
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '').strip().strip('\'"')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '').strip().strip('\'"')
 RAZORPAY_ENV = os.getenv('RAZORPAY_ENV', 'test').strip().lower()  # 'test' or 'live'
-RAZORPAY_WEBHOOK_SECRET = os.getenv('RAZORPAY_WEBHOOK_SECRET', '').strip()
+RAZORPAY_WEBHOOK_SECRET = os.getenv('RAZORPAY_WEBHOOK_SECRET', '').strip().strip('\'"')
 
 # Manual UPI Store Configuration
 UPI_ID = os.getenv('UPI_ID', '6395673529@pthdfc').strip()

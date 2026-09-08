@@ -13,8 +13,8 @@ def get_razorpay_client():
     Initializes and returns the official Razorpay Python Client.
     Credentials are read from Django settings (populated via environment variables).
     """
-    key_id = getattr(settings, 'RAZORPAY_KEY_ID', '').strip()
-    key_secret = getattr(settings, 'RAZORPAY_KEY_SECRET', '').strip()
+    key_id = getattr(settings, 'RAZORPAY_KEY_ID', '').strip().strip('\'"')
+    key_secret = getattr(settings, 'RAZORPAY_KEY_SECRET', '').strip().strip('\'"')
 
     if not key_id or not key_secret:
         logger.error("Razorpay API credentials missing from Django settings (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET).")

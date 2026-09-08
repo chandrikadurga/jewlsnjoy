@@ -14,6 +14,7 @@ import re
 import uuid
 import logging
 import requests
+import time
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -169,13 +170,23 @@ def upload_payment_proof(file_obj, user_uid, order_number):
     return f"local://{saved_path}"
 
 
+_SIGNED_URL_CACHE = {}  # {storage_path: (url, expiry_timestamp)}
+
+
 def create_signed_proof_url(storage_path, expires_in=3600):
     """
     Generates a secure, time-limited signed URL for administrative inspection.
     Guaranteed to return a valid browser-loadable HTTP/HTTPS URL, never a raw internal URI.
+    Uses in-memory caching to make order listing fast and prevent serializing delays.
     """
     if not storage_path:
         return ''
+
+    # Check in-memory cache first
+    now = time.time()
+    cached = _SIGNED_URL_CACHE.get(storage_path)
+    if cached and cached[1] > now:
+        return cached[0]
 
     supabase_url = getattr(settings, 'SUPABASE_URL', '').rstrip('/')
     bucket = getattr(settings, 'SUPABASE_STORAGE_BUCKET', 'payment-proofs')
@@ -186,6 +197,8 @@ def create_signed_proof_url(storage_path, expires_in=3600):
         parts = storage_path.replace('supabase://', '', 1).split('/', 1)
         if len(parts) == 2:
             b_name, rel_path = parts
+            public_url = f"{supabase_url}/storage/v1/object/public/{b_name}/{rel_path}" if supabase_url else ''
+
             if supabase_url and headers:
                 try:
                     sign_url = f"{supabase_url}/storage/v1/object/sign/{b_name}/{rel_path}"
@@ -193,21 +206,22 @@ def create_signed_proof_url(storage_path, expires_in=3600):
                         sign_url,
                         headers={**headers, 'Content-Type': 'application/json'},
                         json={'expiresIn': int(expires_in)},
-                        timeout=5
+                        timeout=2.0  # Fast timeout so listing is never blocked
                     )
                     if res.status_code == 200:
                         data = res.json()
                         signed_part = data.get('signedURL') or data.get('url') or ''
                         if signed_part:
-                            if signed_part.startswith('http'):
-                                return signed_part
-                            return f"{supabase_url}/storage/v1{signed_part}"
+                            final_url = signed_part if signed_part.startswith('http') else f"{supabase_url}/storage/v1{signed_part}"
+                            _SIGNED_URL_CACHE[storage_path] = (final_url, now + min(int(expires_in) - 60, 1800))
+                            return final_url
                 except Exception as e:
                     logger.warning("Could not generate Supabase signed URL: %s", str(e))
 
             # Reliable fallback: public object URL from Supabase CDN
-            if supabase_url:
-                return f"{supabase_url}/storage/v1/object/public/{b_name}/{rel_path}"
+            if public_url:
+                _SIGNED_URL_CACHE[storage_path] = (public_url, now + 3600)
+                return public_url
 
     elif storage_path.startswith('local://'):
         local_rel = storage_path.replace('local://', '', 1).lstrip('/')

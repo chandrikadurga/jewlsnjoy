@@ -119,18 +119,39 @@ export default function AdminOrders() {
     }
   };
 
-  const loadOrders = async () => {
+  const [fetchError, setFetchError] = useState(null);
+
+  const loadOrders = async (isRetry = false) => {
     try {
       setLoading(true);
+      setFetchError(null);
       const [ordersData, verifData] = await Promise.allSettled([
         adminApi.getOrders(),
         adminApi.getPaymentVerifications(),
       ]);
 
-      const fetchedOrders =
-        ordersData.status === 'fulfilled' && Array.isArray(ordersData.value)
-          ? ordersData.value
-          : [];
+      let fetchedOrders = [];
+      if (ordersData.status === 'fulfilled' && ordersData.value) {
+        if (Array.isArray(ordersData.value)) {
+          fetchedOrders = ordersData.value;
+        } else if (Array.isArray(ordersData.value.orders)) {
+          fetchedOrders = ordersData.value.orders;
+        } else if (Array.isArray(ordersData.value.results)) {
+          fetchedOrders = ordersData.value.results;
+        }
+      }
+
+      if (ordersData.status === 'rejected') {
+        console.warn('Orders fetch initial error:', ordersData.reason);
+        if (!isRetry) {
+          // Auto retry once after 1.5s in case Render server is waking up
+          setTimeout(() => loadOrders(true), 1500);
+          return;
+        } else {
+          setFetchError(ordersData.reason?.message || 'Server did not respond in time.');
+        }
+      }
+
       setOrders(fetchedOrders);
 
       if (verifData.status === 'fulfilled' && Array.isArray(verifData.value)) {
@@ -138,6 +159,7 @@ export default function AdminOrders() {
       }
     } catch (err) {
       console.error('Failed to load orders/verifications:', err);
+      setFetchError(err.message || 'Failed to load orders.');
     } finally {
       setLoading(false);
     }
@@ -397,45 +419,94 @@ export default function AdminOrders() {
           ))}
         </div>
 
-        <div className="admin-orders-search">
-          <Search size={18} className="admin-orders-search__icon" />
-          <input
-            type="text"
-            placeholder="Search order #, customer name, email..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="admin-search-input"
-          />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          <div className="admin-orders-search">
+            <Search size={18} className="admin-orders-search__icon" />
+            <input
+              type="text"
+              placeholder="Search order #, customer name, email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="admin-search-input"
+            />
+          </div>
+          <button
+            type="button"
+            className="admin-btn admin-btn--secondary"
+            onClick={() => loadOrders()}
+            disabled={loading}
+            title="Refresh order records"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.55rem 0.9rem', fontSize: '0.82rem' }}
+          >
+            <RotateCcw size={14} className={loading ? 'admin-spin' : ''} />
+            <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
+          </button>
         </div>
       </div>
 
-      {/* Orders Table Card */}
-      <div className="admin-card admin-orders-card">
-        <div className="admin-card__header">
-          <div>
-            <h2 className="admin-card__title">Customer Orders</h2>
-            <p className="admin-card__subtitle">
-              {filteredOrders.length} orders found • Click order to view full shipping &amp; verification details
-            </p>
-          </div>
+      {/* Loading State */}
+      {loading && orders.length === 0 ? (
+        <div className="admin-loading-state" style={{ minHeight: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.2rem', padding: '4rem 1rem' }}>
+          <div className="admin-spinner" />
+          <p style={{ color: '#c2a370', fontSize: '0.92rem', letterSpacing: '0.3px' }}>
+            Loading customer orders &amp; payment records...
+          </p>
         </div>
+      ) : fetchError && orders.length === 0 ? (
+        <div className="admin-card" style={{ textAlign: 'center', padding: '3.5rem 1.5rem', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+          <AlertTriangle size={42} color="#f87171" style={{ margin: '0 auto 1rem' }} />
+          <h3 style={{ color: '#f87171', marginBottom: '0.5rem', fontFamily: 'Cinzel, serif', fontSize: '1.2rem' }}>
+            Unable to Load Orders
+          </h3>
+          <p style={{ color: 'rgba(247, 239, 230, 0.7)', fontSize: '0.9rem', maxWidth: '480px', margin: '0 auto 1.5rem', lineHeight: '1.5' }}>
+            {fetchError}. The cloud backend server might have been asleep and is currently starting up.
+          </p>
+          <button
+            type="button"
+            className="admin-btn admin-btn--primary"
+            onClick={() => loadOrders()}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', margin: '0 auto', padding: '0.65rem 1.4rem' }}
+          >
+            <RotateCcw size={16} /> Retry Fetching Orders
+          </button>
+        </div>
+      ) : (
+        /* Orders Table Card */
+        <div className="admin-card admin-orders-card">
+          <div className="admin-card__header">
+            <div>
+              <h2 className="admin-card__title">Customer Orders</h2>
+              <p className="admin-card__subtitle">
+                {filteredOrders.length} orders found • Click order to view full shipping &amp; verification details
+              </p>
+            </div>
+          </div>
 
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Order #</th>
-                <th>Customer</th>
-                <th>Date Placed</th>
-                <th>Total</th>
-                <th>Payment</th>
-                <th>Proof &amp; UTR</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredOrders.map((order) => {
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Customer</th>
+                  <th>Date Placed</th>
+                  <th>Total</th>
+                  <th>Payment</th>
+                  <th>Proof &amp; UTR</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} style={{ textAlign: 'center', padding: '3.5rem 1rem', color: 'rgba(247, 239, 230, 0.5)', fontSize: '0.9rem' }}>
+                      {orders.length === 0
+                        ? 'No customer orders found in database.'
+                        : `No orders match filter "${activeTab}"${searchQuery ? ` and search "${searchQuery}"` : ''}.`}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredOrders.map((order) => {
                 const verification = getVerificationForOrder(order);
                 const isAwaiting =
                   order.status === 'awaiting_payment_verification' ||
@@ -596,7 +667,7 @@ export default function AdminOrders() {
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>
@@ -739,6 +810,7 @@ export default function AdminOrders() {
           )}
         </div>
       </div>
+      )}
 
       {/* Order Detail / Packing Slip Modal */}
       {selectedOrder && (

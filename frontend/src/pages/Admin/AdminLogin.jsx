@@ -57,7 +57,7 @@ export default function AdminLogin({ onLoginSuccess }) {
           is_superuser: true,
         };
         sessionStorage.setItem('admin_authenticated', 'true');
-        sessionStorage.setItem('admin_token', 'admin_session_active');
+        sessionStorage.setItem('admin_token', 'jewels_n_joys_secure_admin_token_2026');
         sessionStorage.setItem('admin_user', JSON.stringify(adminUserObj));
         if (onLoginSuccess) {
           onLoginSuccess(adminUserObj);

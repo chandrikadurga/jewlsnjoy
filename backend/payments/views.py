@@ -430,6 +430,13 @@ class RazorpayWebhookView(APIView):
     Asynchronous Razorpay Webhook Listener.
     Validates HMAC-SHA256 signature, logs event, and idempotently updates order & inventory.
     """
+    def get(self, request):
+        return Response({
+            'status': 'active',
+            'endpoint': '/api/payments/webhook/',
+            'message': 'Razorpay webhook listener is active and ready to receive POST notifications.'
+        }, status=status.HTTP_200_OK)
+
     def post(self, request):
         raw_body = request.body
         signature = request.headers.get('x-razorpay-signature', '')

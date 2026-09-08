@@ -259,7 +259,7 @@ export default function AdminOrders() {
 
       // Update verifications list immediately
       setVerifications((prev) =>
-        prev.map((v) => (v.id === verificationId ? { ...v, status: 'paid' } : v))
+        prev.map((v) => (v.id === verificationId ? { ...v, status: 'paid', rejection_reason: '' } : v))
       );
 
       // Update orders list immediately
@@ -274,8 +274,8 @@ export default function AdminOrders() {
               status: 'confirmed',
               payment_status: 'paid',
               payment_verification: o.payment_verification
-                ? { ...o.payment_verification, status: 'paid' }
-                : { id: verificationId, status: 'paid' },
+                ? { ...o.payment_verification, status: 'paid', rejection_reason: '' }
+                : { id: verificationId, status: 'paid', rejection_reason: '' },
             };
           }
           return o;
@@ -291,8 +291,8 @@ export default function AdminOrders() {
             status: 'confirmed',
             payment_status: 'paid',
             payment_verification: prev.payment_verification
-              ? { ...prev.payment_verification, status: 'paid' }
-              : { id: verificationId, status: 'paid' },
+              ? { ...prev.payment_verification, status: 'paid', rejection_reason: '' }
+              : { id: verificationId, status: 'paid', rejection_reason: '' },
           };
         });
       }
@@ -398,6 +398,7 @@ export default function AdminOrders() {
               ? {
                   ...o.payment_verification,
                   status: isAwaiting ? 'pending_verification' : isConfirmed ? 'paid' : o.payment_verification.status,
+                  ...(isAwaiting || isConfirmed ? { rejection_reason: '' } : {}),
                 }
               : o.payment_verification,
           };
@@ -410,7 +411,7 @@ export default function AdminOrders() {
       setVerifications((prev) =>
         prev.map((v) => {
           if (v.order_id === orderId || v.order === orderId) {
-            return { ...v, status: isAwaiting ? 'pending_verification' : 'paid' };
+            return { ...v, status: isAwaiting ? 'pending_verification' : 'paid', rejection_reason: '' };
           }
           return v;
         })
@@ -429,6 +430,7 @@ export default function AdminOrders() {
             ? {
                 ...prev.payment_verification,
                 status: isAwaiting ? 'pending_verification' : isConfirmed ? 'paid' : prev.payment_verification.status,
+                ...(isAwaiting || isConfirmed ? { rejection_reason: '' } : {}),
               }
             : prev.payment_verification,
         };
@@ -1037,7 +1039,7 @@ export default function AdminOrders() {
                             </div>
                           </div>
 
-                          {selectedOrderVerif.rejection_reason && (
+                          {selectedOrderVerif.status === 'rejected' && selectedOrderVerif.rejection_reason && (
                             <div className="admin-rejection-note-box">
                               <strong>Rejection Reason:</strong> {selectedOrderVerif.rejection_reason}
                             </div>

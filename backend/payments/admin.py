@@ -84,9 +84,10 @@ class PaymentVerificationAdmin(admin.ModelAdmin):
                     continue
 
                 verification.status = 'paid'
+                verification.rejection_reason = ''
                 verification.verified_at = timezone.now()
                 verification.verified_by = request.user
-                verification.save(update_fields=['status', 'verified_at', 'verified_by', 'updated_at'])
+                verification.save(update_fields=['status', 'rejection_reason', 'verified_at', 'verified_by', 'updated_at'])
 
                 order.payment_status = 'paid'
                 order.status = 'confirmed'

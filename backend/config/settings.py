@@ -9,10 +9,10 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from backend/.env
+load_dotenv(BASE_DIR / '.env')
 
 # Security
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-change-this')

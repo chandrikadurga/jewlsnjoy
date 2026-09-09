@@ -29,7 +29,7 @@ export default function Checkout() {
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
   const [couponCode, setCouponCode] = useState('');
-  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState(null); // { code: 'JOY30', type: 'flat', value: 30 }
   const [couponMsg, setCouponMsg] = useState({ type: '', text: '' });
   const [copied, setCopied] = useState(false);
   const [paymentConfig, setPaymentConfig] = useState({
@@ -94,7 +94,14 @@ export default function Checkout() {
 
   const codFee = paymentMethod === 'cod' ? 25 : 0;
   const rawShipping = cartTotal >= 999 ? 0 : 80;
-  const discountAmount = Math.round((cartTotal * appliedDiscount) / 100);
+
+  let discountAmount = 0;
+  if (appliedCoupon?.type === 'flat') {
+    discountAmount = Math.min(cartTotal, appliedCoupon.value);
+  } else if (appliedCoupon?.type === 'percent') {
+    discountAmount = Math.round((cartTotal * appliedCoupon.value) / 100);
+  }
+
   const total = Math.max(0, cartTotal - discountAmount + rawShipping + codFee);
   const amountForFreeShipping = Math.max(0, 999 - cartTotal);
 
@@ -116,20 +123,30 @@ export default function Checkout() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleApplyCoupon = (e) => {
-    e.preventDefault();
-    const code = couponCode.trim().toUpperCase();
+  const applyCouponCode = (rawCode) => {
+    const code = (rawCode || couponCode).trim().toUpperCase();
     if (!code) return;
 
-    if (code === 'WELCOME10' || code === 'JEWELS10') {
-      setAppliedDiscount(10);
+    if (code === 'JOY30' || code === 'SAVE30' || code === 'FLAT30' || code === 'WELCOME30' || code === 'OFF30' || code === 'SPECIAL30') {
+      setAppliedCoupon({ code, type: 'flat', value: 30 });
+      setCouponCode(code);
+      setCouponMsg({ type: 'success', text: '₹30 flat discount applied successfully!' });
+    } else if (code === 'WELCOME10' || code === 'JEWELS10') {
+      setAppliedCoupon({ code, type: 'percent', value: 10 });
+      setCouponCode(code);
       setCouponMsg({ type: 'success', text: '10% luxury discount applied!' });
     } else if (code === 'GOLD5') {
-      setAppliedDiscount(5);
+      setAppliedCoupon({ code, type: 'percent', value: 5 });
+      setCouponCode(code);
       setCouponMsg({ type: 'success', text: '5% member discount applied!' });
     } else {
-      setCouponMsg({ type: 'error', text: 'Invalid coupon code. Try WELCOME10' });
+      setCouponMsg({ type: 'error', text: 'Invalid coupon code. Try JOY30' });
     }
+  };
+
+  const handleApplyCoupon = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    applyCouponCode(couponCode);
   };
 
   const handleCopyOrder = () => {
@@ -180,6 +197,7 @@ export default function Checkout() {
       state: form.state,
       postal_code: form.postalCode,
       total_amount: total,
+      notes: appliedCoupon?.code ? `Coupon: ${appliedCoupon.code} (-₹${discountAmount})` : '',
       items: items.map((item) => ({
         id: item.product.id,
         name: item.product.name,
@@ -250,8 +268,8 @@ export default function Checkout() {
         state: form.state,
         postal_code: form.postalCode,
         country: 'India',
-        coupon_code: couponCode.trim().toUpperCase(),
-        notes: couponCode ? `Coupon applied: ${couponCode}` : '',
+        coupon_code: appliedCoupon?.code || couponCode.trim().toUpperCase(),
+        notes: appliedCoupon?.code ? `Coupon: ${appliedCoupon.code} (-₹${discountAmount})` : (couponCode ? `Coupon applied: ${couponCode}` : ''),
         items: items.map((item) => ({
           id: Number(item.product?.id || item.id),
           product_id: Number(item.product?.id || item.id),
@@ -522,14 +540,53 @@ export default function Checkout() {
                 ))}
               </ul>
 
+              {/* Coupon Offer Recommendation Card */}
+              <div className="checkout-coupon-offer">
+                <div className="checkout-coupon-offer__left">
+                  <span className="checkout-coupon-offer__badge">JOY30</span>
+                  <div className="checkout-coupon-offer__text">
+                    <strong>Get Flat ₹30 OFF</strong>
+                    <span>Use code JOY30 on your order</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className={`checkout-coupon-offer__btn ${appliedCoupon?.code === 'JOY30' ? 'applied' : ''}`}
+                  onClick={() => applyCouponCode('JOY30')}
+                >
+                  {appliedCoupon?.code === 'JOY30' ? 'Applied ✓' : 'Apply'}
+                </button>
+              </div>
+
+              {/* Mobile Coupon Form */}
+              <form className="checkout-coupon-box" onSubmit={handleApplyCoupon} style={{ marginBottom: '1.25rem' }}>
+                <div className="checkout-coupon-row">
+                  <input
+                    type="text"
+                    className="checkout-coupon-input"
+                    placeholder="Discount code (e.g. JOY30)"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                  />
+                  <button type="submit" className="checkout-coupon-btn">
+                    Apply
+                  </button>
+                </div>
+                {couponMsg.text && (
+                  <p className={`checkout-coupon-msg ${couponMsg.type}`}>
+                    {couponMsg.text}
+                  </p>
+                )}
+              </form>
+
               <div className="checkout-summary__totals">
                 <div className="checkout-summary__row">
                   <span>Subtotal</span>
                   <span>₹{cartTotal.toLocaleString('en-IN')}</span>
                 </div>
-                {appliedDiscount > 0 && (
+                {discountAmount > 0 && (
                   <div className="checkout-summary__row checkout-summary__row--discount">
-                    <span>Discount ({appliedDiscount}%)</span>
+                    <span>Discount {appliedCoupon?.code ? `(${appliedCoupon.code})` : ''}</span>
                     <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
                   </div>
                 )}
@@ -552,6 +609,26 @@ export default function Checkout() {
           </div>
         )}
       </div>
+
+      {/* Perks & Benefits Strip (Directly under order summary as circled in user screenshot) */}
+      <aside className="checkout-perks-strip" role="region" aria-label="Customer Benefits">
+        <div className="checkout-perks-strip__container">
+          <div className="checkout-perks-item">
+            <span className="checkout-perks-item__icon">🎁</span>
+            <span className="checkout-perks-item__text">Free gifts on every order</span>
+          </div>
+          <span className="checkout-perks-divider">•</span>
+          <div className="checkout-perks-item">
+            <span className="checkout-perks-item__icon">🚚</span>
+            <span className="checkout-perks-item__text">Free delivery on order above 999rs</span>
+          </div>
+          <span className="checkout-perks-divider">•</span>
+          <div className="checkout-perks-item">
+            <span className="checkout-perks-item__icon">💳</span>
+            <span className="checkout-perks-item__text">COD and Prepaid all payment methods are available</span>
+          </div>
+        </div>
+      </aside>
 
       <div className="container checkout-container">
         <div className="checkout-page__header">
@@ -946,13 +1023,31 @@ export default function Checkout() {
               ))}
             </ul>
 
+            {/* Coupon Offer Recommendation Card */}
+            <div className="checkout-coupon-offer">
+              <div className="checkout-coupon-offer__left">
+                <span className="checkout-coupon-offer__badge">JOY30</span>
+                <div className="checkout-coupon-offer__text">
+                  <strong>Get Flat ₹30 OFF</strong>
+                  <span>Use code JOY30 on your order</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                className={`checkout-coupon-offer__btn ${appliedCoupon?.code === 'JOY30' ? 'applied' : ''}`}
+                onClick={() => applyCouponCode('JOY30')}
+              >
+                {appliedCoupon?.code === 'JOY30' ? 'Applied ✓' : 'Apply'}
+              </button>
+            </div>
+
             {/* Coupon field */}
             <form className="checkout-coupon-box" onSubmit={handleApplyCoupon}>
               <div className="checkout-coupon-row">
                 <input
                   type="text"
                   className="checkout-coupon-input"
-                  placeholder="Discount code (e.g. WELCOME10)"
+                  placeholder="Discount code (e.g. JOY30)"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
                 />
@@ -972,9 +1067,9 @@ export default function Checkout() {
                 <span>Subtotal</span>
                 <span>₹{cartTotal.toLocaleString('en-IN')}</span>
               </div>
-              {appliedDiscount > 0 && (
+              {discountAmount > 0 && (
                 <div className="checkout-summary__row checkout-summary__row--discount">
-                  <span>Special Discount ({appliedDiscount}%)</span>
+                  <span>Discount {appliedCoupon?.code ? `(${appliedCoupon.code})` : ''}</span>
                   <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
                 </div>
               )}

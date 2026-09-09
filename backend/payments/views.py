@@ -196,13 +196,14 @@ class RazorpayCreateOrderView(APIView):
         # ─── Server-Side Shipping & Total Calculation ─────────────────────────
         # Free delivery for orders >= ₹999, otherwise flat ₹80 delivery
         coupon = (validated_data.get('coupon_code') or '').strip().upper()
-        discount_percent = Decimal('0.00')
+        discount_amount = Decimal('0.00')
         if coupon in ('WELCOME10', 'JEWELS10'):
-            discount_percent = Decimal('10.00')
+            discount_amount = (subtotal * Decimal('10.00') / Decimal('100.00')).quantize(Decimal('1.00'))
         elif coupon == 'GOLD5':
-            discount_percent = Decimal('5.00')
+            discount_amount = (subtotal * Decimal('5.00') / Decimal('100.00')).quantize(Decimal('1.00'))
+        elif coupon in ('JOY30', 'SAVE30', 'FLAT30', 'WELCOME30', 'SPECIAL30', 'OFF30'):
+            discount_amount = min(subtotal, Decimal('30.00'))
 
-        discount_amount = (subtotal * discount_percent / Decimal('100.00')).quantize(Decimal('1.00'))
         subtotal_after_discount = max(Decimal('0.00'), subtotal - discount_amount)
         shipping_cost = Decimal('0.00') if subtotal >= Decimal('999.00') else Decimal('80.00')
         grand_total = subtotal_after_discount + shipping_cost

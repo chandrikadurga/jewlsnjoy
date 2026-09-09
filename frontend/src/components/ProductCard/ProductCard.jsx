@@ -57,7 +57,10 @@ export default function ProductCard({ product }) {
     }
   };
 
-  const formatPrice = (price) => `₹${price.toLocaleString('en-IN')}`;
+  const formatPrice = (price) => {
+    const num = Math.round(Number(price) || 0);
+    return `₹${num.toLocaleString('en-IN')}`;
+  };
 
   return (
     <article className={`product-card ${isOutOfStock ? 'product-card--out-of-stock' : ''}`}>

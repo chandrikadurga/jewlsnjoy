@@ -51,26 +51,39 @@ export default function Header() {
 
   return (
     <>
-      {/* Top Announcement Bar — Free Gifts, Free Delivery, COD & Prepaid */}
-      <aside className="announcement-bar" role="region" aria-label="Offers Announcement">
-        <div className="container announcement-bar__inner">
-          <div className="announcement-bar__content">
-            <span className="announcement-bar__msg">
-              <span className="announcement-bar__icon">🎁</span> Free gifts on every order
-            </span>
-            <span className="announcement-bar__bullet">✦</span>
-            <span className="announcement-bar__msg">
-              <span className="announcement-bar__icon">🚚</span> Free delivery on order above 999rs
-            </span>
-            <span className="announcement-bar__bullet">✦</span>
-            <span className="announcement-bar__msg">
-              <span className="announcement-bar__icon">💳</span> COD and Prepaid all payment methods are available
-            </span>
-          </div>
-        </div>
-      </aside>
-
       <header className={`header${scrolled ? ' header--scrolled' : ''}`} role="banner">
+        {/* Top Announcement Bar — Free Gifts, Free Delivery, COD & Prepaid */}
+        <aside className="announcement-bar" role="region" aria-label="Offers Announcement">
+          <div className="announcement-bar__track">
+            <div className="announcement-bar__content">
+              <span className="announcement-bar__msg">
+                <span className="announcement-bar__icon">🎁</span> Free gifts on every order
+              </span>
+              <span className="announcement-bar__bullet">✦</span>
+              <span className="announcement-bar__msg">
+                <span className="announcement-bar__icon">🚚</span> Free delivery on order above 999rs
+              </span>
+              <span className="announcement-bar__bullet">✦</span>
+              <span className="announcement-bar__msg">
+                <span className="announcement-bar__icon">💳</span> COD and Prepaid all payment methods are available
+              </span>
+            </div>
+            <div className="announcement-bar__content announcement-bar__content--dup" aria-hidden="true">
+              <span className="announcement-bar__msg">
+                <span className="announcement-bar__icon">🎁</span> Free gifts on every order
+              </span>
+              <span className="announcement-bar__bullet">✦</span>
+              <span className="announcement-bar__msg">
+                <span className="announcement-bar__icon">🚚</span> Free delivery on order above 999rs
+              </span>
+              <span className="announcement-bar__bullet">✦</span>
+              <span className="announcement-bar__msg">
+                <span className="announcement-bar__icon">💳</span> COD and Prepaid all payment methods are available
+              </span>
+            </div>
+          </div>
+        </aside>
+
         <div className="container header__inner">
 
           {/* Logo */}

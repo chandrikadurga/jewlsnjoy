@@ -36,3 +36,11 @@ services:
         sync: false
       - key: SUPABASE_STORAGE_BUCKET
         value: "payment-proofs"
+      - key: DELHIVERY_ENABLED
+        value: "True"
+      - key: DELHIVERY_ENV
+        value: "production"
+      - key: DELHIVERY_API_TOKEN
+        sync: false
+      - key: DELHIVERY_PICKUP_LOCATION
+        value: "Arpit Singh"

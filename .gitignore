@@ -38,3 +38,6 @@ Thumbs.db
 scratch/
 products_raw_backup/
 frontend/public/products/new_products/
+*.zip
+frontend/public/yarn implementation and report/
+frontend/public/WhatsApp Unknown*

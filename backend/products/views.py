@@ -3,10 +3,13 @@ Django REST API views for Jewels N' Joys.
 Full-stack database queries for public storefront and admin dashboard.
 """
 
+import os
 import json
 import logging
+import uuid
 import urllib.request
 from decimal import Decimal
+from pathlib import Path
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
@@ -15,6 +18,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 admin_signer = TimestampSigner(salt='jewlsnjoy-admin-auth')
 
@@ -515,12 +519,55 @@ class AdminProductDetailView(APIView):
                 data['stock_quantity'] = 10
         return data
 
+    def _sync_images(self, product, images_data, primary_url=None):
+        url_list = []
+        if images_data is not None and isinstance(images_data, list):
+            for item in images_data:
+                if isinstance(item, str) and item.strip():
+                    url_list.append(item.strip())
+                elif isinstance(item, dict) and item.get('image_url'):
+                    url_list.append(item['image_url'].strip())
+
+        target_primary = primary_url or product.primary_image_url
+        if not target_primary and url_list:
+            target_primary = url_list[0]
+
+        if target_primary and target_primary not in url_list:
+            url_list.insert(0, target_primary)
+
+        if url_list:
+            ProductImage.objects.filter(product=product).delete()
+            for idx, u in enumerate(url_list):
+                ProductImage.objects.create(
+                    product=product,
+                    image_url=u,
+                    angle_number=idx + 1,
+                    is_primary=(u == target_primary or (not target_primary and idx == 0))
+                )
+
+        if target_primary and product.primary_image_url != target_primary:
+            product.primary_image_url = target_primary
+            product.save(update_fields=['primary_image_url'])
+
     def patch(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         data = self._sync_stock_data(product, request.data)
+
+        # Handle category if category_name given
+        cat_id = data.get('category')
+        if not cat_id and data.get('category_name'):
+            cat, _ = Category.objects.get_or_create(name=data.get('category_name'))
+            data['category'] = cat.id
+
+        images_data = data.pop('images', None)
+        if images_data is None:
+            images_data = data.pop('image_urls', None)
+        primary_url = data.get('primary_image_url') or data.get('image')
+
         serializer = AdminProductWriteSerializer(product, data=data, partial=True)
         if serializer.is_valid():
             product = serializer.save()
+            self._sync_images(product, images_data, primary_url)
             response = Response(ProductSerializer(product).data)
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
             return response
@@ -529,9 +576,21 @@ class AdminProductDetailView(APIView):
     def put(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         data = self._sync_stock_data(product, request.data)
+
+        cat_id = data.get('category')
+        if not cat_id and data.get('category_name'):
+            cat, _ = Category.objects.get_or_create(name=data.get('category_name'))
+            data['category'] = cat.id
+
+        images_data = data.pop('images', None)
+        if images_data is None:
+            images_data = data.pop('image_urls', None)
+        primary_url = data.get('primary_image_url') or data.get('image')
+
         serializer = AdminProductWriteSerializer(product, data=data)
         if serializer.is_valid():
             product = serializer.save()
+            self._sync_images(product, images_data, primary_url)
             response = Response(ProductSerializer(product).data)
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
             return response
@@ -543,6 +602,52 @@ class AdminProductDetailView(APIView):
         response = Response({'message': 'Product deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         return response
+
+
+class AdminImageUploadView(APIView):
+    """
+    POST /api/admin/upload-image/
+    Uploads an image file or base64 image data to media/products/
+    Returns: { 'url': '/media/products/...', 'filename': '...' }
+    """
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def post(self, request):
+        file_obj = request.FILES.get('image') or request.FILES.get('file')
+        if not file_obj:
+            base64_data = request.data.get('image_data') or request.data.get('image')
+            if base64_data and isinstance(base64_data, str) and 'base64,' in base64_data:
+                import base64
+                header, encoded = base64_data.split('base64,', 1)
+                ext = '.jpg'
+                if 'png' in header:
+                    ext = '.png'
+                elif 'webp' in header:
+                    ext = '.webp'
+                filename = f"prod_{uuid.uuid4().hex[:10]}{ext}"
+                save_dir = Path(settings.MEDIA_ROOT) / 'products'
+                save_dir.mkdir(parents=True, exist_ok=True)
+                dest_path = save_dir / filename
+                with open(dest_path, 'wb') as f:
+                    f.write(base64.b64decode(encoded))
+                return Response({'url': f"/media/products/{filename}", 'filename': filename}, status=status.HTTP_201_CREATED)
+            return Response({'error': 'No image file or data provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        filename = getattr(file_obj, 'name', 'product.jpg')
+        ext = os.path.splitext(filename)[1].lower()
+        if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
+            ext = '.jpg'
+
+        safe_name = f"prod_{uuid.uuid4().hex[:10]}{ext}"
+        save_dir = Path(settings.MEDIA_ROOT) / 'products'
+        save_dir.mkdir(parents=True, exist_ok=True)
+        dest_path = save_dir / safe_name
+
+        with open(dest_path, 'wb+') as destination:
+            for chunk in file_obj.chunks():
+                destination.write(chunk)
+
+        return Response({'url': f"/media/products/{safe_name}", 'filename': safe_name}, status=status.HTTP_201_CREATED)
 
 
 class AdminOrderListView(APIView):

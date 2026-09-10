@@ -65,11 +65,37 @@ function resolveProductImage(imagePath, isCover = false) {
 
 function resolveProductImages(product) {
   if (!product) return product;
+  const primary = resolveProductImage(product.primary_image_url || product.image, true);
+  let resolvedImages = [];
+  if (Array.isArray(product.images)) {
+    resolvedImages = product.images.map((img) => {
+      if (typeof img === 'string') return resolveProductImage(img, false);
+      if (img && typeof img === 'object') {
+        return {
+          ...img,
+          image_url: resolveProductImage(img.image_url, false),
+        };
+      }
+      return img;
+    });
+  }
+  let resolvedUrls = [];
+  if (Array.isArray(product.image_urls)) {
+    resolvedUrls = product.image_urls.map((u) => resolveProductImage(u, false));
+  } else if (resolvedImages.length > 0) {
+    resolvedUrls = resolvedImages.map((img) => (typeof img === 'string' ? img : img.image_url)).filter(Boolean);
+  }
+  if (primary && !resolvedUrls.includes(primary)) {
+    resolvedUrls.unshift(primary);
+  }
+
   return {
     ...product,
-    image: resolveProductImage(product.image, true),
-    thumbnail: resolveProductImage(product.thumbnail, true),
-    images: product.images ? product.images.map((img) => resolveProductImage(img, false)) : [],
+    image: primary,
+    thumbnail: primary,
+    primary_image_url: primary,
+    images: resolvedImages.length > 0 ? resolvedImages : resolvedUrls,
+    image_urls: resolvedUrls,
   };
 }
 
@@ -286,6 +312,16 @@ export const adminApi = {
   },
   deleteProduct: async (id) => {
     const response = await api.delete(`/api/admin/products/${id}/`);
+    return response.data;
+  },
+  uploadProductImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await api.post('/api/admin/upload-image/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
   getOrders: async (params = {}) => {

@@ -27,7 +27,7 @@ export const FAQ_DATA = [
     question: 'How can I contact your customer service?',
     answer: (
       <>
-        You can reach our customer support team by calling us at <a href="tel:+917251070150" className="faq-inline-link">7251070150</a> during our business hours, which are Monday to Friday, 11:00 AM to 6:00 PM. Alternatively, you can email us at <a href="mailto:jewelsnjoys25@gmail.com" className="faq-inline-link">jewelsnjoys25@gmail.com</a>. We&apos;re always available to assist you with any inquiries or concerns you may have.
+        You can reach our customer support team by calling us at <a href="tel:+917251070150" className="faq-inline-link">7251070150</a> during our business hours, which are Monday to Saturday, 11:00 AM to 6:00 PM. Alternatively, you can email us at <a href="mailto:jewelsnjoys25@gmail.com" className="faq-inline-link">jewelsnjoys25@gmail.com</a>. We&apos;re always available to assist you with any inquiries or concerns you may have.
       </>
     ),
   },
@@ -43,8 +43,8 @@ export const FAQ_DATA = [
 ];
 
 export default function FAQSection({ title = "FAQ", subtitle = "Got questions? We're here with clear answers." }) {
-  // Store open question IDs (starts completely collapsed by default)
-  const [openIds, setOpenIds] = useState([]);
+  // Store open question IDs (can toggle multiple open like in screenshot)
+  const [openIds, setOpenIds] = useState(['track-order']);
 
   const toggleItem = (id) => {
     setOpenIds((prev) =>

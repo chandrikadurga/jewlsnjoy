@@ -37,4 +37,4 @@ Thumbs.db
 # Local scratches & raw backups
 scratch/
 products_raw_backup/
-
+frontend/public/products/new_products/

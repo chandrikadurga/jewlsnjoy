@@ -9,7 +9,10 @@ urlpatterns = [
     path('products/<int:pk>/', views.AdminProductDetailView.as_view(), name='admin-product-detail'),
     path('upload-image/', views.AdminImageUploadView.as_view(), name='admin-image-upload'),
     path('orders/', views.AdminOrderListView.as_view(), name='admin-order-list'),
+    path('orders/delete/', views.AdminOrderListView.as_view(), name='admin-order-bulk-delete'),
     path('orders/<int:pk>/', views.AdminOrderDetailView.as_view(), name='admin-order-detail'),
+    path('orders/<int:pk>/delete/', views.AdminOrderDetailView.as_view(), name='admin-order-delete-pk'),
+    path('orders/<str:identifier>/delete/', views.AdminOrderDetailView.as_view(), name='admin-order-delete-str'),
     path('policies/', views.AdminStorePolicyView.as_view(), name='admin-policies'),
 ]
 

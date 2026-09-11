@@ -714,21 +714,37 @@ class AdminOrderListView(APIView):
         response['Pragma'] = 'no-cache'
         return response
 
-    def delete(self, request):
+    def _delete_orders(self, request):
         ids = request.data.get('ids') or request.query_params.getlist('id')
         if ids:
-            orders_qs = Order.objects.filter(id__in=ids)
-            # Remove any linked shipments first due to on_delete=PROTECT
+            orders_qs = Order.objects.filter(
+                Q(id__in=[int(i) for i in ids if str(i).isdigit()]) |
+                Q(order_number__in=[str(i) for i in ids])
+            )
             try:
                 from shipping.models import Shipment
                 Shipment.objects.filter(order__in=orders_qs).delete()
             except Exception as e:
                 logger.warning("Could not delete associated shipments for orders %s: %s", ids, str(e))
+
+            try:
+                from payments.models import PaymentVerification, PaymentTransaction
+                PaymentVerification.objects.filter(order__in=orders_qs).delete()
+                PaymentTransaction.objects.filter(order__in=orders_qs).delete()
+            except Exception as e:
+                logger.warning("Could not delete payments for orders %s: %s", ids, str(e))
+
             deleted_count, _ = orders_qs.delete()
-            response = Response({'message': f'{deleted_count} orders deleted successfully'}, status=status.HTTP_200_OK)
+            response = Response({'success': True, 'message': f'{deleted_count} orders deleted successfully'}, status=status.HTTP_200_OK)
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
             return response
         return Response({'error': 'No order IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        return self._delete_orders(request)
+
+    def post(self, request):
+        return self._delete_orders(request)
 
 
 class AdminOrderDetailView(APIView):
@@ -736,15 +752,31 @@ class AdminOrderDetailView(APIView):
     GET /api/admin/orders/<id>/
     PATCH /api/admin/orders/<id>/
     DELETE /api/admin/orders/<id>/
+    POST /api/admin/orders/<id>/delete/
     """
-    def get(self, request, pk):
-        order = get_object_or_404(Order, pk=pk)
+    def _get_order(self, identifier):
+        if str(identifier).isdigit():
+            order = Order.objects.filter(Q(id=int(identifier)) | Q(order_number=str(identifier))).first()
+        else:
+            order = Order.objects.filter(order_number=str(identifier)).first()
+        if not order:
+            return None
+        return order
+
+    def get(self, request, pk=None, identifier=None):
+        target = pk if pk is not None else identifier
+        order = self._get_order(target)
+        if not order:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
         response = Response(OrderSerializer(order).data)
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         return response
 
-    def patch(self, request, pk):
-        order = get_object_or_404(Order, pk=pk)
+    def patch(self, request, pk=None, identifier=None):
+        target = pk if pk is not None else identifier
+        order = self._get_order(target)
+        if not order:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
         new_status = request.data.get('status')
         if new_status:
             order.status = new_status
@@ -768,17 +800,35 @@ class AdminOrderDetailView(APIView):
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         return response
 
-    def delete(self, request, pk):
-        order = get_object_or_404(Order, pk=pk)
+    def _delete_single_order(self, request, target):
+        order = self._get_order(target)
+        if not order:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
         try:
             from shipping.models import Shipment
             Shipment.objects.filter(order=order).delete()
         except Exception as e:
-            logger.warning("Could not delete associated shipment for order %s: %s", pk, str(e))
+            logger.warning("Could not delete associated shipment for order %s: %s", target, str(e))
+
+        try:
+            from payments.models import PaymentVerification, PaymentTransaction
+            PaymentVerification.objects.filter(order=order).delete()
+            PaymentTransaction.objects.filter(order=order).delete()
+        except Exception as e:
+            logger.warning("Could not delete payments for order %s: %s", target, str(e))
+
         order.delete()
-        response = Response({'message': 'Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        response = Response({'success': True, 'message': 'Order deleted successfully'}, status=status.HTTP_200_OK)
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         return response
+
+    def delete(self, request, pk=None, identifier=None):
+        target = pk if pk is not None else identifier
+        return self._delete_single_order(request, target)
+
+    def post(self, request, pk=None, identifier=None):
+        target = pk if pk is not None else identifier
+        return self._delete_single_order(request, target)
 
 
 # ─── Store Policy Management Views ──────────────────────────────────────────

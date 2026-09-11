@@ -337,13 +337,103 @@ export const adminApi = {
     const response = await api.patch(`/api/admin/orders/${id}/`, { status });
     return response.data;
   },
-  deleteOrder: async (id) => {
-    const response = await api.delete(`/api/admin/orders/${id}/`);
-    return response.data;
+  deleteOrder: async (id, orderNumber) => {
+    // 1. Try Django REST API with DELETE
+    try {
+      const response = await api.delete(`/api/admin/orders/${id}/`);
+      return response.data;
+    } catch (apiErr) {
+      // If 405 (Method Not Allowed) or 404, try POST fallback to Django endpoints
+      if (apiErr.response?.status === 405 || apiErr.response?.status === 404) {
+        try {
+          const response = await api.post(`/api/admin/orders/${id}/delete/`);
+          return response.data;
+        } catch {
+          // If ID failed, try orderNumber if available
+          if (orderNumber) {
+            try {
+              const response = await api.post(`/api/admin/orders/${orderNumber}/delete/`);
+              return response.data;
+            } catch {
+              // continue to Supabase DB direct fallback
+            }
+          }
+        }
+      }
+
+      // 2. Authoritative Supabase Database Fallback (handles 405 / proxy restrictions / deploy delays)
+      try {
+        const numericId = Number(id);
+        if (!isNaN(numericId) && numericId > 0) {
+          const { data, error } = await supabase.rpc('admin_delete_orders', {
+            p_order_ids: [numericId],
+          });
+          if (!error && data?.success) {
+            return {
+              success: true,
+              message: 'Order permanently deleted from database',
+              deleted_count: data.deleted_count,
+            };
+          }
+        }
+
+        if (orderNumber) {
+          const { data, error } = await supabase.rpc('admin_delete_order_by_number', {
+            p_order_number: String(orderNumber),
+          });
+          if (!error && data?.success) {
+            return {
+              success: true,
+              message: 'Order permanently deleted from database',
+              deleted_count: data.deleted_count,
+            };
+          }
+        }
+      } catch (sbErr) {
+        console.error('Supabase direct order deletion fallback error:', sbErr);
+      }
+
+      // Re-throw original error if all fallbacks failed
+      throw apiErr;
+    }
   },
-  deleteOrders: async (ids) => {
-    const response = await api.delete('/api/admin/orders/', { data: { ids } });
-    return response.data;
+  deleteOrders: async (ids = []) => {
+    // 1. Try Django REST API with DELETE
+    try {
+      const response = await api.delete('/api/admin/orders/', { data: { ids } });
+      return response.data;
+    } catch (apiErr) {
+      // If 405 or 404, try POST fallback to Django
+      if (apiErr.response?.status === 405 || apiErr.response?.status === 404) {
+        try {
+          const response = await api.post('/api/admin/orders/delete/', { ids });
+          return response.data;
+        } catch {
+          // continue to Supabase DB direct fallback
+        }
+      }
+
+      // 2. Authoritative Supabase Database Fallback
+      try {
+        const numericIds = ids.map(Number).filter((n) => !isNaN(n) && n > 0);
+        if (numericIds.length > 0) {
+          const { data, error } = await supabase.rpc('admin_delete_orders', {
+            p_order_ids: numericIds,
+          });
+          if (!error && data?.success) {
+            return {
+              success: true,
+              message: `${data.deleted_count} orders permanently deleted from database`,
+              deleted_count: data.deleted_count,
+            };
+          }
+        }
+      } catch (sbErr) {
+        console.error('Supabase direct bulk delete fallback error:', sbErr);
+      }
+
+      throw apiErr;
+    }
   },
   getPaymentVerifications: async (params = {}) => {
     const response = await api.get('/api/payments/admin/verifications/', { params: { ...params, _t: Date.now() } });

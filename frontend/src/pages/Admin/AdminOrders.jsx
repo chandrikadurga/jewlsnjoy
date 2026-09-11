@@ -515,7 +515,7 @@ export default function AdminOrders() {
         showToast(`${idsToDelete.length} order${idsToDelete.length > 1 ? 's' : ''} permanently deleted from database.`);
       } else {
         const idToDelete = deleteTarget.id;
-        await adminApi.deleteOrder(idToDelete);
+        await adminApi.deleteOrder(idToDelete, deleteTarget.order_number);
         setOrders((prev) => prev.filter((o) => o.id !== idToDelete));
         setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
         showToast(`Order #${deleteTarget.order_number} permanently deleted from database.`);

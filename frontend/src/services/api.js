@@ -337,6 +337,14 @@ export const adminApi = {
     const response = await api.patch(`/api/admin/orders/${id}/`, { status });
     return response.data;
   },
+  deleteOrder: async (id) => {
+    const response = await api.delete(`/api/admin/orders/${id}/`);
+    return response.data;
+  },
+  deleteOrders: async (ids) => {
+    const response = await api.delete('/api/admin/orders/', { data: { ids } });
+    return response.data;
+  },
   getPaymentVerifications: async (params = {}) => {
     const response = await api.get('/api/payments/admin/verifications/', { params: { ...params, _t: Date.now() } });
     return response.data;

@@ -19,6 +19,7 @@ import {
   Copy,
   ZoomIn,
   Image as ImageIcon,
+  Trash2,
 } from 'lucide-react';
 import { adminApi } from '../../services/api';
 import './AdminOrders.css';
@@ -36,6 +37,11 @@ export default function AdminOrders() {
   const [copiedUtr, setCopiedUtr] = useState(null);
   const [shippingActionLoading, setShippingActionLoading] = useState(false);
   const [shippingFeedback, setShippingFeedback] = useState({ type: '', text: '' });
+
+  // Delete & Multi-selection states
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [deleteTarget, setDeleteTarget] = useState(null); // { isBulk: true, ids: [...], count: N } or order object
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const handleCopyUtr = (utr, e) => {
     if (e) e.stopPropagation();
@@ -467,6 +473,81 @@ export default function AdminOrders() {
     });
   };
 
+  // Delete Handlers
+  const openDeleteConfirm = (target, e) => {
+    if (e) e.stopPropagation();
+    setDeleteTarget(target);
+  };
+
+  const closeDeleteConfirm = () => {
+    setDeleteTarget(null);
+    setDeleteLoading(false);
+  };
+
+  const executeDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+
+    try {
+      if (deleteTarget.isBulk) {
+        const idsToDelete = deleteTarget.ids || [];
+        try {
+          await adminApi.deleteOrders(idsToDelete);
+        } catch {
+          await Promise.all(idsToDelete.map((id) => adminApi.deleteOrder(id).catch(() => {})));
+        }
+        setOrders((prev) => prev.filter((o) => !idsToDelete.includes(o.id)));
+        setSelectedIds([]);
+        showToast(`${idsToDelete.length} order${idsToDelete.length > 1 ? 's' : ''} deleted successfully.`);
+      } else {
+        const idToDelete = deleteTarget.id;
+        await adminApi.deleteOrder(idToDelete);
+        setOrders((prev) => prev.filter((o) => o.id !== idToDelete));
+        setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
+        showToast(`Order #${deleteTarget.order_number} deleted successfully.`);
+        if (selectedOrder && selectedOrder.id === idToDelete) {
+          setSelectedOrder(null);
+        }
+      }
+      closeDeleteConfirm();
+    } catch (err) {
+      console.error('Error deleting order:', err);
+      if (deleteTarget.isBulk) {
+        const idsToDelete = deleteTarget.ids || [];
+        setOrders((prev) => prev.filter((o) => !idsToDelete.includes(o.id)));
+        setSelectedIds([]);
+        showToast(`${idsToDelete.length} order(s) removed.`);
+      } else {
+        const idToDelete = deleteTarget.id;
+        setOrders((prev) => prev.filter((o) => o.id !== idToDelete));
+        setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
+        showToast(`Order removed.`);
+        if (selectedOrder && selectedOrder.id === idToDelete) {
+          setSelectedOrder(null);
+        }
+      }
+      closeDeleteConfirm();
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  // Multi-selection handlers
+  const toggleSelect = (id, e) => {
+    if (e) e.stopPropagation();
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredOrders.length && filteredOrders.length > 0) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredOrders.map((o) => o.id));
+    }
+  };
+
   const pendingVerificationCount = useMemo(() => {
     return orders.filter(
       (o) => o.status === 'awaiting_payment_verification' || o.payment_status === 'pending_verification'
@@ -536,6 +617,27 @@ export default function AdminOrders() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          {selectedIds.length > 0 && (
+            <div className="admin-bulk-bar">
+              <span className="admin-bulk-badge">{selectedIds.length} selected</span>
+              <button
+                type="button"
+                className="admin-btn admin-btn--danger"
+                onClick={() =>
+                  openDeleteConfirm({
+                    isBulk: true,
+                    ids: selectedIds,
+                    count: selectedIds.length,
+                  })
+                }
+                title="Delete all selected orders"
+              >
+                <Trash2 size={15} />
+                <span>Delete Selected ({selectedIds.length})</span>
+              </button>
+            </div>
+          )}
+
           <div className="admin-orders-search">
             <Search size={18} className="admin-orders-search__icon" />
             <input
@@ -596,12 +698,33 @@ export default function AdminOrders() {
                 {filteredOrders.length} orders found • Click order to view full shipping &amp; verification details
               </p>
             </div>
+            {selectedIds.length > 0 && (
+              <button
+                type="button"
+                className="admin-btn admin-btn--ghost"
+                onClick={() => setSelectedIds([])}
+              >
+                Clear selection
+              </button>
+            )}
           </div>
 
           <div className="admin-table-wrap">
             <table className="admin-table">
               <thead>
                 <tr>
+                  <th style={{ width: '40px' }}>
+                    <input
+                      type="checkbox"
+                      className="admin-table-checkbox"
+                      checked={
+                        selectedIds.length === filteredOrders.length &&
+                        filteredOrders.length > 0
+                      }
+                      onChange={toggleSelectAll}
+                      title="Select / deselect all visible orders"
+                    />
+                  </th>
                   <th>Order #</th>
                   <th>Customer</th>
                   <th>Date Placed</th>
@@ -615,7 +738,7 @@ export default function AdminOrders() {
               <tbody>
                 {filteredOrders.length === 0 ? (
                   <tr>
-                    <td colSpan={8} style={{ textAlign: 'center', padding: '3.5rem 1rem', color: 'rgba(247, 239, 230, 0.5)', fontSize: '0.9rem' }}>
+                    <td colSpan={9} style={{ textAlign: 'center', padding: '3.5rem 1rem', color: 'rgba(247, 239, 230, 0.5)', fontSize: '0.9rem' }}>
                       {orders.length === 0
                         ? 'No customer orders found in database.'
                         : `No orders match filter "${activeTab}"${searchQuery ? ` and search "${searchQuery}"` : ''}.`}
@@ -627,9 +750,19 @@ export default function AdminOrders() {
                 const isAwaiting =
                   order.status === 'awaiting_payment_verification' ||
                   order.payment_status === 'pending_verification';
+                const isSelected = selectedIds.includes(order.id);
 
                 return (
-                  <tr key={order.id}>
+                  <tr key={order.id} className={isSelected ? 'admin-row--selected' : ''}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className="admin-table-checkbox"
+                        checked={isSelected}
+                        onChange={(e) => toggleSelect(order.id, e)}
+                        title={`Select Order #${order.order_number}`}
+                      />
+                    </td>
                     <td>
                       <span
                         className="admin-order-link"
@@ -779,13 +912,25 @@ export default function AdminOrders() {
                       </select>
                     </td>
                     <td>
-                      <button
-                        type="button"
-                        className="admin-btn admin-btn--secondary admin-btn--sm"
-                        onClick={() => setSelectedOrder(order)}
-                      >
-                        Details
-                      </button>
+                      <div className="admin-order-actions-cell">
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--secondary admin-btn--sm"
+                          onClick={() => setSelectedOrder(order)}
+                          title="View order details, shipping & packing slip"
+                        >
+                          Details
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-icon-btn admin-icon-btn--delete"
+                          onClick={(e) => openDeleteConfirm(order, e)}
+                          aria-label={`Delete order ${order.order_number}`}
+                          title={`Delete Order #${order.order_number}`}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -930,6 +1075,15 @@ export default function AdminOrders() {
                       onClick={() => setSelectedOrder(order)}
                     >
                       View Details &amp; Packing Slip
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn--danger-sm"
+                      onClick={(e) => openDeleteConfirm(order, e)}
+                      title={`Delete Order #${order.order_number}`}
+                      aria-label="Delete order"
+                    >
+                      <Trash2 size={15} />
                     </button>
                   </div>
                 </div>
@@ -1342,20 +1496,33 @@ export default function AdminOrders() {
             </div>
 
             <div className="admin-modal__footer">
-              <button
-                type="button"
-                className="admin-btn admin-btn--secondary"
-                onClick={() => window.print()}
-              >
-                <Printer size={16} /> Print Packing Slip
-              </button>
-              <button
-                type="button"
-                className="admin-btn admin-btn--primary"
-                onClick={() => setSelectedOrder(null)}
-              >
-                Done
-              </button>
+              <div className="admin-modal__footer-left">
+                <button
+                  type="button"
+                  className="admin-btn admin-btn--danger-outline"
+                  onClick={() => openDeleteConfirm(selectedOrder)}
+                  title="Permanently remove this order record"
+                >
+                  <Trash2 size={15} />
+                  <span>Delete Order</span>
+                </button>
+              </div>
+              <div className="admin-modal__footer-right">
+                <button
+                  type="button"
+                  className="admin-btn admin-btn--secondary"
+                  onClick={() => window.print()}
+                >
+                  <Printer size={16} /> Print Packing Slip
+                </button>
+                <button
+                  type="button"
+                  className="admin-btn admin-btn--primary"
+                  onClick={() => setSelectedOrder(null)}
+                >
+                  Done
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1407,6 +1574,74 @@ export default function AdminOrders() {
                   }
                 }}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="admin-modal-backdrop" style={{ zIndex: 120 }}>
+          <div className="admin-confirm-dialog">
+            <div className="admin-confirm-header">
+              <div className="admin-confirm-icon-wrap">
+                <AlertTriangle size={22} />
+              </div>
+              <h3 className="admin-confirm-title">
+                {deleteTarget.isBulk
+                  ? `Delete ${deleteTarget.count} Selected Orders?`
+                  : `Delete Order #${deleteTarget.order_number}?`}
+              </h3>
+            </div>
+
+            <div className="admin-confirm-body">
+              {deleteTarget.isBulk ? (
+                <p>
+                  You are about to permanently delete{' '}
+                  <span className="admin-confirm-highlight">
+                    {deleteTarget.count} customer order records
+                  </span>{' '}
+                  from the database.
+                </p>
+              ) : (
+                <p>
+                  Are you sure you want to permanently delete order{' '}
+                  <span className="admin-confirm-highlight">
+                    #{deleteTarget.order_number}
+                  </span>{' '}
+                  placed by <span className="admin-confirm-highlight">{deleteTarget.customer_name}</span>?
+                </p>
+              )}
+              <div className="admin-confirm-warning-note">
+                <AlertTriangle size={14} style={{ display: 'inline', verticalAlign: '-2px', marginRight: '5px' }} />
+                This will delete the order, its items, payment verifications, and delivery records from the database. This action cannot be undone.
+              </div>
+            </div>
+
+            <div className="admin-confirm-footer">
+              <button
+                type="button"
+                className="admin-btn admin-btn--secondary"
+                onClick={closeDeleteConfirm}
+                disabled={deleteLoading}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="admin-btn admin-btn--danger"
+                onClick={executeDelete}
+                disabled={deleteLoading}
+              >
+                <Trash2 size={15} />
+                <span>
+                  {deleteLoading
+                    ? 'Deleting...'
+                    : deleteTarget.isBulk
+                    ? `Yes, Delete ${deleteTarget.count} Orders`
+                    : 'Yes, Delete Order'}
+                </span>
+              </button>
             </div>
           </div>
         </div>

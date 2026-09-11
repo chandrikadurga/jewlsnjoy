@@ -701,11 +701,28 @@ class AdminOrderListView(APIView):
 
         return Response(OrderSerializer(orders, many=True).data)
 
+    def delete(self, request):
+        ids = request.data.get('ids') or request.query_params.getlist('id')
+        if ids:
+            orders_qs = Order.objects.filter(id__in=ids)
+            # Remove any linked shipments first due to on_delete=PROTECT
+            try:
+                from shipping.models import Shipment
+                Shipment.objects.filter(order__in=orders_qs).delete()
+            except Exception as e:
+                logger.warning("Could not delete associated shipments for orders %s: %s", ids, str(e))
+            deleted_count, _ = orders_qs.delete()
+            response = Response({'message': f'{deleted_count} orders deleted successfully'}, status=status.HTTP_200_OK)
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+            return response
+        return Response({'error': 'No order IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class AdminOrderDetailView(APIView):
     """
     GET /api/admin/orders/<id>/
     PATCH /api/admin/orders/<id>/
+    DELETE /api/admin/orders/<id>/
     """
     def get(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
@@ -733,6 +750,18 @@ class AdminOrderDetailView(APIView):
             order.notes = request.data.get('notes')
         order.save()
         return Response(OrderSerializer(order).data)
+
+    def delete(self, request, pk):
+        order = get_object_or_404(Order, pk=pk)
+        try:
+            from shipping.models import Shipment
+            Shipment.objects.filter(order=order).delete()
+        except Exception as e:
+            logger.warning("Could not delete associated shipment for order %s: %s", pk, str(e))
+        order.delete()
+        response = Response({'message': 'Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
 
 
 # ─── Store Policy Management Views ──────────────────────────────────────────

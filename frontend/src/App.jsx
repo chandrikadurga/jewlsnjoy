@@ -29,6 +29,8 @@ import OrderDetail from './pages/Orders/OrderDetail';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminProducts from './pages/Admin/AdminProducts';
 import AdminOrders from './pages/Admin/AdminOrders';
+import AdminPolicies from './pages/Admin/AdminPolicies';
+
 
 function App() {
   return (
@@ -70,7 +72,9 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="policies" element={<AdminPolicies />} />
           </Route>
+
         </Routes>
       </CartProvider>
     </WishlistProvider>

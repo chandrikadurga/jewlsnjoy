@@ -41,7 +41,9 @@ export default function AdminLayout() {
     { to: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true },
     { to: '/admin/products', label: 'Product Catalog', icon: Package },
     { to: '/admin/orders', label: 'Orders & Sales', icon: ShoppingBag },
+    { to: '/admin/policies', label: 'Store Policies', icon: ShieldCheck },
   ];
+
 
   if (!adminUser) {
     return <AdminLogin onLoginSuccess={(user) => setAdminUser(user || { username: 'admin' })} />;
@@ -144,7 +146,9 @@ export default function AdminLayout() {
                 {location.pathname === '/admin' && 'Executive Overview'}
                 {location.pathname === '/admin/products' && 'Product Catalog'}
                 {location.pathname === '/admin/orders' && 'Customer Orders'}
+                {location.pathname === '/admin/policies' && 'Store Policies & Compliance'}
               </h1>
+
               <span className="admin-header__subtitle">Jewels &apos;n&apos; Joys Administration</span>
             </div>
           </div>

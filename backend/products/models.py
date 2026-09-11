@@ -210,3 +210,20 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.rating}★ by {self.author_name} on {self.product.name}"
 
+
+class StorePolicy(models.Model):
+    key = models.CharField(max_length=50, unique=True)
+    title = models.CharField(max_length=200, blank=True, default='')
+    badge_label = models.CharField(max_length=100, blank=True, default='Strict Policy')
+    last_updated = models.CharField(max_length=100, blank=True, default='')
+    data = models.JSONField(default=dict, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'Store Policies'
+        ordering = ['key']
+
+    def __str__(self):
+        return f"Policy: {self.title or self.key}"
+
+

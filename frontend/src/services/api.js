@@ -314,6 +314,11 @@ export const adminApi = {
     const response = await api.delete(`/api/admin/products/${id}/`);
     return response.data;
   },
+  deleteProducts: async (ids) => {
+    const response = await api.delete('/api/admin/products/', { data: { ids } });
+    return response.data;
+  },
+
   uploadProductImage: async (file) => {
     const formData = new FormData();
     formData.append('image', file);
@@ -360,6 +365,32 @@ export const adminApi = {
     const response = await api.post(`/api/shipping/admin/orders/${orderId}/pickup/`);
     return response.data;
   },
+  getStorePolicies: async () => {
+    const response = await api.get('/api/admin/policies/', { params: { _t: Date.now() } });
+    return response.data;
+  },
+  updateStorePolicies: async (policiesData) => {
+    const response = await api.post('/api/admin/policies/', policiesData);
+    return response.data;
+  },
+};
+
+// ─── Policy API (Storefront & Common) ──────────────────────────
+
+export const policyApi = {
+  getPolicies: async () => {
+    try {
+      const response = await api.get('/api/policies/', { params: { _t: Date.now() } });
+      return response.data;
+    } catch (err) {
+      console.warn('Using local policy defaults:', err);
+      return null;
+    }
+  },
+  updatePolicies: async (policiesData) => {
+    const response = await api.post('/api/admin/policies/', policiesData);
+    return response.data;
+  },
 };
 
 // ─── Shipping API ──────────────────────────────────────────────
@@ -380,4 +411,5 @@ export const shippingApi = {
 };
 
 export default api;
+
 

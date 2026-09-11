@@ -1,0 +1,187 @@
+/* ─── Admin Policies Page Styles ─── */
+
+.admin-policies-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-policies-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-policies-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.01em;
+}
+
+.admin-policies-subtitle {
+  font-size: 0.85rem;
+  color: rgba(247, 239, 230, 0.65);
+  margin: 0;
+}
+
+.admin-policies-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Tabs */
+.admin-policies-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(194, 163, 112, 0.2);
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+}
+
+.admin-policy-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.15rem;
+  background: #18130f;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  border-radius: 8px;
+  color: rgba(247, 239, 230, 0.7);
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.admin-policy-nav-tab:hover {
+  border-color: #c2a370;
+  color: #fff;
+}
+
+.admin-policy-nav-tab--active {
+  background: rgba(194, 163, 112, 0.15);
+  border-color: #d4af37;
+  color: #d4af37;
+  font-weight: 600;
+}
+
+/* Content Card */
+.admin-policy-content-card {
+  padding: 1.75rem;
+}
+
+.admin-policy-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  animation: adminTabFade 0.25s ease;
+}
+
+.admin-policy-section__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(194, 163, 112, 0.15);
+}
+
+.admin-policy-section__title {
+  font-size: 1.1rem;
+  color: #f7efe6;
+  margin: 0 0 0.2rem 0;
+  font-weight: 600;
+}
+
+.admin-policy-section__subtitle {
+  font-size: 0.82rem;
+  color: rgba(247, 239, 230, 0.6);
+  margin: 0;
+}
+
+/* Policy Rules Box */
+.admin-policy-rules-box {
+  background: #14100c;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.admin-policy-rules-box__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.admin-policy-rules-box__header h4 {
+  font-size: 0.92rem;
+  color: #c2a370;
+  margin: 0;
+  font-weight: 600;
+}
+
+.admin-add-rule-btn {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+}
+
+.admin-policy-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.admin-policy-rule-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #1a1510;
+  border: 1px solid rgba(194, 163, 112, 0.12);
+  padding: 0.85rem;
+  border-radius: 6px;
+}
+
+.admin-policy-rule-inputs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-policy-rule-title {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.admin-policy-rule-text {
+  font-size: 0.82rem;
+}
+
+/* Bottom Save Bar */
+.admin-policies-save-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(194, 163, 112, 0.15);
+}
+
+@media (max-width: 768px) {
+  .admin-policies-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-policies-header__actions {
+    flex-direction: column;
+  }
+
+  .admin-policy-content-card {
+    padding: 1.1rem;
+  }
+}

@@ -24,7 +24,7 @@ admin_signer = TimestampSigner(salt='jewlsnjoy-admin-auth')
 
 logger = logging.getLogger(__name__)
 
-from .models import Category, Product, ProductImage, Order, OrderItem, Review
+from .models import Category, Product, ProductImage, Order, OrderItem, Review, StorePolicy
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
@@ -33,6 +33,7 @@ from .serializers import (
     OrderSerializer,
     OrderCreateSerializer,
     ReviewSerializer,
+    StorePolicySerializer,
 )
 
 
@@ -441,9 +442,18 @@ class AdminProductListView(APIView):
         return response
 
     def post(self, request):
-        data = request.data.copy()
+        data = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
         images_data = data.pop('images', None)
-        
+        if images_data is None:
+            images_data = data.pop('image_urls', None)
+        primary_url = data.get('primary_image_url') or data.get('image')
+
+        # Synchronize stock
+        data = AdminProductDetailView()._sync_stock_data(None, data)
+
+        # Merge product details (policies, specifications, care instructions)
+        data['details'] = merge_product_details(data)
+
         # Category handling
         cat_id = data.get('category')
         if not cat_id and data.get('category_name'):
@@ -453,32 +463,81 @@ class AdminProductListView(APIView):
         serializer = AdminProductWriteSerializer(data=data)
         if serializer.is_valid():
             product = serializer.save()
-            
-            # Set default primary image if none given
-            if not product.primary_image_url:
+
+            if primary_url:
+                product.primary_image_url = primary_url
+                product.save(update_fields=['primary_image_url'])
+            elif not product.primary_image_url:
                 product.primary_image_url = f"/products/{product.id}/1.jpeg"
                 product.save(update_fields=['primary_image_url'])
 
-            # Add sample angle images
-            if images_data and isinstance(images_data, list):
-                for idx, img_url in enumerate(images_data):
-                    ProductImage.objects.create(
-                        product=product,
-                        image_url=img_url,
-                        angle_number=idx + 1,
-                        is_primary=(idx == 0)
-                    )
-            elif not product.images.exists():
-                for angle in range(1, 4):
-                    ProductImage.objects.create(
-                        product=product,
-                        image_url=product.primary_image_url,
-                        angle_number=angle,
-                        is_primary=(angle == 1)
-                    )
+            sync_product_images(product, images_data, product.primary_image_url)
 
-            return Response(ProductSerializer(product).data, status=status.HTTP_201_CREATED)
+            response = Response(ProductSerializer(product).data, status=status.HTTP_201_CREATED)
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+            return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        ids = request.data.get('ids') or request.query_params.getlist('id')
+        if ids:
+            Product.objects.filter(id__in=ids).delete()
+            response = Response({'message': f'{len(ids)} products deleted successfully'}, status=status.HTTP_200_OK)
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+            return response
+        return Response({'error': 'No product IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+def sync_product_images(product, images_data, primary_url=None):
+    """
+    Synchronizes ProductImage records and primary_image_url for a product.
+    Supports list of string URLs or dicts {image_url: '...'}.
+    """
+    url_list = []
+    if images_data is not None and isinstance(images_data, list):
+        for item in images_data:
+            if isinstance(item, str) and item.strip():
+                url_list.append(item.strip())
+            elif isinstance(item, dict) and item.get('image_url'):
+                url_list.append(item['image_url'].strip())
+
+    target_primary = primary_url or product.primary_image_url
+    if not target_primary and url_list:
+        target_primary = url_list[0]
+
+    if target_primary and target_primary not in url_list:
+        url_list.insert(0, target_primary)
+
+    if url_list:
+        ProductImage.objects.filter(product=product).delete()
+        for idx, u in enumerate(url_list):
+            ProductImage.objects.create(
+                product=product,
+                image_url=u,
+                angle_number=idx + 1,
+                is_primary=(u == target_primary or (not target_primary and idx == 0))
+            )
+
+    if target_primary and product.primary_image_url != target_primary:
+        product.primary_image_url = target_primary
+        product.save(update_fields=['primary_image_url'])
+
+
+def merge_product_details(raw_data, existing_details=None):
+    """
+    Combines nested and flat policy, shipping, care instructions, and specs into details JSON.
+    """
+    details = dict(existing_details) if isinstance(existing_details, dict) else {}
+    if 'details' in raw_data and isinstance(raw_data['details'], dict):
+        details.update(raw_data['details'])
+
+    # Merge top-level fields into details if provided
+    for field in ['return_policy', 'dispatch_timeline', 'care_instructions', 'specifications', 'features', 'shipping']:
+        if field in raw_data and raw_data[field] is not None:
+            details[field] = raw_data[field]
+
+    return details
 
 
 class AdminProductDetailView(APIView):
@@ -519,39 +578,10 @@ class AdminProductDetailView(APIView):
                 data['stock_quantity'] = 10
         return data
 
-    def _sync_images(self, product, images_data, primary_url=None):
-        url_list = []
-        if images_data is not None and isinstance(images_data, list):
-            for item in images_data:
-                if isinstance(item, str) and item.strip():
-                    url_list.append(item.strip())
-                elif isinstance(item, dict) and item.get('image_url'):
-                    url_list.append(item['image_url'].strip())
-
-        target_primary = primary_url or product.primary_image_url
-        if not target_primary and url_list:
-            target_primary = url_list[0]
-
-        if target_primary and target_primary not in url_list:
-            url_list.insert(0, target_primary)
-
-        if url_list:
-            ProductImage.objects.filter(product=product).delete()
-            for idx, u in enumerate(url_list):
-                ProductImage.objects.create(
-                    product=product,
-                    image_url=u,
-                    angle_number=idx + 1,
-                    is_primary=(u == target_primary or (not target_primary and idx == 0))
-                )
-
-        if target_primary and product.primary_image_url != target_primary:
-            product.primary_image_url = target_primary
-            product.save(update_fields=['primary_image_url'])
-
     def patch(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         data = self._sync_stock_data(product, request.data)
+        data['details'] = merge_product_details(data, product.details)
 
         # Handle category if category_name given
         cat_id = data.get('category')
@@ -567,7 +597,7 @@ class AdminProductDetailView(APIView):
         serializer = AdminProductWriteSerializer(product, data=data, partial=True)
         if serializer.is_valid():
             product = serializer.save()
-            self._sync_images(product, images_data, primary_url)
+            sync_product_images(product, images_data, primary_url)
             response = Response(ProductSerializer(product).data)
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
             return response
@@ -576,6 +606,7 @@ class AdminProductDetailView(APIView):
     def put(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         data = self._sync_stock_data(product, request.data)
+        data['details'] = merge_product_details(data, product.details)
 
         cat_id = data.get('category')
         if not cat_id and data.get('category_name'):
@@ -590,7 +621,7 @@ class AdminProductDetailView(APIView):
         serializer = AdminProductWriteSerializer(product, data=data)
         if serializer.is_valid():
             product = serializer.save()
-            self._sync_images(product, images_data, primary_url)
+            sync_product_images(product, images_data, primary_url)
             response = Response(ProductSerializer(product).data)
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
             return response
@@ -702,4 +733,117 @@ class AdminOrderDetailView(APIView):
             order.notes = request.data.get('notes')
         order.save()
         return Response(OrderSerializer(order).data)
+
+
+# ─── Store Policy Management Views ──────────────────────────────────────────
+
+DEFAULT_POLICIES = {
+    'return': {
+        'key': 'return',
+        'title': 'Return & Refund Policy',
+        'badge_label': 'Strict Policy',
+        'last_updated': '04-09-2026',
+        'intro': "Thank you for shopping at Jewels 'n' Joys.",
+        'highlight_notice': "We follow a strict no refund, return, or exchange policy. Once an order is placed, it cannot be canceled, modified, or returned.",
+        'unboxing_requirement': "A full 360-degree unboxing video with no cuts or edits is mandatory to process any complaints. Without this video, we will not be able to assist you.",
+        'reporting_hours': 24,
+        'rules': [
+            {"title": "24-Hour Reporting Window", "text": "If you receive a damaged or incorrect product, you must report the issue within 24 hours of delivery."},
+            {"title": "Mandatory 360° Unboxing Video", "text": "A full 360-degree unboxing video with no cuts or edits is mandatory to process any complaints. Without this video, we will not be able to assist you."},
+            {"title": "Approval & Replacement", "text": "If your complaint is verified and approved, we may provide a replacement for the damaged product."}
+        ],
+        'support_email': 'jewelsnjoy25@gmail.com',
+        'support_phone': '+91 7251070150',
+    },
+    'shipping': {
+        'key': 'shipping',
+        'title': 'Shipping & Delivery Policy',
+        'badge_label': 'Fast & Reliable',
+        'last_updated': '04-09-2026',
+        'intro': "We deliver our luxury jewellery pieces safely across all serviceable pin codes in India.",
+        'dispatch_days': '1–3 working days (Mon–Fri)',
+        'standard_delivery': '6 to 8 business days',
+        'express_delivery': '3 to 4 business days',
+        'free_shipping_threshold': 999,
+        'partner_note': 'Orders dispatched via premier courier services with tracking provided on order confirmation.',
+        'support_email': 'jewelsnjoy25@gmail.com',
+        'support_phone': '+91 7251070150',
+    },
+    'privacy': {
+        'key': 'privacy',
+        'title': 'Privacy Policy',
+        'badge_label': 'Data Protected',
+        'last_updated': '04-09-2026',
+        'intro': "Your privacy and personal data are respected and safeguarded at Jewels 'n' Joys.",
+        'summary': "We use customer names, shipping addresses, and contact details strictly for order fulfillment, dispatch updates, and customer support. We never sell your personal data.",
+        'support_email': 'jewelsnjoy25@gmail.com',
+    }
+}
+
+
+class StorePolicyView(APIView):
+    """
+    GET /api/policies/
+    Public view returning store policies with defaults if not configured in DB.
+    """
+    def get(self, request):
+        policies = {}
+        for key, default_data in DEFAULT_POLICIES.items():
+            db_pol = StorePolicy.objects.filter(key=key).first()
+            if db_pol and db_pol.data:
+                policies[key] = {**default_data, **db_pol.data, 'last_updated': db_pol.last_updated or default_data['last_updated']}
+            else:
+                policies[key] = default_data
+        response = Response(policies)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
+
+
+class AdminStorePolicyView(APIView):
+    """
+    GET /api/admin/policies/
+    POST / PUT / PATCH /api/admin/policies/
+    Admin view for reading and updating site-wide policies.
+    """
+    def get(self, request):
+        policies = {}
+        for key, default_data in DEFAULT_POLICIES.items():
+            db_pol = StorePolicy.objects.filter(key=key).first()
+            if db_pol and db_pol.data:
+                policies[key] = {**default_data, **db_pol.data, 'last_updated': db_pol.last_updated or default_data['last_updated']}
+            else:
+                policies[key] = default_data
+        response = Response(policies)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
+
+    def post(self, request):
+        payload = request.data
+        updated_policies = {}
+
+        if 'key' in payload and 'data' in payload:
+            key = payload['key']
+            data = payload['data']
+            sp, _ = StorePolicy.objects.get_or_create(key=key)
+            sp.title = payload.get('title', sp.title or DEFAULT_POLICIES.get(key, {}).get('title', ''))
+            sp.badge_label = payload.get('badge_label', sp.badge_label or DEFAULT_POLICIES.get(key, {}).get('badge_label', ''))
+            sp.last_updated = payload.get('last_updated', sp.last_updated or 'Today')
+            sp.data = data
+            sp.save()
+            updated_policies[key] = {**DEFAULT_POLICIES.get(key, {}), **sp.data}
+        else:
+            for k, val in payload.items():
+                if isinstance(val, dict):
+                    sp, _ = StorePolicy.objects.get_or_create(key=k)
+                    sp.title = val.get('title', sp.title or DEFAULT_POLICIES.get(k, {}).get('title', ''))
+                    sp.badge_label = val.get('badge_label', sp.badge_label or DEFAULT_POLICIES.get(k, {}).get('badge_label', ''))
+                    sp.last_updated = val.get('last_updated', sp.last_updated or 'Today')
+                    sp.data = val
+                    sp.save()
+                    updated_policies[k] = {**DEFAULT_POLICIES.get(k, {}), **val}
+
+        response = Response({'message': 'Policies updated successfully', 'policies': updated_policies})
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
+
 

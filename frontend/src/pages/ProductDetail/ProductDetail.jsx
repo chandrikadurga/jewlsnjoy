@@ -297,8 +297,11 @@ export default function ProductDetail() {
     'Store in the provided jewellery pouch when not in use.',
     'Clean gently with a soft dry cloth.'
   ];
+  const returnPolicyText = product.return_policy || product.details?.return_policy || "Jewels 'n' Joys follows a strict no refund, return, or exchange policy once an order is placed.";
+  const dispatchTimelineText = product.dispatch_timeline || product.details?.dispatch_timeline || shippingInfo?.dispatch || "Dispatch within 1–3 working days (Mon–Fri).";
 
   return (
+
     <div className="product-detail">
       <div className="container">
 
@@ -531,12 +534,13 @@ export default function ProductDetail() {
               <AccordionItem title="Shipping & Returns Policy">
                 <p><strong>Standard shipping:</strong> {shippingInfo?.standard || '6 to 8 days'}</p>
                 <p><strong>Express shipping:</strong> {shippingInfo?.express || '3 to 4 days'}</p>
-                <p style={{ marginTop: '0.5rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
-                  Dispatch within 1–3 working days (Mon–Fri). Jewels 'n' Joys follows a strict no refund, return, or exchange policy once an order is placed.
+                <p style={{ marginTop: '0.5rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
+                  <strong>{dispatchTimelineText}</strong> {returnPolicyText}
                 </p>
                 <p style={{ marginTop: '0.45rem', fontSize: '0.84rem', color: 'var(--color-gold, #c6934b)' }}>
                   ★ Damaged or incorrect product? Report within 24 hours with an uncut 360° unboxing video for replacement review. <Link to="/policies" style={{ textDecoration: 'underline', color: 'inherit', fontWeight: 600 }}>View Policy Details</Link>
                 </p>
+
               </AccordionItem>
 
               <AccordionItem title="Care Instructions">

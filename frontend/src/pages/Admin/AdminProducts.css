@@ -117,7 +117,29 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
+.admin-btn--danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.admin-btn--danger:hover {
+  background: #ef4444;
+}
+
+.admin-btn--danger-outline {
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  color: #f87171;
+}
+
+.admin-btn--danger-outline:hover {
+  background: rgba(220, 38, 38, 0.25);
+  border-color: #ef4444;
+  color: #fff;
+}
+
 /* Table Cells */
+
 .admin-prod-cell {
   display: flex;
   align-items: center;
@@ -777,3 +799,353 @@
     padding: 1rem;
   }
 }
+
+/* ─── Modal Large & Tabbed Navigation ─── */
+.admin-modal--large {
+  max-width: 860px;
+  width: 92vw;
+  max-height: 90vh;
+}
+
+.admin-modal__tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  background: #14100c;
+  border-bottom: 1px solid rgba(194, 163, 112, 0.15);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.admin-modal__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: rgba(247, 239, 230, 0.7);
+  font-size: 0.84rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.admin-modal__tab:hover {
+  color: #fff;
+  background: rgba(194, 163, 112, 0.08);
+}
+
+.admin-modal__tab--active {
+  background: rgba(194, 163, 112, 0.15);
+  border-color: rgba(194, 163, 112, 0.4);
+  color: #d4af37;
+  font-weight: 600;
+}
+
+.admin-modal-tab-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: adminTabFade 0.25s ease;
+}
+
+@keyframes adminTabFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-tab-intro {
+  padding: 0.85rem 1rem;
+  background: rgba(194, 163, 112, 0.05);
+  border: 1px solid rgba(194, 163, 112, 0.15);
+  border-radius: 8px;
+}
+
+.admin-tab-intro__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.admin-tab-intro__title h4 {
+  font-size: 0.92rem;
+  color: #f7efe6;
+  margin: 0;
+  font-weight: 600;
+}
+
+.admin-tab-intro__desc {
+  font-size: 0.82rem;
+  color: rgba(247, 239, 230, 0.65);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Discount preview pill */
+.admin-discount-preview-pill {
+  margin-left: 0.5rem;
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  background: rgba(74, 222, 128, 0.15);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* Style tag suggestions */
+.admin-tag-suggestions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.admin-tag-suggestions-label {
+  font-size: 0.75rem;
+  color: rgba(247, 239, 230, 0.45);
+}
+
+.admin-tag-pill {
+  background: rgba(194, 163, 112, 0.08);
+  border: 1px solid rgba(194, 163, 112, 0.18);
+  color: rgba(247, 239, 230, 0.8);
+  border-radius: 12px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-tag-pill:hover {
+  background: rgba(194, 163, 112, 0.2);
+  color: #fff;
+  border-color: #c2a370;
+}
+
+/* Policy Presets */
+.admin-policy-presets {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.admin-policy-presets__label {
+  font-size: 0.78rem;
+  color: #c2a370;
+  font-weight: 500;
+}
+
+.admin-policy-preset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #18130f;
+  border: 1px solid rgba(194, 163, 112, 0.25);
+  color: #f7efe6;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-policy-preset-btn:hover {
+  border-color: #d4af37;
+  background: rgba(194, 163, 112, 0.12);
+  color: #d4af37;
+}
+
+.admin-field-tip {
+  font-size: 0.74rem;
+  color: rgba(247, 239, 230, 0.45);
+  margin-top: 0.2rem;
+  display: block;
+}
+
+/* Quality Feature Badges Selector */
+.admin-badges-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.admin-feature-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  background: #18130f;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  color: rgba(247, 239, 230, 0.7);
+  border-radius: 20px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-feature-toggle-pill:hover {
+  border-color: #c2a370;
+  color: #fff;
+}
+
+.admin-feature-toggle-pill--active {
+  background: rgba(194, 163, 112, 0.2);
+  border-color: #d4af37;
+  color: #f7efe6;
+  font-weight: 600;
+}
+
+/* Angle count pill in table */
+.admin-prod-thumb-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.admin-angle-count-pill {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: rgba(0, 0, 0, 0.78);
+  border: 1px solid rgba(194, 163, 112, 0.4);
+  color: #d4af37;
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+}
+
+/* Modal Footer Layout */
+.admin-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-modal__footer-left,
+.admin-modal__footer-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-btn--ghost {
+  background: transparent;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  color: rgba(247, 239, 230, 0.7);
+}
+
+.admin-btn--ghost:hover {
+  color: #fff;
+  border-color: rgba(194, 163, 112, 0.5);
+  background: rgba(194, 163, 112, 0.06);
+}
+
+/* Bulk Selection & Actions */
+.admin-bulk-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  animation: adminSlideUp 0.2s ease;
+}
+
+.admin-bulk-badge {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f87171;
+}
+
+.admin-table-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #c2a370;
+  cursor: pointer;
+}
+
+/* Confirmation Dialog */
+.admin-confirm-dialog {
+  max-width: 480px;
+  width: 92vw;
+  background: #18130f;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  border-radius: 12px;
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+  animation: adminTabFade 0.2s ease;
+}
+
+.admin-confirm-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.admin-confirm-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.admin-confirm-title {
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.admin-confirm-body {
+  font-size: 0.88rem;
+  color: rgba(247, 239, 230, 0.75);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.admin-confirm-highlight {
+  color: #f7efe6;
+  font-weight: 600;
+}
+
+.admin-confirm-warning-note {
+  font-size: 0.8rem;
+  color: rgba(239, 68, 68, 0.85);
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  padding: 0.6rem 0.85rem;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.admin-confirm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+

@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   ChevronRight,
 } from 'lucide-react';
+import { policyApi } from '../../services/api';
 import './Policies.css';
 
 export default function Policies() {
@@ -29,11 +30,31 @@ export default function Policies() {
   };
 
   const [activeTab, setActiveTab] = useState(getInitialTab);
+  const [storePolicies, setStorePolicies] = useState(() => {
+    try {
+      const stored = localStorage.getItem('jewels_store_policies');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    policyApi
+      .getPolicies()
+      .then((res) => {
+        if (res && typeof res === 'object') {
+          setStorePolicies(res);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     setActiveTab(getInitialTab());
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
+
 
   return (
     <div className="policies-page">
@@ -88,16 +109,18 @@ export default function Policies() {
           <article className="policy-card glass-panel" aria-labelledby="return-policy-title">
             <header className="policy-card__header">
               <div className="policy-card__meta">
-                <span className="policy-pill policy-pill--alert">Strict Policy</span>
+                <span className="policy-pill policy-pill--alert">
+                  {storePolicies?.return?.badge_label || 'Strict Policy'}
+                </span>
                 <span className="policy-date">
-                  <Calendar size={13} /> Last Updated: 04-09-2026
+                  <Calendar size={13} /> Last Updated: {storePolicies?.return?.last_updated || '04-09-2026'}
                 </span>
               </div>
               <h2 id="return-policy-title" className="policy-card__title">
-                Return &amp; Refund Policy
+                {storePolicies?.return?.title || 'Return & Refund Policy'}
               </h2>
               <p className="policy-card__intro">
-                Thank you for shopping at <strong>Jewels &apos;n&apos; Joys</strong>.
+                {storePolicies?.return?.intro || "Thank you for shopping at Jewels 'n' Joys."}
               </p>
             </header>
 
@@ -106,7 +129,8 @@ export default function Policies() {
               <div>
                 <h3 className="policy-callout__title">No Returns, Refunds, or Exchanges</h3>
                 <p className="policy-callout__text">
-                  We follow a <strong>strict no refund, return, or exchange policy</strong>. Once an order is placed, it cannot be canceled, modified, or returned.
+                  {storePolicies?.return?.highlight_notice ||
+                    'We follow a strict no refund, return, or exchange policy. Once an order is placed, it cannot be canceled, modified, or returned.'}
                 </p>
               </div>
             </div>
@@ -120,13 +144,13 @@ export default function Policies() {
                 <li>
                   <div className="policy-checklist__dot" />
                   <div>
-                    <strong>24-Hour Reporting Window:</strong> If you receive a damaged or incorrect product, you must report the issue <strong>within 24 hours of delivery</strong>.
+                    <strong>24-Hour Reporting Window:</strong> If you receive a damaged or incorrect product, you must report the issue <strong>within {storePolicies?.return?.reporting_hours || 24} hours of delivery</strong>.
                   </div>
                 </li>
                 <li>
                   <div className="policy-checklist__dot" />
                   <div>
-                    <strong>Mandatory 360° Unboxing Video:</strong> A <strong>full 360-degree unboxing video with no cuts or edits</strong> is mandatory to process any complaints. Without this video, we will not be able to assist you.
+                    <strong>Mandatory 360° Unboxing Video:</strong> {storePolicies?.return?.unboxing_requirement || 'A full 360-degree unboxing video with no cuts or edits is mandatory to process any complaints. Without this video, we will not be able to assist you.'}
                   </div>
                 </li>
                 <li>
@@ -144,21 +168,27 @@ export default function Policies() {
                 For any concerns or issues, please reach out to our dedicated support desk:
               </p>
               <div className="policy-contact-grid">
-                <a href="mailto:jewelsnjoy25@gmail.com" className="policy-contact-card">
+                <a href={`mailto:${storePolicies?.return?.support_email || 'jewelsnjoy25@gmail.com'}`} className="policy-contact-card">
                   <Mail size={18} color="var(--color-gold)" />
                   <div>
                     <span className="policy-contact-card__label">Email Support</span>
-                    <span className="policy-contact-card__val">jewelsnjoy25@gmail.com</span>
+                    <span className="policy-contact-card__val">{storePolicies?.return?.support_email || 'jewelsnjoy25@gmail.com'}</span>
                   </div>
                 </a>
-                <a href="https://wa.me/917251070150" target="_blank" rel="noopener noreferrer" className="policy-contact-card">
+                <a
+                  href={`https://wa.me/${(storePolicies?.return?.support_phone || '917251070150').replace(/[^0-9]/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="policy-contact-card"
+                >
                   <Phone size={18} color="var(--color-gold)" />
                   <div>
                     <span className="policy-contact-card__label">WhatsApp Support</span>
-                    <span className="policy-contact-card__val">7251070150</span>
+                    <span className="policy-contact-card__val">{storePolicies?.return?.support_phone || '+91 7251070150'}</span>
                   </div>
                 </a>
               </div>
+
               <p className="policy-note">
                 <Clock size={14} /> We will review your case and respond within <strong>48–72 hours</strong> with the best possible solution.
               </p>

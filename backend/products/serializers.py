@@ -4,7 +4,7 @@ Full ModelSerializers for Category, Product, ProductImage, Order, and OrderItem.
 """
 
 from rest_framework import serializers
-from .models import Category, Product, ProductImage, Order, OrderItem, Review
+from .models import Category, Product, ProductImage, Order, OrderItem, Review, StorePolicy
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -36,6 +36,8 @@ class ProductSerializer(serializers.ModelSerializer):
     specifications = serializers.SerializerMethodField()
     shipping = serializers.SerializerMethodField()
     care_instructions = serializers.SerializerMethodField()
+    return_policy = serializers.SerializerMethodField()
+    dispatch_timeline = serializers.SerializerMethodField()
     image_urls = serializers.SerializerMethodField()
 
     class Meta:
@@ -45,6 +47,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'price', 'original_price', 'discount_percent',
             'description', 'details', 'style_tags', 'style',
             'features', 'specifications', 'shipping', 'care_instructions',
+            'return_policy', 'dispatch_timeline',
             'in_stock', 'stock_quantity', 'is_featured', 'is_bestseller',
             'primary_image_url', 'image', 'thumbnail', 'images', 'image_urls',
             'created_at', 'updated_at',
@@ -78,6 +81,19 @@ class ProductSerializer(serializers.ModelSerializer):
             "Store in the provided jewellery pouch when not in use.",
             "Clean gently with a soft dry cloth."
         ]
+
+    def get_return_policy(self, obj):
+        if isinstance(obj.details, dict) and 'return_policy' in obj.details:
+            return obj.details['return_policy']
+        return "Dispatch within 1–3 working days (Mon–Fri). Jewels 'n' Joys follows a strict no refund, return, or exchange policy once an order is placed. Replacement available for damaged items reported within 24 hours with uncut 360° unboxing video."
+
+    def get_dispatch_timeline(self, obj):
+        if isinstance(obj.details, dict):
+            if 'dispatch_timeline' in obj.details:
+                return obj.details['dispatch_timeline']
+            if isinstance(obj.details.get('shipping'), dict) and 'dispatch' in obj.details['shipping']:
+                return obj.details['shipping']['dispatch']
+        return "Dispatch within 1–3 working days (Mon–Fri)"
 
     def get_image_urls(self, obj):
         urls = [img.image_url for img in obj.images.all()]
@@ -295,4 +311,11 @@ class ReviewSerializer(serializers.ModelSerializer):
             'comment', 'is_verified_buyer', 'helpful_count', 'created_at'
         ]
         read_only_fields = ['id', 'is_verified_buyer', 'helpful_count', 'created_at']
+
+
+class StorePolicySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StorePolicy
+        fields = ['id', 'key', 'title', 'badge_label', 'last_updated', 'data', 'updated_at']
+
 

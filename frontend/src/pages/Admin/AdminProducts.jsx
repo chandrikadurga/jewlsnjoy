@@ -677,6 +677,7 @@ export default function AdminProducts() {
       }
       broadcastCatalogUpdate();
       closeDeleteConfirm();
+      await loadData();
     } catch (err) {
       console.error('Error deleting:', err);
       if (deleteTarget.isBulk) {

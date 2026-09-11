@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -13,12 +13,26 @@ import {
   LogOut
 } from 'lucide-react';
 import AdminLogin from '../pages/Admin/AdminLogin';
+import { adminApi } from '../services/api';
 import logoImg from '../assets/logo.jpeg';
 import './AdminLayout.css';
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [dbName, setDbName] = useState('Real-Time DB Connected');
   const location = useLocation();
+
+  useEffect(() => {
+    adminApi.getStats()
+      .then((data) => {
+        if (data?.database) {
+          setDbName(`${data.database} Connected`);
+        }
+      })
+      .catch(() => {
+        setDbName('PostgreSQL DB Connected');
+      });
+  }, []);
 
   const [adminUser, setAdminUser] = useState(() => {
     try {
@@ -112,9 +126,9 @@ export default function AdminLayout() {
         </nav>
 
         <div className="admin-sidebar__footer">
-          <div className="admin-status-pill">
+          <div className="admin-status-pill" title={`Active Database: ${dbName}`}>
             <span className="admin-status-dot" />
-            <span>SQLite DB Connected</span>
+            <span>{dbName}</span>
           </div>
           <button
             type="button"

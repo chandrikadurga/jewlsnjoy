@@ -412,7 +412,14 @@ class AdminStatsView(APIView):
         # Recent products
         recent_products = ProductListSerializer(products.order_by('-created_at')[:5], many=True).data
 
-        return Response({
+        from django.db import connection
+        db_engine = connection.settings_dict.get('ENGINE', '')
+        is_postgres = 'postgresql' in db_engine
+        db_type = 'Supabase PostgreSQL' if is_postgres else 'SQLite'
+
+        response = Response({
+            'database': db_type,
+            'is_postgres': is_postgres,
             'total_revenue': float(total_revenue),
             'total_orders': total_orders,
             'total_products': total_products,
@@ -421,6 +428,9 @@ class AdminStatsView(APIView):
             'recent_orders': recent_orders,
             'recent_products': recent_products,
         })
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        return response
 
 
 class AdminProductListView(APIView):
@@ -699,7 +709,10 @@ class AdminOrderListView(APIView):
                 Q(customer_email__icontains=search)
             )
 
-        return Response(OrderSerializer(orders, many=True).data)
+        response = Response(OrderSerializer(orders, many=True).data)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        return response
 
     def delete(self, request):
         ids = request.data.get('ids') or request.query_params.getlist('id')
@@ -726,7 +739,9 @@ class AdminOrderDetailView(APIView):
     """
     def get(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
-        return Response(OrderSerializer(order).data)
+        response = Response(OrderSerializer(order).data)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
 
     def patch(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
@@ -749,7 +764,9 @@ class AdminOrderDetailView(APIView):
         if 'notes' in request.data:
             order.notes = request.data.get('notes')
         order.save()
-        return Response(OrderSerializer(order).data)
+        response = Response(OrderSerializer(order).data)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
 
     def delete(self, request, pk):
         order = get_object_or_404(Order, pk=pk)

@@ -22,6 +22,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { adminApi } from '../../services/api';
+import { broadcastOrderUpdate, subscribeToOrderUpdates } from '../../utils/catalogEvents';
 import './AdminOrders.css';
 
 export default function AdminOrders() {
@@ -185,6 +186,22 @@ export default function AdminOrders() {
 
   useEffect(() => {
     loadOrders();
+    const unsubscribe = subscribeToOrderUpdates(() => {
+      loadOrders();
+    });
+    // Auto-poll real-time DB every 25 seconds for new orders
+    const pollTimer = setInterval(() => {
+      loadOrders();
+    }, 25000);
+    // Refresh instantly when admin window regains focus
+    const onFocus = () => loadOrders();
+    window.addEventListener('focus', onFocus);
+
+    return () => {
+      unsubscribe();
+      clearInterval(pollTimer);
+      window.removeEventListener('focus', onFocus);
+    };
   }, []);
 
   const [modalVerifLoading, setModalVerifLoading] = useState(false);
@@ -395,9 +412,10 @@ export default function AdminOrders() {
     try {
       await adminApi.updateOrderStatus(orderId, newStatus);
       showToast(`Order status updated to ${newStatus}`);
+      broadcastOrderUpdate();
     } catch (err) {
       console.error('Failed to update status on server:', err);
-      showToast(`Status updated locally.`);
+      showToast(`Status update failed on server: ${err.message}`);
     }
 
     const isAwaiting = newStatus === 'awaiting_payment_verification';
@@ -491,42 +509,30 @@ export default function AdminOrders() {
     try {
       if (deleteTarget.isBulk) {
         const idsToDelete = deleteTarget.ids || [];
-        try {
-          await adminApi.deleteOrders(idsToDelete);
-        } catch {
-          await Promise.all(idsToDelete.map((id) => adminApi.deleteOrder(id).catch(() => {})));
-        }
+        await adminApi.deleteOrders(idsToDelete);
         setOrders((prev) => prev.filter((o) => !idsToDelete.includes(o.id)));
         setSelectedIds([]);
-        showToast(`${idsToDelete.length} order${idsToDelete.length > 1 ? 's' : ''} deleted successfully.`);
+        showToast(`${idsToDelete.length} order${idsToDelete.length > 1 ? 's' : ''} permanently deleted from database.`);
       } else {
         const idToDelete = deleteTarget.id;
         await adminApi.deleteOrder(idToDelete);
         setOrders((prev) => prev.filter((o) => o.id !== idToDelete));
         setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
-        showToast(`Order #${deleteTarget.order_number} deleted successfully.`);
+        showToast(`Order #${deleteTarget.order_number} permanently deleted from database.`);
         if (selectedOrder && selectedOrder.id === idToDelete) {
           setSelectedOrder(null);
         }
       }
+      broadcastOrderUpdate();
       closeDeleteConfirm();
+      // Re-fetch from real-time PostgreSQL database to verify sync
+      await loadOrders();
     } catch (err) {
-      console.error('Error deleting order:', err);
-      if (deleteTarget.isBulk) {
-        const idsToDelete = deleteTarget.ids || [];
-        setOrders((prev) => prev.filter((o) => !idsToDelete.includes(o.id)));
-        setSelectedIds([]);
-        showToast(`${idsToDelete.length} order(s) removed.`);
-      } else {
-        const idToDelete = deleteTarget.id;
-        setOrders((prev) => prev.filter((o) => o.id !== idToDelete));
-        setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
-        showToast(`Order removed.`);
-        if (selectedOrder && selectedOrder.id === idToDelete) {
-          setSelectedOrder(null);
-        }
-      }
+      console.error('Error deleting order from database:', err);
+      const errMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'Server error occurred.';
+      alert(`Could not delete from database: ${errMsg}`);
       closeDeleteConfirm();
+      await loadOrders();
     } finally {
       setDeleteLoading(false);
     }

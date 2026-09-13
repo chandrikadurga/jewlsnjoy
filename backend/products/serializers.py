@@ -116,6 +116,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'slug', 'category', 'category_name',
             'price', 'original_price', 'discount_percent',
+            'description',
             'in_stock', 'stock_quantity', 'is_featured', 'is_bestseller',
             'primary_image_url', 'image', 'thumbnail', 'images', 'style_tags', 'style',
         ]

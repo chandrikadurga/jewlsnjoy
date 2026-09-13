@@ -24,12 +24,20 @@ const SORT_OPTIONS = [
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [category,   setCategory]   = useState(searchParams.get('category') || 'All');
-  const [style,      setStyle]       = useState('');
-  const [priceRange, setPriceRange]  = useState(null);
-  const [sort,       setSort]        = useState('featured');
+  const [category,    setCategory]    = useState(searchParams.get('category') || 'All');
+  const [style,       setStyle]       = useState('');
+  const [priceRange,  setPriceRange]  = useState(null);
+  const [sort,        setSort]        = useState('featured');
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [searchQuery] = useState(searchParams.get('search') || '');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+
+  // Keep state in sync if URL search params change (e.g. clicking category link from navbar)
+  useEffect(() => {
+    const urlCat = searchParams.get('category');
+    setCategory(urlCat || 'All');
+    const urlSearch = searchParams.get('search');
+    setSearchQuery(urlSearch || '');
+  }, [searchParams]);
 
   // Fetch all products — client-side filtering
   const { products: allProducts, loading, error } = useProducts();
@@ -44,20 +52,25 @@ export default function Shop() {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       list = list.filter((p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.description && p.description.toLowerCase().includes(q)) ||
+        (p.category && p.category.toLowerCase().includes(q))
       );
     }
 
     // Category
     if (category && category !== 'All') {
-      list = list.filter((p) => p.category === category);
+      list = list.filter((p) => (p.category || '').toLowerCase() === category.toLowerCase());
     }
 
     // Style
     if (style) {
-      list = list.filter((p) => p.style.includes(style));
+      list = list.filter((p) => {
+        if (Array.isArray(p.style)) {
+          return p.style.some((s) => s.toLowerCase() === style.toLowerCase());
+        }
+        return false;
+      });
     }
 
     // Price
@@ -86,6 +99,7 @@ export default function Shop() {
     setStyle('');
     setPriceRange(null);
     setSort('featured');
+    setSearchParams({});
   };
 
   const hasActiveFilters = category !== 'All' || style || priceRange;

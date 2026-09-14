@@ -144,30 +144,53 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
+  min-width: 220px;
+}
+
+.admin-prod-thumb-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  flex-shrink: 0 !important;
 }
 
 .admin-prod-thumb {
-  width: 44px;
-  height: 44px;
-  border-radius: 6px;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  border-radius: 8px;
   object-fit: cover;
   background: #281f19;
-  border: 1px solid rgba(194, 163, 112, 0.2);
+  border: 1px solid rgba(194, 163, 112, 0.25);
+  flex-shrink: 0 !important;
+  display: block;
 }
 
 .admin-prod-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  flex: 1;
 }
 
 .admin-prod-name {
   font-weight: 600;
   color: #fff;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  word-break: break-word;
 }
 
 .admin-prod-sku {
   font-size: 0.72rem;
-  color: rgba(247, 239, 230, 0.45);
+  color: rgba(247, 239, 230, 0.5);
+  margin-top: 2px;
 }
 
 .admin-cat-pill {
@@ -1146,6 +1169,165 @@
   justify-content: flex-end;
   gap: 0.75rem;
   padding-top: 0.5rem;
+}
+
+/* ─── Mobile Product Cards & Viewport Adaptations (<= 768px portrait) ─── */
+
+.admin-products-mobile-list {
+  display: none;
+}
+
+.admin-empty-mobile {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: rgba(247, 239, 230, 0.5);
+  font-size: 0.88rem;
+}
+
+.admin-prod-mobile-card {
+  background: #18130f;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.admin-prod-mobile-card:hover {
+  border-color: rgba(194, 163, 112, 0.4);
+}
+
+.admin-prod-mobile-card--selected {
+  border-color: #c2a370;
+  background: rgba(194, 163, 112, 0.05);
+}
+
+.admin-prod-mobile-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.admin-prod-mobile-card__details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-prod-mobile-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-prod-mobile-card__body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(194, 163, 112, 0.1);
+}
+
+.admin-prod-mobile-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  padding-top: 0.25rem;
+}
+
+.admin-prod-mobile-card__stock-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-prod-mobile-card__switch-label {
+  font-size: 0.76rem;
+  color: rgba(247, 239, 230, 0.65);
+  font-weight: 500;
+}
+
+/* ─── Responsive Breakpoints ─── */
+@media (max-width: 768px) {
+  .admin-table-wrap {
+    display: none !important;
+  }
+
+  .admin-products-mobile-list {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.85rem;
+    width: 100%;
+  }
+
+  .admin-products-page {
+    gap: 1rem;
+    max-width: 100%;
+  }
+
+  .admin-products-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .admin-products-bar__search {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .admin-products-bar__filters {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.6rem;
+  }
+
+  .admin-products-bar__filters .admin-select {
+    width: 100%;
+  }
+
+  .admin-products-bar__filters .admin-btn--primary {
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem;
+  }
+
+  .admin-bulk-bar {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .admin-card {
+    padding: 1rem 0.85rem !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .admin-table-wrap {
+    display: block !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  .admin-table {
+    min-width: 820px;
+  }
+
+  .admin-products-mobile-list {
+    display: none !important;
+  }
 }
 
 

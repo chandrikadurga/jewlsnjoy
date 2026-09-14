@@ -998,6 +998,132 @@ export default function AdminProducts() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Product Cards View (<= 768px portrait) */}
+        <div className="admin-products-mobile-list">
+          {filteredProducts.length === 0 ? (
+            <div className="admin-empty-mobile">
+              <p>No jewellery pieces match your search or category filter.</p>
+            </div>
+          ) : (
+            filteredProducts.map((prod) => {
+              const imgUrls = extractProductImageUrls(prod);
+              const isSelected = selectedIds.includes(prod.id);
+              return (
+                <div
+                  key={prod.id}
+                  className={`admin-prod-mobile-card ${isSelected ? 'admin-prod-mobile-card--selected' : ''}`}
+                >
+                  <div className="admin-prod-mobile-card__header">
+                    <input
+                      type="checkbox"
+                      className="admin-table-checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleSelect(prod.id)}
+                      title={`Select ${prod.name}`}
+                    />
+                    <div className="admin-prod-thumb-wrap">
+                      <img
+                        src={prod.primary_image_url || prod.image || `/products/${prod.id}/1.jpeg`}
+                        onError={(e) => {
+                          e.currentTarget.src = `/products/${(prod.id % 7) + 1}/1.jpeg`;
+                        }}
+                        alt={prod.name}
+                        className="admin-prod-thumb"
+                      />
+                      {imgUrls.length > 1 && (
+                        <span className="admin-angle-count-pill" title={`${imgUrls.length} photo angles`}>
+                          {imgUrls.length} pics
+                        </span>
+                      )}
+                    </div>
+                    <div className="admin-prod-mobile-card__details">
+                      <span className="admin-prod-name">{prod.name}</span>
+                      <div className="admin-prod-mobile-card__meta">
+                        <span className="admin-cat-pill">
+                          {prod.category_name || prod.category || 'Necklaces'}
+                        </span>
+                        <span className="admin-prod-sku">ID #{prod.id}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="admin-prod-mobile-card__body">
+                    <div className="admin-price-cell">
+                      <span className="admin-price-main">₹{prod.price}</span>
+                      {prod.original_price && (
+                        <span className="admin-price-orig">₹{prod.original_price}</span>
+                      )}
+                    </div>
+                    <span
+                      className={`admin-stock-num ${(prod.stock_quantity ?? 0) < 15 ? 'admin-stock-num--low' : ''}`}
+                    >
+                      {prod.stock_quantity ?? 0} units
+                    </span>
+                  </div>
+
+                  <div className="admin-prod-mobile-card__footer">
+                    <div className="admin-prod-mobile-card__stock-switch">
+                      <span className="admin-prod-mobile-card__switch-label">
+                        {prod.in_stock ? 'In Stock' : 'Out of Stock'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleStock(prod)}
+                        className={`admin-toggle ${prod.in_stock ? 'admin-toggle--on' : ''}`}
+                        title="Toggle availability"
+                      >
+                        <span className="admin-toggle__thumb" />
+                      </button>
+                    </div>
+
+                    <div className="admin-badge-toggles">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleBadge(prod, 'is_featured')}
+                        className={`admin-badge-btn ${prod.is_featured ? 'admin-badge-btn--gold' : ''}`}
+                        title="Toggle Featured on Homepage"
+                      >
+                        <Star size={13} fill={prod.is_featured ? 'currentColor' : 'none'} />
+                        <span>Featured</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleBadge(prod, 'is_bestseller')}
+                        className={`admin-badge-btn ${prod.is_bestseller ? 'admin-badge-btn--rose' : ''}`}
+                        title="Toggle Bestseller Badge"
+                      >
+                        <Flame size={13} fill={prod.is_bestseller ? 'currentColor' : 'none'} />
+                        <span>Bestseller</span>
+                      </button>
+                    </div>
+
+                    <div className="admin-action-icons">
+                      <button
+                        type="button"
+                        className="admin-icon-btn admin-icon-btn--edit"
+                        onClick={() => openEditModal(prod)}
+                        aria-label="Edit piece & policies"
+                        title="Edit piece, policies & photography"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-icon-btn admin-icon-btn--delete"
+                        onClick={() => openDeleteConfirm(prod)}
+                        aria-label="Delete piece"
+                        title="Delete piece from catalog"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
 
       {/* Add / Edit Modal with Tabs */}

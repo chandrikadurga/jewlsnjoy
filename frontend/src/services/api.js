@@ -463,6 +463,12 @@ export const adminApi = {
     const response = await api.post(`/api/shipping/admin/orders/${orderId}/pickup/`);
     return response.data;
   },
+  updateShipmentPayment: async (orderId, paymentMode = 'COD') => {
+    const response = await api.post(`/api/shipping/admin/orders/${orderId}/update-delhivery-payment/`, {
+      payment_mode: paymentMode,
+    });
+    return response.data;
+  },
   getStorePolicies: async () => {
     const response = await api.get('/api/admin/policies/', { params: { _t: Date.now() } });
     return response.data;

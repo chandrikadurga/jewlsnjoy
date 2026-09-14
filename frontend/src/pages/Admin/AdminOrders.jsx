@@ -138,6 +138,26 @@ export default function AdminOrders() {
     }
   };
 
+  const handleUpdateShipmentPayment = async (orderId, paymentMode = 'COD') => {
+    setShippingActionLoading(true);
+    setShippingFeedback({ type: '', text: '' });
+    try {
+      const res = await adminApi.updateShipmentPayment(orderId, paymentMode);
+      showToast(res.message || 'Delhivery payment mode updated!');
+      if (res.shipment) {
+        setSelectedOrder(prev => ({ ...prev, shipment: res.shipment }));
+        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, shipment: res.shipment } : o));
+      }
+      setShippingFeedback({ type: 'success', text: `Updated Delhivery: ${res.message}` });
+    } catch (err) {
+      const errText = err.response?.data?.error || 'Failed to update payment mode on Delhivery.';
+      setShippingFeedback({ type: 'error', text: errText });
+      showToast(errText);
+    } finally {
+      setShippingActionLoading(false);
+    }
+  };
+
   const [fetchError, setFetchError] = useState(null);
 
   const loadOrders = async (isRetry = false) => {
@@ -815,7 +835,7 @@ export default function AdminOrders() {
                             ? 'Pending Review'
                             : order.payment_status === 'rejected'
                             ? 'Rejected'
-                            : (order.payment_status || 'Pending')}
+                            : (String(order.payment_method || '').toLowerCase().includes('cod') ? 'Pay upon Delivery' : (order.payment_status || 'Pending'))}
                         </span>
                       </div>
                     </td>
@@ -1391,7 +1411,7 @@ export default function AdminOrders() {
                       </div>
                       <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '0.5rem 0.75rem', borderRadius: '6px' }}>
                         <span style={{ color: 'rgba(247, 239, 230, 0.5)', display: 'block', fontSize: '0.72rem' }}>Payment Mode</span>
-                        <strong style={{ color: '#f7efe6' }}>
+                        <strong style={{ color: selectedOrder.shipment.payment_mode === 'COD' ? '#4ade80' : '#f7efe6' }}>
                           {selectedOrder.shipment.payment_mode} {selectedOrder.shipment.payment_mode === 'COD' ? `(Collect ₹${Number(selectedOrder.shipment.cod_amount).toLocaleString('en-IN')})` : ''}
                         </strong>
                       </div>
@@ -1400,6 +1420,37 @@ export default function AdminOrders() {
                         <strong style={{ color: '#f7efe6' }}>{selectedOrder.shipment.pickup_token_number || 'Not Requested'}</strong>
                       </div>
                     </div>
+
+                    {Boolean(
+                      (String(selectedOrder.payment_method || '').toLowerCase().includes('cod') ||
+                       String(selectedOrder.payment_method || '').toLowerCase().includes('cash on delivery')) &&
+                      selectedOrder.shipment.payment_mode !== 'COD'
+                    ) && (
+                      <div style={{
+                        background: 'rgba(234, 179, 8, 0.15)',
+                        border: '1px solid rgba(234, 179, 8, 0.4)',
+                        color: '#fde047',
+                        padding: '10px 14px',
+                        borderRadius: '6px',
+                        fontSize: '0.82rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '10px',
+                        flexWrap: 'wrap',
+                      }}>
+                        <span>⚠️ Manifested as Prepaid on Delhivery. Click to switch to COD &amp; collect ₹{Number(selectedOrder.total_amount).toLocaleString('en-IN')} upon delivery.</span>
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--primary admin-btn--sm"
+                          disabled={shippingActionLoading}
+                          onClick={() => handleUpdateShipmentPayment(selectedOrder.id, 'COD')}
+                          style={{ whiteSpace: 'nowrap' }}
+                        >
+                          {shippingActionLoading ? 'Updating Delhivery...' : 'Fix & Set COD'}
+                        </button>
+                      </div>
+                    )}
 
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
                       <button
@@ -1422,6 +1473,20 @@ export default function AdminOrders() {
                         <Printer size={13} />
                         Print Label
                       </button>
+
+                      {(String(selectedOrder.payment_method || '').toLowerCase().includes('cod') ||
+                        String(selectedOrder.payment_method || '').toLowerCase().includes('cash on delivery')) && (
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--secondary admin-btn--sm"
+                          disabled={shippingActionLoading}
+                          onClick={() => handleUpdateShipmentPayment(selectedOrder.id, 'COD')}
+                          title="Sync or update Delhivery payment mode to COD"
+                        >
+                          <CheckCircle2 size={13} />
+                          {selectedOrder.shipment.payment_mode === 'COD' ? 'Re-sync COD' : 'Set COD Mode'}
+                        </button>
+                      )}
 
                       {!selectedOrder.shipment.pickup_token_number && (
                         <button

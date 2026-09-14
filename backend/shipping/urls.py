@@ -16,4 +16,5 @@ urlpatterns = [
     path('admin/orders/<int:order_id>/refresh/', views.AdminShipmentRefreshTrackingView.as_view(), name='admin-shipment-refresh'),
     path('admin/orders/<int:order_id>/label/', views.AdminShipmentLabelView.as_view(), name='admin-shipment-label'),
     path('admin/orders/<int:order_id>/pickup/', views.AdminShipmentPickupView.as_view(), name='admin-shipment-pickup'),
+    path('admin/orders/<int:order_id>/update-delhivery-payment/', views.AdminShipmentUpdatePaymentView.as_view(), name='admin-shipment-update-payment'),
 ]

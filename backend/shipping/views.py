@@ -415,3 +415,61 @@ class AdminShipmentPickupView(APIView):
         except Exception as e:
             logger.error("Pickup request failed for order #%s: %s", order.order_number, str(e))
             return Response({'error': f"Pickup request failed: {str(e)}"}, status=status.HTTP_502_BAD_GATEWAY)
+
+
+class AdminShipmentUpdatePaymentView(APIView):
+    """
+    POST /api/shipping/admin/orders/<int:order_id>/update-delhivery-payment/
+    Forces an update of an existing shipment's payment mode on Delhivery's live servers.
+    Useful when a COD order was manifested as Prepaid or when payment terms change.
+    """
+    def post(self, request, order_id):
+        is_admin, _ = verify_admin_request(request)
+        if not is_admin:
+            return Response({'error': 'Unauthorized admin access.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        order = Order.objects.filter(pk=order_id).first()
+        if not order:
+            return Response({'error': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        shipment = getattr(order, 'shipment', None)
+        if not shipment or not shipment.awb_number:
+            return Response({'error': 'No active Delhivery shipment found for this order.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Resolve payment mode from request or order
+        req_mode = request.data.get('payment_mode')
+        if req_mode:
+            is_cod = ('cod' in str(req_mode).lower()) or ('cash on delivery' in str(req_mode).lower())
+        else:
+            pm = str(order.payment_method or '').strip().lower()
+            is_cod = ('cod' in pm) or ('cash on delivery' in pm)
+
+        payment_mode = 'COD' if is_cod else 'Prepaid'
+        cod_amount = Decimal(str(order.total_amount)) if is_cod else Decimal('0.00')
+
+        provider = DelhiveryShippingProvider()
+        try:
+            edit_resp = provider.edit_shipment(
+                waybill=shipment.awb_number,
+                payment_mode=payment_mode,
+                cod_amount=float(cod_amount),
+                name=order.customer_name,
+                address=order.shipping_address,
+                phone=order.customer_phone
+            )
+        except Exception as e:
+            logger.exception("Failed to update Delhivery shipment payment mode: %s", str(e))
+            return Response({'error': f"Delhivery update failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update local database record
+        shipment.payment_mode = payment_mode
+        shipment.cod_amount = cod_amount
+        shipment.last_synced_at = timezone.now()
+        shipment.save(update_fields=['payment_mode', 'cod_amount', 'last_synced_at', 'updated_at'])
+
+        return Response({
+            'success': True,
+            'message': f"Delhivery shipment payment mode updated to {payment_mode} (Collect ₹{cod_amount}).",
+            'delhivery_response': edit_resp,
+            'shipment': ShipmentDetailSerializer(shipment).data
+        })

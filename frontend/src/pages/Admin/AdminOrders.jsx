@@ -851,20 +851,47 @@ export default function AdminOrders() {
                     <td className="admin-table-dim">{formatDate(order.created_at)}</td>
                     <td className="admin-table-bold">{formatCurrency(order.total_amount)}</td>
                     <td>
-                      <span className="admin-payment-pill">
-                        {order.payment_method === 'manual_upi' ? 'UPI (QR Code)' : (order.payment_method || 'Online')}
-                      </span>
-                      <div style={{ marginTop: '4px' }}>
-                        <span className={`admin-paystatus-pill admin-paystatus-pill--${order.payment_status}`}>
-                          {order.payment_status === 'paid'
-                            ? 'Paid'
-                            : order.payment_status === 'pending_verification'
-                            ? 'Pending Review'
-                            : order.payment_status === 'rejected'
-                            ? 'Rejected'
-                            : (String(order.payment_method || '').toLowerCase().includes('cod') ? 'Pay upon Delivery' : (order.payment_status || 'Pending'))}
-                        </span>
-                      </div>
+                      {(() => {
+                        const isOrderCod = String(order.payment_method || '').toLowerCase().includes('cod') ||
+                                           String(order.payment_method || '').toLowerCase().includes('cash on delivery');
+                        const delhiveryMode = order.shipment?.payment_mode;
+                        return (
+                          <>
+                            <span className="admin-payment-pill">
+                              {order.payment_method === 'manual_upi'
+                                ? 'UPI (QR Code)'
+                                : isOrderCod
+                                ? 'Cash on Delivery (COD)'
+                                : (order.payment_method || 'Online')}
+                            </span>
+                            <div style={{ marginTop: '4px' }}>
+                              <span className={`admin-paystatus-pill ${isOrderCod ? 'admin-paystatus-pill--cod' : `admin-paystatus-pill--${order.payment_status}`}`}>
+                                {order.payment_status === 'paid'
+                                  ? 'Paid'
+                                  : isOrderCod
+                                  ? 'COD (Pending Collection)'
+                                  : order.payment_status === 'pending_verification'
+                                  ? 'Pending Review'
+                                  : order.payment_status === 'rejected'
+                                  ? 'Rejected'
+                                  : (order.payment_status || 'Pending')}
+                              </span>
+                            </div>
+                            {order.shipment?.awb_number && (
+                              <div style={{ marginTop: '4px', fontSize: '0.72rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{ color: delhiveryMode === 'COD' ? '#4ade80' : '#fde047', fontWeight: 600 }}>
+                                  Delhivery: {delhiveryMode || 'Prepaid'}
+                                </span>
+                                {delhiveryMode === 'COD' && (
+                                  <span style={{ color: 'rgba(247, 239, 230, 0.6)' }}>
+                                    (₹{Number(order.shipment.cod_amount || order.total_amount).toLocaleString('en-IN')})
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
                     </td>
                     <td>
                       {verification ? (
@@ -1377,7 +1404,22 @@ export default function AdminOrders() {
                   <p className="admin-detail-text">
                     Email: {selectedOrder.customer_email || 'N/A'}<br />
                     Phone: {selectedOrder.customer_phone || 'N/A'}<br />
-                    Payment: {selectedOrder.payment_method} ({selectedOrder.payment_status || (String(selectedOrder.payment_method || '').toLowerCase().includes('cod') ? 'Pending' : 'Paid')})
+                    {(() => {
+                      const isOrderCod = String(selectedOrder.payment_method || '').toLowerCase().includes('cod') ||
+                                         String(selectedOrder.payment_method || '').toLowerCase().includes('cash on delivery');
+                      return (
+                        <>
+                          Payment Method: <strong style={{ color: isOrderCod ? '#fbbf24' : '#c2a370' }}>
+                            {isOrderCod ? 'Cash on Delivery (COD)' : (selectedOrder.payment_method === 'manual_upi' ? 'UPI (QR Code)' : (selectedOrder.payment_method || 'Online'))}
+                          </strong><br />
+                          Payment Status: <span style={{ fontWeight: 600, color: isOrderCod ? '#fbbf24' : (selectedOrder.payment_status === 'paid' ? '#4ade80' : '#f87171') }}>
+                            {isOrderCod
+                              ? `COD (Collect ₹${Number(selectedOrder.total_amount).toLocaleString('en-IN')} cash upon delivery)`
+                              : (selectedOrder.payment_status || 'Paid')}
+                          </span>
+                        </>
+                      );
+                    })()}
                     {selectedOrder.razorpay_order_id && (
                       <>
                         <br />Razorpay Order: <span style={{ fontFamily: 'monospace', color: '#c2a370' }}>{selectedOrder.razorpay_order_id}</span>

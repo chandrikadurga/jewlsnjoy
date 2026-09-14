@@ -296,6 +296,9 @@ class DelhiveryShippingProvider(ShippingProvider):
             error_detail = ', '.join(remarks) if remarks else status_text or 'No AWB assigned.'
             raise DelhiveryShipmentCreationError(f"Delhivery did not generate an AWB: {error_detail}", raw_response=response)
 
+        # Check if Delhivery response already acknowledged COD
+        resp_payment = str(pkg.get('payment', '') or '').strip()
+
         # Enforce COD for all COD orders; never downgrade to Prepaid based on Delhivery package stub
         if is_cod:
             resolved_mode = 'COD'
@@ -335,7 +338,7 @@ class DelhiveryShippingProvider(ShippingProvider):
     ) -> Dict[str, Any]:
         """
         Updates an existing manifested shipment with Delhivery using the official /api/p/edit endpoint.
-        Allows updating payment mode (pt/payment_mode), COD amount (cod/cod_amount), consignee details, etc.
+        Allows updating payment mode (pt), COD amount (cod), consignee details, etc.
         """
         if not self.enabled:
             raise DelhiveryError("Delhivery shipping integration is disabled.")
@@ -348,9 +351,7 @@ class DelhiveryShippingProvider(ShippingProvider):
         edit_data = {
             'waybill': clean_waybill,
             'pt': pt,
-            'payment_mode': pt,
             'cod': cod_val,
-            'cod_amount': cod_val,
         }
         if name:
             edit_data['name'] = str(name).strip()
@@ -359,17 +360,12 @@ class DelhiveryShippingProvider(ShippingProvider):
         if phone:
             edit_data['phone'] = sanitize_phone_number(phone)
 
-        form_data = {
-            'format': 'json',
-            'data': json.dumps(edit_data)
-        }
-
-        logger.info("Editing Delhivery shipment waybill %s -> Mode: %s, COD: %s", clean_waybill, pt, cod_val)
+        logger.info("Editing Delhivery shipment waybill %s -> pt: %s, cod: %s", clean_waybill, pt, cod_val)
         response = self._make_request(
             'POST',
             '/api/p/edit',
-            data=form_data,
-            content_type='application/x-www-form-urlencoded',
+            data=edit_data,
+            content_type='application/json',
             timeout=25
         )
         return response if isinstance(response, dict) else {'response': response}

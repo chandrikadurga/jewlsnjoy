@@ -451,6 +451,12 @@
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
+.admin-paystatus-pill--cod {
+  background: rgba(217, 119, 6, 0.18);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
 /* ─── Payment Proof Cell in Table ─── */
 .admin-proof-cell {
   display: flex;

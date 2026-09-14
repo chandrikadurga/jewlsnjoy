@@ -486,19 +486,47 @@ class AdminBulkSyncCodShipmentsView(APIView):
         if not is_admin:
             return Response({'error': 'Unauthorized admin access.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Find all shipments for orders with COD payment method
+        # Find all orders with COD payment method
         from django.db.models import Q
-        cod_shipments = Shipment.objects.filter(
-            Q(order__payment_method__icontains='cod') | Q(order__payment_method__icontains='cash on delivery')
-        ).exclude(awb_number='').select_related('order')
+        from products.models import Order
+        from shipping.utils import auto_dispatch_delhivery_shipment
+
+        cod_orders = Order.objects.filter(
+            Q(payment_method__icontains='cod') | Q(payment_method__icontains='cash on delivery')
+        ).order_by('-created_at')
 
         provider = DelhiveryShippingProvider()
         synced = []
         errors = []
 
-        for s in cod_shipments:
-            ord_obj = s.order
-            cod_val = float(ord_obj.total_amount)
+        for ord_obj in cod_orders:
+            cod_val = round(float(ord_obj.total_amount), 2)
+            s = getattr(ord_obj, 'shipment', None)
+
+            # If order has no shipment manifested yet, auto-dispatch to create it on Delhivery as COD
+            if not s or not s.awb_number:
+                try:
+                    s = auto_dispatch_delhivery_shipment(ord_obj)
+                    if s and s.awb_number:
+                        synced.append({
+                            'order_number': ord_obj.order_number,
+                            'awb_number': s.awb_number,
+                            'amount': cod_val,
+                            'status': 'Manifested as COD'
+                        })
+                    else:
+                        errors.append({
+                            'order_number': ord_obj.order_number,
+                            'error': 'Auto-dispatch did not assign an AWB'
+                        })
+                except Exception as exc:
+                    errors.append({
+                        'order_number': ord_obj.order_number,
+                        'error': str(exc)
+                    })
+                continue
+
+            # If shipment already exists with an AWB, sync payment mode to COD via Delhivery /api/p/edit
             try:
                 provider.edit_shipment(
                     waybill=s.awb_number,
@@ -515,7 +543,8 @@ class AdminBulkSyncCodShipmentsView(APIView):
                 synced.append({
                     'order_number': ord_obj.order_number,
                     'awb_number': s.awb_number,
-                    'amount': cod_val
+                    'amount': cod_val,
+                    'status': 'Updated to COD'
                 })
             except Exception as exc:
                 logger.warning("Bulk COD sync failed for order %s (AWB %s): %s", ord_obj.order_number, s.awb_number, str(exc))
@@ -527,7 +556,7 @@ class AdminBulkSyncCodShipmentsView(APIView):
 
         return Response({
             'success': True,
-            'message': f"Synchronized {len(synced)} COD shipment(s) with Delhivery.",
+            'message': f"Synchronized {len(synced)} COD order(s) with Delhivery.",
             'synced_count': len(synced),
             'synced_orders': synced,
             'errors': errors

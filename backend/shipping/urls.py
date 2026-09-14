@@ -17,5 +17,6 @@ urlpatterns = [
     path('admin/orders/<int:order_id>/label/', views.AdminShipmentLabelView.as_view(), name='admin-shipment-label'),
     path('admin/orders/<int:order_id>/pickup/', views.AdminShipmentPickupView.as_view(), name='admin-shipment-pickup'),
     path('admin/orders/<int:order_id>/update-delhivery-payment/', views.AdminShipmentUpdatePaymentView.as_view(), name='admin-shipment-update-payment'),
+    path('admin/update-payment/', views.AdminDirectUpdatePaymentView.as_view(), name='admin-direct-update-payment'),
     path('admin/sync-all-cod-shipments/', views.AdminBulkSyncCodShipmentsView.as_view(), name='admin-sync-all-cod-shipments'),
 ]

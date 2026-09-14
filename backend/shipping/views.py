@@ -427,6 +427,12 @@ class AdminShipmentUpdatePaymentView(APIView):
     Forces an update of an existing shipment's payment mode on Delhivery's live servers.
     Useful when a COD order was manifested as Prepaid or when payment terms change.
     Guards against updates on terminal or uneditable shipment states.
+
+    Zero-Trust Architecture:
+    1. Call Delhivery /api/p/edit
+    2. Inspect response
+    3. IF SUCCESS: update local DB
+    4. IF FAILURE: DO NOT update local DB; return exact Delhivery error and status code
     """
     def post(self, request, order_id):
         is_admin, _ = verify_admin_request(request)
@@ -447,7 +453,7 @@ class AdminShipmentUpdatePaymentView(APIView):
             return Response({'error': reason}, status=status.HTTP_400_BAD_REQUEST)
 
         # Resolve requested payment mode
-        req_mode = request.data.get('payment_mode')
+        req_mode = request.data.get('payment_mode') or request.data.get('pt')
         if req_mode:
             is_cod = ('cod' in str(req_mode).lower()) or ('cash on delivery' in str(req_mode).lower())
         else:
@@ -455,10 +461,21 @@ class AdminShipmentUpdatePaymentView(APIView):
 
         pay_details = get_delhivery_payment_details(order)
         payment_mode = 'COD' if is_cod else 'Prepaid'
-        cod_amount = pay_details['cod_amount'] if is_cod else Decimal('0.00')
-        cod_val = pay_details['cod_amount_float'] if is_cod else 0.0
+        req_cod = request.data.get('cod') or request.data.get('cod_amount')
+        if req_cod is not None:
+            try:
+                cod_val = round(float(req_cod), 2) if is_cod else 0.0
+                cod_amount = Decimal(str(cod_val))
+            except (ValueError, TypeError):
+                cod_val = pay_details['cod_amount_float'] if is_cod else 0.0
+                cod_amount = pay_details['cod_amount'] if is_cod else Decimal('0.00')
+        else:
+            cod_amount = pay_details['cod_amount'] if is_cod else Decimal('0.00')
+            cod_val = pay_details['cod_amount_float'] if is_cod else 0.0
 
         provider = DelhiveryShippingProvider()
+
+        # Step 1: Call Delhivery
         try:
             edit_resp = provider.edit_shipment(
                 waybill=shipment.awb_number,
@@ -469,11 +486,36 @@ class AdminShipmentUpdatePaymentView(APIView):
                 address=order.shipping_address,
                 phone=order.customer_phone
             )
+        except DelhiveryError as e:
+            # Step 2: FAILURE -> NEVER UPDATE LOCAL DB
+            http_st = getattr(e, 'code', 400) or 400
+            raw_resp = getattr(e, 'raw_response', None)
+            logger.error("Delhivery payment update error for order %s (AWB %s): %s", order.order_number, shipment.awb_number, str(e))
+            return Response({
+                'success': False,
+                'http_status': http_st,
+                'error': str(e),
+                'delhivery_response': raw_resp
+            }, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            logger.exception("Failed to update Delhivery shipment payment mode: %s", str(e))
-            return Response({'error': f"Delhivery update failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+            logger.exception("Unexpected error updating Delhivery payment mode: %s", str(e))
+            return Response({
+                'success': False,
+                'http_status': 500,
+                'error': str(e),
+                'delhivery_response': None
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Update local database record only after carrier confirmation
+        if not edit_resp.get('success'):
+            # Step 2: FAILURE -> NEVER UPDATE LOCAL DB
+            return Response({
+                'success': False,
+                'http_status': edit_resp.get('http_status', 400),
+                'error': edit_resp.get('error', 'Delhivery rejected payment update.'),
+                'delhivery_response': edit_resp.get('delhivery_response')
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Step 3: SUCCESS -> ONLY NOW update local DB
         shipment.payment_mode = payment_mode
         shipment.cod_amount = cod_amount
         shipment.last_synced_at = timezone.now()
@@ -481,10 +523,103 @@ class AdminShipmentUpdatePaymentView(APIView):
 
         return Response({
             'success': True,
+            'http_status': edit_resp.get('http_status', 200),
             'message': f"Delhivery shipment payment mode updated to {payment_mode} (Collect ₹{cod_amount}).",
-            'delhivery_response': edit_resp,
+            'delhivery_response': edit_resp.get('delhivery_response'),
             'shipment': ShipmentDetailSerializer(shipment).data
-        })
+        }, status=status.HTTP_200_OK)
+
+
+class AdminDirectUpdatePaymentView(APIView):
+    """
+    POST /api/shipping/admin/update-payment/
+    Direct waybill payment update operation.
+    Accepts:
+    {
+        "waybill": "41710610005176",
+        "pt": "COD",
+        "cod": 324.0
+    }
+    Strict Zero-Trust Flow:
+    1. Call Delhivery /api/p/edit
+    2. Check response
+    3. IF SUCCESS: update local DB (if shipment exists for waybill)
+    4. IF FAILURE: DO NOT update local DB; return exact HTTP status and Delhivery error response.
+    """
+    def post(self, request):
+        is_admin, _ = verify_admin_request(request)
+        if not is_admin:
+            return Response({'error': 'Unauthorized admin access.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        waybill = str(request.data.get('waybill', '')).strip()
+        if not waybill:
+            return Response({'error': 'waybill is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        pt = str(request.data.get('pt') or request.data.get('payment_mode') or 'COD').strip()
+        is_cod = ('cod' in pt.lower()) or ('cash on delivery' in pt.lower())
+        payment_mode = 'COD' if is_cod else 'Prepaid'
+
+        raw_cod = request.data.get('cod', None)
+        if raw_cod is None:
+            raw_cod = request.data.get('cod_amount', 0.0)
+
+        try:
+            cod_float = round(float(raw_cod), 2) if is_cod else 0.0
+        except (ValueError, TypeError):
+            cod_float = 0.0
+
+        provider = DelhiveryShippingProvider()
+
+        # Step 1: Call Delhivery
+        try:
+            edit_resp = provider.edit_shipment(
+                waybill=waybill,
+                payment_mode=payment_mode,
+                cod_amount=cod_float
+            )
+        except DelhiveryError as e:
+            # Step 2: FAILURE -> DO NOT UPDATE DB, RETURN EXACT ERROR & RAW RESPONSE
+            http_st = getattr(e, 'code', 400) or 400
+            raw_resp = getattr(e, 'raw_response', None)
+            logger.error("Direct payment update rejected by Delhivery for AWB %s (HTTP %s): %s", waybill, http_st, str(e))
+            return Response({
+                'success': False,
+                'http_status': http_st,
+                'error': str(e),
+                'delhivery_response': raw_resp
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.exception("Unexpected error during direct payment update for AWB %s: %s", waybill, str(e))
+            return Response({
+                'success': False,
+                'http_status': 500,
+                'error': str(e),
+                'delhivery_response': None
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if not edit_resp.get('success'):
+            return Response({
+                'success': False,
+                'http_status': edit_resp.get('http_status', 400),
+                'error': edit_resp.get('error', 'Delhivery rejected payment update.'),
+                'delhivery_response': edit_resp.get('delhivery_response')
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Step 3: SUCCESS -> Update local DB if matching shipment exists
+        shipment = Shipment.objects.filter(awb_number=waybill).first()
+        if shipment:
+            shipment.payment_mode = payment_mode
+            shipment.cod_amount = Decimal(str(cod_float))
+            shipment.last_synced_at = timezone.now()
+            shipment.save(update_fields=['payment_mode', 'cod_amount', 'last_synced_at', 'updated_at'])
+
+        return Response({
+            'success': True,
+            'http_status': edit_resp.get('http_status', 200),
+            'message': f"Delhivery payment updated to {payment_mode} (COD ₹{cod_float}) for waybill {waybill}.",
+            'delhivery_response': edit_resp.get('delhivery_response'),
+            'shipment': ShipmentDetailSerializer(shipment).data if shipment else None
+        }, status=status.HTTP_200_OK)
 
 
 class AdminBulkSyncCodShipmentsView(APIView):
@@ -492,7 +627,7 @@ class AdminBulkSyncCodShipmentsView(APIView):
     POST /api/shipping/admin/sync-all-cod-shipments/
     Scans ALL active COD shipments across the store and synchronizes their payment mode
     and collectable COD amount directly with Delhivery's live servers via /api/p/edit.
-    Returns granular per-order sync and error reporting.
+    Strict Zero-Trust: Never updates database records if Delhivery rejects the edit.
     """
     def post(self, request):
         is_admin, _ = verify_admin_request(request)
@@ -558,7 +693,7 @@ class AdminBulkSyncCodShipmentsView(APIView):
 
             # 4. If update is supported: update payment mode to COD via Delhivery /api/p/edit
             try:
-                provider.edit_shipment(
+                edit_resp = provider.edit_shipment(
                     waybill=s.awb_number,
                     payment_mode='COD',
                     cod_amount=cod_val,
@@ -567,6 +702,19 @@ class AdminBulkSyncCodShipmentsView(APIView):
                     address=ord_obj.shipping_address,
                     phone=ord_obj.customer_phone
                 )
+                if not edit_resp.get('success'):
+                    # ZERO-TRUST: DO NOT UPDATE LOCAL DB
+                    failed_orders.append({
+                        'order_number': ord_obj.order_number,
+                        'awb_number': s.awb_number,
+                        'status': 'failed',
+                        'http_status': edit_resp.get('http_status', 400),
+                        'reason': edit_resp.get('error', 'Delhivery rejected payment update.'),
+                        'delhivery_response': edit_resp.get('delhivery_response')
+                    })
+                    continue
+
+                # ONLY ON CONFIRMED DELHIVERY SUCCESS
                 s.payment_mode = 'COD'
                 s.cod_amount = pay_details['cod_amount']
                 s.last_synced_at = timezone.now()
@@ -575,16 +723,22 @@ class AdminBulkSyncCodShipmentsView(APIView):
                     'order_number': ord_obj.order_number,
                     'awb_number': s.awb_number,
                     'status': 'updated',
+                    'http_status': edit_resp.get('http_status', 200),
                     'payment_mode': 'COD',
-                    'cod_amount': cod_val
+                    'cod_amount': cod_val,
+                    'delhivery_response': edit_resp.get('delhivery_response')
                 })
             except Exception as exc:
+                # ZERO-TRUST: DO NOT UPDATE LOCAL DB
+                http_st = getattr(exc, 'code', 400) if hasattr(exc, 'code') else 400
                 logger.warning("Bulk COD sync failed for order %s (AWB %s): %s", ord_obj.order_number, s.awb_number, str(exc))
                 failed_orders.append({
                     'order_number': ord_obj.order_number,
                     'awb_number': s.awb_number,
                     'status': 'failed',
-                    'reason': str(exc)
+                    'http_status': http_st,
+                    'reason': str(exc),
+                    'delhivery_response': getattr(exc, 'raw_response', None)
                 })
 
         all_succeeded = len(failed_orders) == 0

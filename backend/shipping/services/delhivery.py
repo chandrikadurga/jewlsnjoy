@@ -64,6 +64,9 @@ class DelhiveryShippingProvider(ShippingProvider):
         self.default_length_cm = getattr(settings, 'DELHIVERY_DEFAULT_LENGTH_CM', 10.0)
         self.default_breadth_cm = getattr(settings, 'DELHIVERY_DEFAULT_BREADTH_CM', 10.0)
         self.default_height_cm = getattr(settings, 'DELHIVERY_DEFAULT_HEIGHT_CM', 5.0)
+        self.last_http_status = None
+        self.last_raw_response = None
+        self.last_parsed_response = None
 
     def _get_headers(self, content_type: str = 'application/json') -> Dict[str, str]:
         """Builds standard headers with token authorization."""
@@ -116,9 +119,14 @@ class DelhiveryShippingProvider(ShippingProvider):
             with urllib.request.urlopen(req, timeout=timeout) as response:
                 status_code = response.status
                 raw_content = response.read().decode('utf-8')
+                self.last_http_status = status_code
+                self.last_raw_response = raw_content
                 try:
-                    return json.loads(raw_content)
+                    parsed_data = json.loads(raw_content)
+                    self.last_parsed_response = parsed_data
+                    return parsed_data
                 except json.JSONDecodeError:
+                    self.last_parsed_response = raw_content
                     return raw_content
         except urllib.error.HTTPError as e:
             err_body = ''
@@ -127,6 +135,10 @@ class DelhiveryShippingProvider(ShippingProvider):
                 parsed_err = json.loads(err_body)
             except Exception:
                 parsed_err = err_body
+
+            self.last_http_status = e.code
+            self.last_raw_response = err_body
+            self.last_parsed_response = parsed_err
 
             logger.error("Delhivery HTTP %s error on %s: %s", e.code, path, str(parsed_err)[:200])
             if e.code in (401, 403):
@@ -138,9 +150,15 @@ class DelhiveryShippingProvider(ShippingProvider):
             else:
                 raise DelhiveryError(f"Delhivery API responded with error status {e.code}", code=e.code, raw_response=parsed_err)
         except urllib.error.URLError as e:
+            self.last_http_status = 503
+            self.last_raw_response = str(e.reason)
+            self.last_parsed_response = str(e.reason)
             logger.error("Delhivery network connection failure: %s", str(e.reason))
             raise DelhiveryNetworkError(f"Unable to connect to Delhivery servers: {str(e.reason)}")
         except Exception as e:
+            self.last_http_status = 500
+            self.last_raw_response = str(e)
+            self.last_parsed_response = str(e)
             logger.error("Unexpected Delhivery request exception: %s", str(e))
             raise DelhiveryError(f"Unexpected logistics failure: {str(e)}")
 
@@ -424,32 +442,113 @@ class DelhiveryShippingProvider(ShippingProvider):
             timeout=25
         )
 
-        # Validate Delhivery response
-        if isinstance(response, dict):
-            is_success = response.get('status') in (True, 'success', 'Success') or response.get('success') is True
-            has_error = bool(response.get('error') or response.get('errors'))
-            if (response.get('status') in (False, 'fail', 'failed', 'error')) or (has_error and not is_success):
-                err_msg = response.get('error') or response.get('remarks') or response.get('message') or str(response)
-                logger.error("Delhivery rejected shipment update for waybill %s: %s", clean_waybill, err_msg)
-                raise DelhiveryValidationError(f"Delhivery rejected shipment update: {err_msg}", raw_response=response)
+        # Capture the HTTP status code from the request
+        http_status = getattr(self, 'last_http_status', 200)
+
+        # Rigorous parsing of Delhivery response (which can be a list, dict, or string)
+        is_success = False
+        error_message = None
+
+        if isinstance(response, list):
+            if not response:
+                is_success = False
+                error_message = "Delhivery returned an empty response array."
+            else:
+                first_item = response[0]
+                if isinstance(first_item, dict):
+                    st = str(first_item.get('status', '')).strip()
+                    remarks = first_item.get('remarks', [])
+                    raw_success = first_item.get('success')
+                    if st.lower() in ('success', 'true') or raw_success is True:
+                        is_success = True
+                    else:
+                        is_success = False
+                        if isinstance(remarks, list):
+                            error_message = '; '.join([str(r) for r in remarks if r]) or st or "Delhivery rejected package edit"
+                        else:
+                            error_message = str(remarks or first_item.get('error') or st or "Delhivery rejected package edit")
+                else:
+                    item_str = str(first_item)
+                    is_success = ('success' in item_str.lower())
+                    if not is_success:
+                        error_message = item_str
+        elif isinstance(response, dict):
+            st = str(response.get('status', '')).strip()
+            raw_success = response.get('success')
+            has_error_field = bool(response.get('error') or response.get('errors'))
+            remarks = response.get('remarks') or response.get('message') or response.get('rmk') or response.get('error')
+
+            if st.lower() in ('success', 'true') or raw_success is True:
+                is_success = True
+            elif st.lower() in ('fail', 'failed', 'error', 'false') or raw_success is False or has_error_field:
+                is_success = False
+                if isinstance(remarks, list):
+                    error_message = '; '.join([str(r) for r in remarks if r])
+                else:
+                    error_message = str(remarks or "Delhivery rejected shipment update")
+            else:
+                if remarks and any(w in str(remarks).lower() for w in ('fail', 'error', 'not allowed', 'cannot', 'invalid')):
+                    is_success = False
+                    error_message = str(remarks)
+                else:
+                    is_success = True
+        else:
+            resp_str = str(response)
+            if any(w in resp_str.lower() for w in ('fail', 'error', 'exception')):
+                is_success = False
+                error_message = resp_str
+            else:
+                is_success = True
+
+        if not is_success:
+            err_msg = error_message or "Delhivery rejected payment update without detail."
+            logger.error(
+                "\n"
+                "DELHIVERY EDIT REJECTED\n"
+                "-----------------------\n"
+                "HTTP status: %s\n"
+                "AWB: %s\n"
+                "Error: %s\n"
+                "Delhivery response: %s",
+                http_status,
+                clean_waybill,
+                err_msg,
+                response
+            )
+            raise DelhiveryValidationError(
+                f"Delhivery rejected payment update: {err_msg}",
+                code=http_status,
+                raw_response=response
+            )
 
         logger.info(
             "\n"
-            "DELHIVERY RESPONSE\n"
-            "-------------------\n"
-            "HTTP status: 200\n"
+            "DELHIVERY EDIT SUCCESS\n"
+            "----------------------\n"
+            "HTTP status: %s\n"
             "AWB: %s\n"
             "Success: true\n"
             "Message: Shipment updated to %s (COD: %s)\n"
             "Payment mode: %s\n"
-            "COD amount: %s",
+            "COD amount: %s\n"
+            "Delhivery response: %s",
+            http_status,
             clean_waybill,
             pt,
             cod_val,
             pt,
-            cod_val
+            cod_val,
+            response
         )
-        return response if isinstance(response, dict) else {'response': response}
+
+        return {
+            'success': True,
+            'http_status': http_status,
+            'waybill': clean_waybill,
+            'payment_mode': pt,
+            'cod_amount': cod_val,
+            'delhivery_response': response,
+        }
 
     def get_tracking(self, awb_or_order_num: str) -> Dict[str, Any]:
         """

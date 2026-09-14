@@ -12,4 +12,4 @@ echo "=== Running database migrations ==="
 python manage.py migrate --no-input
 
 echo "=== Seeding catalog data ==="
-python manage.py seed_catalog
+python manage.py seed_catalog || true

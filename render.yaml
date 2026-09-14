@@ -3,7 +3,7 @@ services:
     name: jewlsnjoy-backend
     runtime: python
     rootDir: backend
-    buildCommand: ./build.sh
+    buildCommand: bash ./build.sh
     startCommand: gunicorn config.wsgi:application
     plan: free
     envVars:

@@ -473,3 +473,62 @@ class AdminShipmentUpdatePaymentView(APIView):
             'delhivery_response': edit_resp,
             'shipment': ShipmentDetailSerializer(shipment).data
         })
+
+
+class AdminBulkSyncCodShipmentsView(APIView):
+    """
+    POST /api/shipping/admin/sync-all-cod-shipments/
+    Scans ALL active COD shipments across the store and synchronizes their payment mode
+    and collectable COD amount directly with Delhivery's live servers via /api/p/edit.
+    """
+    def post(self, request):
+        is_admin, _ = verify_admin_request(request)
+        if not is_admin:
+            return Response({'error': 'Unauthorized admin access.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Find all shipments for orders with COD payment method
+        from django.db.models import Q
+        cod_shipments = Shipment.objects.filter(
+            Q(order__payment_method__icontains='cod') | Q(order__payment_method__icontains='cash on delivery')
+        ).exclude(awb_number='').select_related('order')
+
+        provider = DelhiveryShippingProvider()
+        synced = []
+        errors = []
+
+        for s in cod_shipments:
+            ord_obj = s.order
+            cod_val = float(ord_obj.total_amount)
+            try:
+                provider.edit_shipment(
+                    waybill=s.awb_number,
+                    payment_mode='COD',
+                    cod_amount=cod_val,
+                    name=ord_obj.customer_name,
+                    address=ord_obj.shipping_address,
+                    phone=ord_obj.customer_phone
+                )
+                s.payment_mode = 'COD'
+                s.cod_amount = ord_obj.total_amount
+                s.last_synced_at = timezone.now()
+                s.save(update_fields=['payment_mode', 'cod_amount', 'last_synced_at', 'updated_at'])
+                synced.append({
+                    'order_number': ord_obj.order_number,
+                    'awb_number': s.awb_number,
+                    'amount': cod_val
+                })
+            except Exception as exc:
+                logger.warning("Bulk COD sync failed for order %s (AWB %s): %s", ord_obj.order_number, s.awb_number, str(exc))
+                errors.append({
+                    'order_number': ord_obj.order_number,
+                    'awb_number': s.awb_number,
+                    'error': str(exc)
+                })
+
+        return Response({
+            'success': True,
+            'message': f"Synchronized {len(synced)} COD shipment(s) with Delhivery.",
+            'synced_count': len(synced),
+            'synced_orders': synced,
+            'errors': errors
+        })

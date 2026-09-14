@@ -469,6 +469,10 @@ export const adminApi = {
     });
     return response.data;
   },
+  syncAllCodShipments: async () => {
+    const response = await api.post('/api/shipping/admin/sync-all-cod-shipments/');
+    return response.data;
+  },
   getStorePolicies: async () => {
     const response = await api.get('/api/admin/policies/', { params: { _t: Date.now() } });
     return response.data;

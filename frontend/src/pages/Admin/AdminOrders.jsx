@@ -158,6 +158,22 @@ export default function AdminOrders() {
     }
   };
 
+  const [bulkCodLoading, setBulkCodLoading] = useState(false);
+
+  const handleSyncAllCod = async () => {
+    setBulkCodLoading(true);
+    try {
+      const res = await adminApi.syncAllCodShipments();
+      showToast(res.message || 'All COD shipments synced with Delhivery!');
+      await loadOrders();
+    } catch (err) {
+      const errText = err.response?.data?.error || 'Failed to sync COD shipments with Delhivery.';
+      showToast(errText);
+    } finally {
+      setBulkCodLoading(false);
+    }
+  };
+
   const [fetchError, setFetchError] = useState(null);
 
   const loadOrders = async (isRetry = false) => {
@@ -677,6 +693,17 @@ export default function AdminOrders() {
               className="admin-search-input"
             />
           </div>
+          <button
+            type="button"
+            className="admin-btn admin-btn--secondary"
+            onClick={handleSyncAllCod}
+            disabled={bulkCodLoading}
+            title="Scan all COD orders and sync collectable amount with Delhivery One"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Truck size={15} className={bulkCodLoading ? 'animate-spin' : ''} />
+            <span>{bulkCodLoading ? 'Syncing...' : 'Sync All COD with Delhivery'}</span>
+          </button>
           <button
             type="button"
             className="admin-btn admin-btn--secondary"

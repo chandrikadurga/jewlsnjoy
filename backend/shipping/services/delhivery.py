@@ -296,14 +296,18 @@ class DelhiveryShippingProvider(ShippingProvider):
             error_detail = ', '.join(remarks) if remarks else status_text or 'No AWB assigned.'
             raise DelhiveryShipmentCreationError(f"Delhivery did not generate an AWB: {error_detail}", raw_response=response)
 
-        # Resolved payment mode
-        resp_payment = str(pkg.get('payment', '') or '').strip()
-        if 'cod' in resp_payment.lower():
+        # Enforce COD for all COD orders; never downgrade to Prepaid based on Delhivery package stub
+        if is_cod:
             resolved_mode = 'COD'
-        elif 'pre' in resp_payment.lower():
-            resolved_mode = 'Prepaid'
+            # If Delhivery's initial create response did not register COD, force an immediate update via /api/p/edit
+            if 'cod' not in resp_payment.lower() and waybill:
+                try:
+                    logger.info("Delhivery response lacked COD flag for order #%s, auto-updating via /api/p/edit", order.order_number)
+                    self.edit_shipment(waybill=waybill, payment_mode='COD', cod_amount=cod_num)
+                except Exception as edit_err:
+                    logger.warning("Auto-edit payment mode failed for waybill %s: %s", waybill, str(edit_err))
         else:
-            resolved_mode = payment_mode
+            resolved_mode = 'Prepaid'
 
         return {
             'awb_number': str(waybill).strip(),

@@ -29,6 +29,9 @@ from ..utils import (
     normalize_delhivery_status,
     validate_indian_pincode,
     sanitize_phone_number,
+    is_cod_order,
+    get_delhivery_payment_details,
+    is_shipment_editable,
 )
 
 logger = logging.getLogger('shipping.delhivery')
@@ -207,18 +210,33 @@ class DelhiveryShippingProvider(ShippingProvider):
         if not pickup_loc:
             raise DelhiveryValidationError("DELHIVERY_PICKUP_LOCATION is not configured. A valid registered Delhivery warehouse is required.")
 
-        # Payment mode and COD amount resolution
-        pm = str(getattr(order, 'payment_method', '') or '').strip().lower()
-        ps = str(getattr(order, 'payment_status', '') or '').strip().lower()
+        # Payment mode and COD amount resolution using single source of truth
+        pay_details = get_delhivery_payment_details(order)
+        delhivery_mode = pay_details['delhivery_mode']  # 'COD' or 'Pre-paid'
+        cod_num = pay_details['cod_amount_float']
+        total_num = pay_details['total_amount_float']
+        is_cod = pay_details['is_cod']
 
-        # An order is Cash on Delivery if payment_method indicates COD and order is not already paid online
-        is_cod = (('cod' in pm) or ('cash on delivery' in pm)) and (ps != 'paid')
-
-        # Delhivery API specifically uses 'COD' for Cash on Delivery and 'Pre-paid' for prepaid orders
-        delhivery_mode = 'COD' if is_cod else 'Pre-paid'
-        cod_num = round(float(order.total_amount), 2) if is_cod else 0.0
-        total_num = round(float(order.total_amount), 2)
-        cod_amount = Decimal(str(cod_num))
+        # Structured debug logging
+        logger.info(
+            "\n"
+            "ORDER PAYMENT DEBUG\n"
+            "-------------------\n"
+            "Order: %s\n"
+            "Payment method: %s\n"
+            "Payment status: %s\n"
+            "Total amount: %s\n"
+            "Detected COD: %s\n"
+            "Delhivery payment mode: %s\n"
+            "Delhivery COD amount: %s",
+            getattr(order, 'order_number', 'unknown'),
+            getattr(order, 'payment_method', ''),
+            getattr(order, 'payment_status', ''),
+            total_num,
+            is_cod,
+            delhivery_mode,
+            cod_num
+        )
 
         # Package dimensions
         dims = dimensions or {}
@@ -228,14 +246,14 @@ class DelhiveryShippingProvider(ShippingProvider):
         weight = weight_grams or self.default_weight_g
 
         # Build items description
-        items = list(order.items.all())
+        items = list(order.items.all()) if hasattr(order, 'items') else []
         products_desc = ', '.join([item.product_name for item in items])[:200] if items else 'Jewellery Items'
         total_qty = sum([item.quantity for item in items]) if items else 1
 
         phone = sanitize_phone_number(order.customer_phone)
 
-        # Build Delhivery shipment dictionary
-        # Delhivery requires numeric float/int for cod_amount/cod, and recognizes payment_mode, pt, and package_type
+        # Build Delhivery shipment dictionary strictly adhering to official /api/cmu/create.json contract
+        # Do NOT include redundant/guessed fields (pt, package_type, order_type, cod)
         shipment_data = {
             'name': order.customer_name or 'Valued Customer',
             'add': order.shipping_address or 'Customer Address',
@@ -246,17 +264,13 @@ class DelhiveryShippingProvider(ShippingProvider):
             'phone': phone,
             'order': str(order.order_number),
             'payment_mode': delhivery_mode,
-            'pt': delhivery_mode,
-            'package_type': delhivery_mode,
-            'order_type': delhivery_mode,
             'cod_amount': cod_num,
-            'cod': cod_num,
             'total_amount': total_num,
             'products_desc': products_desc,
             'hsn_code': '7117',
             'quantity': str(total_qty),
             'seller_name': "Jewels 'n' Joys",
-            'order_date': order.created_at.strftime('%Y-%m-%d %H:%M:%S') if order.created_at else timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'order_date': order.created_at.strftime('%Y-%m-%d %H:%M:%S') if getattr(order, 'created_at', None) else timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
             'shipping_mode': 'Surface',
             'address_type': 'home',
             'shipment_width': float(breadth),
@@ -303,21 +317,45 @@ class DelhiveryShippingProvider(ShippingProvider):
             error_detail = ', '.join(remarks) if remarks else status_text or 'No AWB assigned.'
             raise DelhiveryShipmentCreationError(f"Delhivery did not generate an AWB: {error_detail}", raw_response=response)
 
-        # Check if Delhivery response already acknowledged COD
-        resp_payment = str(pkg.get('payment', '') or '').strip()
+        # Validate payment mode returned by Delhivery
+        resp_payment = str(pkg.get('payment', '') or pkg.get('payment_mode', '') or '').strip()
+        resp_cod = pkg.get('cod_amount', None) if pkg.get('cod_amount') is not None else pkg.get('cod', None)
 
-        # Enforce COD for all COD orders; never downgrade to Prepaid based on Delhivery package stub
+        logger.info(
+            "\n"
+            "DELHIVERY RESPONSE\n"
+            "-------------------\n"
+            "HTTP status: 200\n"
+            "AWB: %s\n"
+            "Success: %s\n"
+            "Message: %s\n"
+            "Payment mode: %s\n"
+            "COD amount: %s",
+            waybill,
+            response.get('success', False),
+            pkg.get('remarks', []) or response.get('rmk', status_text),
+            resp_payment or delhivery_mode,
+            resp_cod if resp_cod is not None else cod_num
+        )
+
+        # Enforce COD consistency; if Delhivery response lacked COD flag, force an immediate update via /api/p/edit
         if is_cod:
-            resolved_mode = 'COD'
-            # If Delhivery's initial create response did not register COD, force an immediate update via /api/p/edit
-            if 'cod' not in resp_payment.lower() and waybill:
+            cod_count = response.get('cod_count', 0)
+            if 'cod' not in resp_payment.lower() and cod_count == 0 and waybill:
                 try:
                     logger.info("Delhivery response lacked COD flag for order #%s, auto-updating via /api/p/edit", order.order_number)
                     self.edit_shipment(waybill=waybill, payment_mode='COD', cod_amount=cod_num)
                 except Exception as edit_err:
-                    logger.warning("Auto-edit payment mode failed for waybill %s: %s", waybill, str(edit_err))
+                    logger.error("Auto-edit payment mode failed for waybill %s: %s", waybill, str(edit_err))
+                    raise DelhiveryShipmentCreationError(
+                        f"Delhivery created shipment as Prepaid instead of COD and update failed: {edit_err}",
+                        raw_response=response
+                    )
+            resolved_mode = 'COD'
+            resolved_cod = pay_details['cod_amount']
         else:
             resolved_mode = 'Prepaid'
+            resolved_cod = Decimal('0.00')
 
         return {
             'awb_number': str(waybill).strip(),
@@ -325,7 +363,7 @@ class DelhiveryShippingProvider(ShippingProvider):
             'provider_shipment_id': str(pkg.get('refnum', '')),
             'provider_status': status_text or 'Manifested',
             'payment_mode': resolved_mode,
-            'cod_amount': cod_amount,
+            'cod_amount': resolved_cod,
             'weight_grams': weight,
             'length_cm': length,
             'breadth_cm': breadth,
@@ -339,19 +377,29 @@ class DelhiveryShippingProvider(ShippingProvider):
         waybill: str,
         payment_mode: str = 'COD',
         cod_amount: float = 0.0,
+        current_status: Optional[str] = None,
         name: Optional[str] = None,
         address: Optional[str] = None,
         phone: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Updates an existing manifested shipment with Delhivery using the official /api/p/edit endpoint.
+        Verifies that shipment lifecycle state allows editing before making API request.
         Allows updating payment mode (pt), COD amount (cod), consignee details, etc.
         """
         if not self.enabled:
             raise DelhiveryError("Delhivery shipping integration is disabled.")
 
         clean_waybill = str(waybill).strip()
-        is_cod = ('cod' in str(payment_mode).lower()) or ('cash on delivery' in str(payment_mode).lower())
+        if not clean_waybill:
+            raise DelhiveryValidationError("Waybill (AWB) is required to edit a shipment.")
+
+        if current_status:
+            can_edit, reason = is_shipment_editable(current_status)
+            if not can_edit:
+                raise DelhiveryValidationError(reason)
+
+        is_cod = is_cod_order({'payment_method': payment_mode}) or ('cod' in str(payment_mode).lower())
         pt = 'COD' if is_cod else 'Prepaid'
         cod_val = round(float(cod_amount), 2) if is_cod else 0.0
 
@@ -374,6 +422,32 @@ class DelhiveryShippingProvider(ShippingProvider):
             data=edit_data,
             content_type='application/json',
             timeout=25
+        )
+
+        # Validate Delhivery response
+        if isinstance(response, dict):
+            is_success = response.get('status') in (True, 'success', 'Success') or response.get('success') is True
+            has_error = bool(response.get('error') or response.get('errors'))
+            if (response.get('status') in (False, 'fail', 'failed', 'error')) or (has_error and not is_success):
+                err_msg = response.get('error') or response.get('remarks') or response.get('message') or str(response)
+                logger.error("Delhivery rejected shipment update for waybill %s: %s", clean_waybill, err_msg)
+                raise DelhiveryValidationError(f"Delhivery rejected shipment update: {err_msg}", raw_response=response)
+
+        logger.info(
+            "\n"
+            "DELHIVERY RESPONSE\n"
+            "-------------------\n"
+            "HTTP status: 200\n"
+            "AWB: %s\n"
+            "Success: true\n"
+            "Message: Shipment updated to %s (COD: %s)\n"
+            "Payment mode: %s\n"
+            "COD amount: %s",
+            clean_waybill,
+            pt,
+            cod_val,
+            pt,
+            cod_val
         )
         return response if isinstance(response, dict) else {'response': response}
 

@@ -111,6 +111,155 @@ def sanitize_phone_number(phone: str) -> str:
     return digits[-10:] if len(digits) >= 10 else digits
 
 
+def is_cod_order(order) -> bool:
+    """
+    Single source of truth for determining whether an order is Cash on Delivery (COD).
+    Uses the application's actual data model.
+    An order is ONLY considered COD if:
+    1. The customer's selected payment method explicitly indicates Cash on Delivery (COD).
+    2. It is NOT an online payment method (e.g. Razorpay, UPI, Card, Net Banking).
+    3. The payment status is NOT already marked as 'paid'.
+    Failed, pending, or cancelled online payments are NEVER treated as COD.
+    Supports both Django Order model instances and dictionary representations.
+    """
+    if not order:
+        return False
+
+    if isinstance(order, dict):
+        pm = str(order.get('payment_method') or '').strip().lower()
+        ps = str(order.get('payment_status') or '').strip().lower()
+    else:
+        pm = str(getattr(order, 'payment_method', '') or '').strip().lower()
+        ps = str(getattr(order, 'payment_status', '') or '').strip().lower()
+
+    if not pm:
+        return False
+
+    # Explicit online payment methods MUST NEVER be treated as COD
+    online_indicators = (
+        'razorpay',
+        'manual_upi',
+        'cashfree',
+        'online',
+        'card',
+        'upi',
+        'credit',
+        'debit',
+        'net banking',
+        'netbanking',
+        'wallet',
+    )
+    if any(ind in pm for ind in online_indicators):
+        return False
+
+    # If the order is already marked as 'paid', it does not require courier collection
+    if ps in ('paid', 'refunded', 'partially_refunded'):
+        return False
+
+    # Check for COD keywords in payment_method
+    cod_indicators = ('cod', 'cash on delivery', 'cash_on_delivery')
+    return any(ind in pm for ind in cod_indicators)
+
+
+def get_delhivery_payment_details(order) -> dict:
+    """
+    Centralized helper to map an Order to Delhivery payment configuration.
+    Rules:
+    - COD:
+        is_cod = True
+        payment_mode = "COD"
+        delhivery_mode = "COD"
+        cod_amount = exact collectible order total
+    - Prepaid:
+        is_cod = False
+        payment_mode = "Prepaid"
+        delhivery_mode = "Pre-paid"
+        cod_amount = 0.00
+    Payment method is the primary source; failed/unpaid online payments are NEVER COD.
+    """
+    is_cod = is_cod_order(order)
+
+    if isinstance(order, dict):
+        raw_total = order.get('total_amount', 0)
+    else:
+        raw_total = getattr(order, 'total_amount', 0)
+
+    try:
+        total_float = round(float(raw_total), 2)
+        total_decimal = Decimal(str(total_float)).quantize(Decimal('0.01'))
+    except (ValueError, TypeError):
+        total_float = 0.0
+        total_decimal = Decimal('0.00')
+
+    if is_cod:
+        return {
+            'is_cod': True,
+            'payment_mode': 'COD',
+            'delhivery_mode': 'COD',
+            'cod_amount': total_decimal,
+            'cod_amount_float': total_float,
+            'total_amount': total_decimal,
+            'total_amount_float': total_float,
+        }
+    else:
+        return {
+            'is_cod': False,
+            'payment_mode': 'Prepaid',
+            'delhivery_mode': 'Pre-paid',
+            'cod_amount': Decimal('0.00'),
+            'cod_amount_float': 0.0,
+            'total_amount': total_decimal,
+            'total_amount_float': total_float,
+        }
+
+
+def is_shipment_editable(shipment_or_status) -> tuple:
+    """
+    Determines whether a Delhivery shipment's payment mode and COD amount can still be updated.
+    Delhivery allows /api/p/edit only while the package is in editable states:
+    Manifested, In Transit, Pending, or Scheduled.
+    Once Dispatched, Delivered, Picked Up, RTO, or Cancelled, Delhivery locks the package.
+    Returns: (is_editable: bool, reason_message: str)
+    """
+    if shipment_or_status is None:
+        return True, ""
+
+    # Extract status string
+    status_str = ''
+    if hasattr(shipment_or_status, 'shipment_status'):
+        status_str = getattr(shipment_or_status, 'shipment_status', '') or ''
+    elif isinstance(shipment_or_status, dict):
+        status_str = shipment_or_status.get('shipment_status', '') or shipment_or_status.get('status', '')
+    else:
+        status_str = str(shipment_or_status)
+
+    cleaned = status_str.strip().lower().replace(' ', '_')
+    if not cleaned:
+        return True, ""
+
+    # Terminal or non-editable states in Delhivery lifecycle
+    non_editable_states = {
+        'delivered',
+        'dispatched',
+        'picked_up',
+        'collected',
+        'rto',
+        'dto',
+        'rto_initiated',
+        'rto_delivered',
+        'cancelled',
+        'closed',
+        'lost',
+        'failed',
+    }
+
+    if cleaned in non_editable_states:
+        display_status = status_str.replace('_', ' ').title()
+        return False, f"Cannot update payment mode in current Delhivery shipment state: '{display_status}'. Only Manifested, In Transit, or Pending shipments can be modified."
+
+    return True, ""
+
+
 def auto_dispatch_delhivery_shipment(order):
     """
     Automatically creates a Delhivery shipment manifest for a confirmed/paid order.
@@ -141,19 +290,14 @@ def auto_dispatch_delhivery_shipment(order):
             logger.info("Delhivery auto-dispatch skipped for order #%s: DELHIVERY_API_TOKEN not configured.", order.order_number)
             return None
 
+        pay_details = get_delhivery_payment_details(order)
         creation_data = provider.create_shipment(order=order)
         awb = creation_data.get('awb_number', '')
         tracking_url = f"https://www.delhivery.com/track/package/{awb}" if awb else ''
         label_url = f"{provider.base_url}/api/p/packing_slip?wbns={awb}" if awb else ''
 
-        pm = str(getattr(order, 'payment_method', '') or '').strip().lower()
-        ps = str(getattr(order, 'payment_status', '') or '').strip().lower()
-        is_order_cod = (('cod' in pm) or ('cash on delivery' in pm)) and (ps != 'paid')
-        expected_mode = 'COD' if is_order_cod else 'Prepaid'
-        expected_cod_amount = Decimal(str(round(float(order.total_amount), 2))) if is_order_cod else Decimal('0.00')
-
-        resolved_mode = creation_data.get('payment_mode') or expected_mode
-        resolved_cod = creation_data.get('cod_amount', expected_cod_amount) if is_order_cod else Decimal('0.00')
+        resolved_mode = creation_data.get('payment_mode') or pay_details['payment_mode']
+        resolved_cod = creation_data.get('cod_amount', pay_details['cod_amount'])
 
         shipment, _ = Shipment.objects.update_or_create(
             order=order,
@@ -184,7 +328,7 @@ def auto_dispatch_delhivery_shipment(order):
             order.status = 'shipped'
             order.save(update_fields=['status', 'updated_at'])
 
-        logger.info("Successfully auto-dispatched order #%s to Delhivery One with AWB: %s", order.order_number, awb)
+        logger.info("Successfully auto-dispatched order #%s to Delhivery One with AWB: %s (Mode: %s, COD: %s)", order.order_number, awb, resolved_mode, resolved_cod)
         return shipment
 
     except Exception as exc:

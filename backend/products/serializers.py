@@ -263,9 +263,11 @@ class OrderCreateSerializer(serializers.Serializer):
             total = sum(parse_price(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
         
         # For COD and new orders, payment_status is 'pending' until authoritatively verified
-        pay_method = str(validated_data.get('payment_method', '')).strip().lower()
-        if 'cod' in pay_method or 'cash on delivery' in pay_method:
-            validated_data['payment_method'] = 'COD'
+        raw_pay_method = str(validated_data.get('payment_method', '')).strip()
+        pay_method_lower = raw_pay_method.lower()
+        if 'cod' in pay_method_lower or 'cash on delivery' in pay_method_lower:
+            # Use Delhivery's documented standard default COD tag
+            validated_data['payment_method'] = 'Cash on Delivery (COD)'
             validated_data['payment_status'] = 'pending'
             validated_data['status'] = 'confirmed'
         else:
@@ -294,15 +296,9 @@ class OrderCreateSerializer(serializers.Serializer):
                 image_url=item.get('image_url') or (prod.primary_image_url if prod else '/products/1/1.jpeg')
             )
 
-        # For COD orders, dispatch directly to Delhivery One panel
-        if 'cod' in pay_method or 'cash on delivery' in pay_method:
-            try:
-                from shipping.utils import auto_dispatch_delhivery_shipment
-                auto_dispatch_delhivery_shipment(order)
-            except Exception as e:
-                import logging
-                logging.getLogger(__name__).warning("Auto-dispatch error on COD order creation: %s", str(e))
-
+        # For COD orders, do NOT immediately manifest or generate an AWB upon customer checkout.
+        # The order remains safely in 'confirmed' with payment_status='pending'.
+        # The admin verifies the order and manifests with Delhivery as COD when ready to ship.
         return order
 
 

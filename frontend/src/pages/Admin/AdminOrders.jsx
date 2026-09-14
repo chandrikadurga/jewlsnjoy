@@ -164,10 +164,15 @@ export default function AdminOrders() {
     setBulkCodLoading(true);
     try {
       const res = await adminApi.syncAllCodShipments();
-      showToast(res.message || 'All COD shipments synced with Delhivery!');
+      if (res.failed_orders && res.failed_orders.length > 0) {
+        const failMsgs = res.failed_orders.map(f => `${f.order_number}: ${f.reason}`).join('; ');
+        showToast(`Synced ${res.synced_count || 0} order(s). Failures (${res.failed_count || res.failed_orders.length}): ${failMsgs}`);
+      } else {
+        showToast(res.message || `All ${res.synced_count || 0} COD shipment(s) synced with Delhivery!`);
+      }
       await loadOrders();
     } catch (err) {
-      const errText = err.response?.data?.error || 'Failed to sync COD shipments with Delhivery.';
+      const errText = err.response?.data?.error || err.response?.data?.message || 'Failed to sync COD shipments with Delhivery.';
       showToast(errText);
     } finally {
       setBulkCodLoading(false);

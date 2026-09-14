@@ -38,6 +38,10 @@ from .utils import (
     normalize_delhivery_status,
     is_status_transition_allowed,
     validate_indian_pincode,
+    is_cod_order,
+    get_delhivery_payment_details,
+    is_shipment_editable,
+    auto_dispatch_delhivery_shipment,
 )
 
 logger = logging.getLogger('shipping.views')
@@ -422,6 +426,7 @@ class AdminShipmentUpdatePaymentView(APIView):
     POST /api/shipping/admin/orders/<int:order_id>/update-delhivery-payment/
     Forces an update of an existing shipment's payment mode on Delhivery's live servers.
     Useful when a COD order was manifested as Prepaid or when payment terms change.
+    Guards against updates on terminal or uneditable shipment states.
     """
     def post(self, request, order_id):
         is_admin, _ = verify_admin_request(request)
@@ -436,23 +441,30 @@ class AdminShipmentUpdatePaymentView(APIView):
         if not shipment or not shipment.awb_number:
             return Response({'error': 'No active Delhivery shipment found for this order.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Resolve payment mode from request or order
+        # Enforce shipment lifecycle check before attempting provider update
+        can_edit, reason = is_shipment_editable(shipment.shipment_status)
+        if not can_edit:
+            return Response({'error': reason}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Resolve requested payment mode
         req_mode = request.data.get('payment_mode')
         if req_mode:
             is_cod = ('cod' in str(req_mode).lower()) or ('cash on delivery' in str(req_mode).lower())
         else:
-            pm = str(order.payment_method or '').strip().lower()
-            is_cod = ('cod' in pm) or ('cash on delivery' in pm)
+            is_cod = is_cod_order(order)
 
+        pay_details = get_delhivery_payment_details(order)
         payment_mode = 'COD' if is_cod else 'Prepaid'
-        cod_amount = Decimal(str(order.total_amount)) if is_cod else Decimal('0.00')
+        cod_amount = pay_details['cod_amount'] if is_cod else Decimal('0.00')
+        cod_val = pay_details['cod_amount_float'] if is_cod else 0.0
 
         provider = DelhiveryShippingProvider()
         try:
             edit_resp = provider.edit_shipment(
                 waybill=shipment.awb_number,
                 payment_mode=payment_mode,
-                cod_amount=float(cod_amount),
+                cod_amount=cod_val,
+                current_status=shipment.shipment_status,
                 name=order.customer_name,
                 address=order.shipping_address,
                 phone=order.customer_phone
@@ -461,7 +473,7 @@ class AdminShipmentUpdatePaymentView(APIView):
             logger.exception("Failed to update Delhivery shipment payment mode: %s", str(e))
             return Response({'error': f"Delhivery update failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Update local database record
+        # Update local database record only after carrier confirmation
         shipment.payment_mode = payment_mode
         shipment.cod_amount = cod_amount
         shipment.last_synced_at = timezone.now()
@@ -480,84 +492,111 @@ class AdminBulkSyncCodShipmentsView(APIView):
     POST /api/shipping/admin/sync-all-cod-shipments/
     Scans ALL active COD shipments across the store and synchronizes their payment mode
     and collectable COD amount directly with Delhivery's live servers via /api/p/edit.
+    Returns granular per-order sync and error reporting.
     """
     def post(self, request):
         is_admin, _ = verify_admin_request(request)
         if not is_admin:
             return Response({'error': 'Unauthorized admin access.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Find all orders with COD payment method
         from django.db.models import Q
-        from products.models import Order
-        from shipping.utils import auto_dispatch_delhivery_shipment
 
-        cod_orders = Order.objects.filter(
+        # Find potential COD orders
+        candidate_orders = Order.objects.filter(
             Q(payment_method__icontains='cod') | Q(payment_method__icontains='cash on delivery')
         ).order_by('-created_at')
 
         provider = DelhiveryShippingProvider()
-        synced = []
-        errors = []
+        synced_orders = []
+        failed_orders = []
 
-        for ord_obj in cod_orders:
-            cod_val = round(float(ord_obj.total_amount), 2)
+        for ord_obj in candidate_orders:
+            # 1. Confirm order is genuinely COD using the single source of truth
+            if not is_cod_order(ord_obj):
+                continue
+
+            pay_details = get_delhivery_payment_details(ord_obj)
+            cod_val = pay_details['cod_amount_float']
             s = getattr(ord_obj, 'shipment', None)
 
-            # If order has no shipment manifested yet, auto-dispatch to create it on Delhivery as COD
+            # 2. If no shipment exists or no AWB, auto-dispatch to create it on Delhivery as COD
             if not s or not s.awb_number:
                 try:
                     s = auto_dispatch_delhivery_shipment(ord_obj)
                     if s and s.awb_number:
-                        synced.append({
+                        synced_orders.append({
                             'order_number': ord_obj.order_number,
                             'awb_number': s.awb_number,
-                            'amount': cod_val,
-                            'status': 'Manifested as COD'
+                            'status': 'created',
+                            'payment_mode': 'COD',
+                            'cod_amount': cod_val
                         })
                     else:
-                        errors.append({
+                        failed_orders.append({
                             'order_number': ord_obj.order_number,
-                            'error': 'Auto-dispatch did not assign an AWB'
+                            'status': 'failed',
+                            'reason': 'Auto-dispatch did not assign an AWB.'
                         })
                 except Exception as exc:
-                    errors.append({
+                    failed_orders.append({
                         'order_number': ord_obj.order_number,
-                        'error': str(exc)
+                        'status': 'failed',
+                        'reason': str(exc)
                     })
                 continue
 
-            # If shipment already exists with an AWB, sync payment mode to COD via Delhivery /api/p/edit
+            # 3. If shipment exists: determine whether it can still be updated
+            can_edit, reason = is_shipment_editable(s.shipment_status)
+            if not can_edit:
+                failed_orders.append({
+                    'order_number': ord_obj.order_number,
+                    'awb_number': s.awb_number,
+                    'status': 'failed',
+                    'reason': reason
+                })
+                continue
+
+            # 4. If update is supported: update payment mode to COD via Delhivery /api/p/edit
             try:
                 provider.edit_shipment(
                     waybill=s.awb_number,
                     payment_mode='COD',
                     cod_amount=cod_val,
+                    current_status=s.shipment_status,
                     name=ord_obj.customer_name,
                     address=ord_obj.shipping_address,
                     phone=ord_obj.customer_phone
                 )
                 s.payment_mode = 'COD'
-                s.cod_amount = ord_obj.total_amount
+                s.cod_amount = pay_details['cod_amount']
                 s.last_synced_at = timezone.now()
                 s.save(update_fields=['payment_mode', 'cod_amount', 'last_synced_at', 'updated_at'])
-                synced.append({
+                synced_orders.append({
                     'order_number': ord_obj.order_number,
                     'awb_number': s.awb_number,
-                    'amount': cod_val,
-                    'status': 'Updated to COD'
+                    'status': 'updated',
+                    'payment_mode': 'COD',
+                    'cod_amount': cod_val
                 })
             except Exception as exc:
                 logger.warning("Bulk COD sync failed for order %s (AWB %s): %s", ord_obj.order_number, s.awb_number, str(exc))
-                errors.append({
+                failed_orders.append({
                     'order_number': ord_obj.order_number,
                     'awb_number': s.awb_number,
-                    'error': str(exc)
+                    'status': 'failed',
+                    'reason': str(exc)
                 })
 
+        all_succeeded = len(failed_orders) == 0
+        msg = f"Synchronized {len(synced_orders)} COD order(s) with Delhivery."
+        if failed_orders:
+            msg += f" {len(failed_orders)} failed."
+
         return Response({
-            'success': True,
-            'message': f"Synchronized {len(synced)} COD order(s) with Delhivery.",
-            'synced_count': len(synced),
-            'synced_orders': synced,
-            'errors': errors
+            'success': all_succeeded,
+            'message': msg,
+            'synced_count': len(synced_orders),
+            'failed_count': len(failed_orders),
+            'synced_orders': synced_orders,
+            'failed_orders': failed_orders
         })

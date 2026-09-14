@@ -234,7 +234,7 @@ export default function Contact() {
               </a>
               <a
                 className="contact-social-circle"
-                href="https://instagram.com"
+                href="https://www.instagram.com/jewelsnjoys?stkn=MXV0eXZlODBkd3p2eg=="
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -242,7 +242,18 @@ export default function Contact() {
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+              </a>
+              <a
+                className="contact-social-circle"
+                href="https://www.snapchat.com/add/arohi0770?share_id=lBy9FtFmH1A&locale=en-US"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Snapchat"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M12.002 2c-3.792 0-6.22 2.825-6.22 6.012 0 .866.24 1.777.625 2.533-.178.077-.417.185-.694.316-.62.296-1.127.537-1.168.917-.034.315.176.621.57.834.615.333 1.472.484 1.96.53.076.425.26 1.157.659 1.748-.686.23-1.688.627-1.996 1.442-.142.378-.052.793.24 1.127.34.389.967.65 1.724.717.378.033.784-.007 1.189-.047.33-.033.666-.066 1.002-.023.468.06.944.408 1.482.802.73.535 1.58 1.159 2.628 1.159.006 0 .012 0 .018 0 1.047 0 1.897-.624 2.628-1.159.537-.394 1.014-.742 1.482-.802.336-.043.671-.01 1.002.023.405.04.811.08 1.189.047.757-.067 1.384-.328 1.724-.717.292-.334.382-.749.24-1.127-.308-.815-1.31-1.212-1.996-1.442.399-.591.583-1.323.659-1.748.488-.046 1.345-.197 1.96-.53.394-.213.604-.519.57-.834-.041-.38-.548-.621-1.168-.917-.277-.131-.516-.239-.694-.316.385-.756.625-1.667.625-2.533C18.222 4.825 15.794 2 12.002 2z" />
                 </svg>
               </a>
               <a

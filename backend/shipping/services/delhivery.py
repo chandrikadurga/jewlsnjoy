@@ -208,7 +208,8 @@ class DelhiveryShippingProvider(ShippingProvider):
             raise DelhiveryValidationError("DELHIVERY_PICKUP_LOCATION is not configured. A valid registered Delhivery warehouse is required.")
 
         # Payment mode and COD amount resolution
-        is_cod = (order.payment_method or '').lower() == 'cod'
+        pm = str(order.payment_method or '').strip().lower()
+        is_cod = ('cod' in pm) or ('cash on delivery' in pm)
         payment_mode = 'COD' if is_cod else 'Prepaid'
         cod_amount = Decimal(str(order.total_amount)) if is_cod else Decimal('0.00')
 
@@ -453,13 +454,15 @@ class DelhiveryShippingProvider(ShippingProvider):
         if not self.enabled:
             return {'cost': Decimal('80.00'), 'currency': 'INR', 'note': 'Static rate fallback'}
 
+        pt_mode = str(payment_mode or '').strip().lower()
+        is_cod_mode = ('cod' in pt_mode) or ('cash on delivery' in pt_mode)
         params = {
             'md': 'S',
             'ss': 'Delivered',
             'd_pin': str(dest_pin).strip(),
             'o_pin': str(origin_pin).strip() if origin_pin else '500081',
             'cgm': int(weight_grams) if weight_grams else 200,
-            'pt': 'COD' if payment_mode.upper() == 'COD' else 'Prepaid',
+            'pt': 'COD' if is_cod_mode else 'Prepaid',
         }
 
         try:

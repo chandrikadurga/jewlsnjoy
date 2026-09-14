@@ -420,11 +420,12 @@ export default function AdminOrders() {
 
     const isAwaiting = newStatus === 'awaiting_payment_verification';
     const isConfirmed = newStatus === 'confirmed';
-    const newPayStatus = isAwaiting ? 'pending_verification' : isConfirmed ? 'paid' : undefined;
 
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id === orderId) {
+          const isCod = (o.payment_method || '').toLowerCase().includes('cod') || (o.payment_method || '').toLowerCase().includes('cash on delivery');
+          const newPayStatus = isAwaiting ? 'pending_verification' : (isConfirmed && !isCod) ? 'paid' : undefined;
           const updatedPayStatus = newPayStatus !== undefined ? newPayStatus : o.payment_status;
           return {
             ...o,
@@ -433,7 +434,7 @@ export default function AdminOrders() {
             payment_verification: o.payment_verification
               ? {
                   ...o.payment_verification,
-                  status: isAwaiting ? 'pending_verification' : isConfirmed ? 'paid' : o.payment_verification.status,
+                  status: isAwaiting ? 'pending_verification' : (isConfirmed && !isCod) ? 'paid' : o.payment_verification.status,
                   ...(isAwaiting || isConfirmed ? { rejection_reason: '' } : {}),
                 }
               : o.payment_verification,
@@ -457,6 +458,8 @@ export default function AdminOrders() {
     if (selectedOrder && selectedOrder.id === orderId) {
       setSelectedOrder((prev) => {
         if (!prev) return null;
+        const isCod = (prev.payment_method || '').toLowerCase().includes('cod') || (prev.payment_method || '').toLowerCase().includes('cash on delivery');
+        const newPayStatus = isAwaiting ? 'pending_verification' : (isConfirmed && !isCod) ? 'paid' : undefined;
         const updatedPayStatus = newPayStatus !== undefined ? newPayStatus : prev.payment_status;
         return {
           ...prev,
@@ -465,7 +468,7 @@ export default function AdminOrders() {
           payment_verification: prev.payment_verification
             ? {
                 ...prev.payment_verification,
-                status: isAwaiting ? 'pending_verification' : isConfirmed ? 'paid' : prev.payment_verification.status,
+                status: isAwaiting ? 'pending_verification' : (isConfirmed && !isCod) ? 'paid' : prev.payment_verification.status,
                 ...(isAwaiting || isConfirmed ? { rejection_reason: '' } : {}),
               }
             : prev.payment_verification,
@@ -1327,7 +1330,7 @@ export default function AdminOrders() {
                   <p className="admin-detail-text">
                     Email: {selectedOrder.customer_email || 'N/A'}<br />
                     Phone: {selectedOrder.customer_phone || 'N/A'}<br />
-                    Payment: {selectedOrder.payment_method} ({selectedOrder.payment_status || 'Paid'})
+                    Payment: {selectedOrder.payment_method} ({selectedOrder.payment_status || (String(selectedOrder.payment_method || '').toLowerCase().includes('cod') ? 'Pending' : 'Paid')})
                     {selectedOrder.razorpay_order_id && (
                       <>
                         <br />Razorpay Order: <span style={{ fontFamily: 'monospace', color: '#c2a370' }}>{selectedOrder.razorpay_order_id}</span>

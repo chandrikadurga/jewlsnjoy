@@ -786,9 +786,12 @@ class AdminOrderDetailView(APIView):
                 if pv_qs is not None:
                     pv_qs.all().update(status='pending_verification', rejection_reason='')
             elif new_status == 'confirmed':
-                order.payment_status = 'paid'
-                if pv_qs is not None:
-                    pv_qs.all().update(status='paid', rejection_reason='')
+                pm = str(order.payment_method or '').strip().lower()
+                is_cod = ('cod' in pm) or ('cash on delivery' in pm)
+                if not is_cod:
+                    order.payment_status = 'paid'
+                    if pv_qs is not None:
+                        pv_qs.all().update(status='paid', rejection_reason='')
             elif new_status == 'cancelled':
                 if pv_qs is not None:
                     pv_qs.all().update(status='rejected')

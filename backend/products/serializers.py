@@ -265,6 +265,7 @@ class OrderCreateSerializer(serializers.Serializer):
         # For COD and new orders, payment_status is 'pending' until authoritatively verified
         pay_method = str(validated_data.get('payment_method', '')).strip().lower()
         if 'cod' in pay_method or 'cash on delivery' in pay_method:
+            validated_data['payment_method'] = 'COD'
             validated_data['payment_status'] = 'pending'
             validated_data['status'] = 'confirmed'
         else:

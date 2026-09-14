@@ -208,9 +208,14 @@ class DelhiveryShippingProvider(ShippingProvider):
             raise DelhiveryValidationError("DELHIVERY_PICKUP_LOCATION is not configured. A valid registered Delhivery warehouse is required.")
 
         # Payment mode and COD amount resolution
-        pm = str(order.payment_method or '').strip().lower()
-        is_cod = ('cod' in pm) or ('cash on delivery' in pm)
-        payment_mode = 'COD' if is_cod else 'Prepaid'
+        pm = str(getattr(order, 'payment_method', '') or '').strip().lower()
+        ps = str(getattr(order, 'payment_status', '') or '').strip().lower()
+
+        # An order is Cash on Delivery if payment_method indicates COD and order is not already paid online
+        is_cod = (('cod' in pm) or ('cash on delivery' in pm)) and (ps != 'paid')
+
+        # Delhivery API specifically uses 'COD' for Cash on Delivery and 'Pre-paid' for prepaid orders
+        delhivery_mode = 'COD' if is_cod else 'Pre-paid'
         cod_num = round(float(order.total_amount), 2) if is_cod else 0.0
         total_num = round(float(order.total_amount), 2)
         cod_amount = Decimal(str(cod_num))
@@ -230,7 +235,7 @@ class DelhiveryShippingProvider(ShippingProvider):
         phone = sanitize_phone_number(order.customer_phone)
 
         # Build Delhivery shipment dictionary
-        # Delhivery requires numeric float/int for cod_amount/cod, and accepts both 'payment_mode' and 'pt'
+        # Delhivery requires numeric float/int for cod_amount/cod, and recognizes payment_mode, pt, and package_type
         shipment_data = {
             'name': order.customer_name or 'Valued Customer',
             'add': order.shipping_address or 'Customer Address',
@@ -240,8 +245,10 @@ class DelhiveryShippingProvider(ShippingProvider):
             'country': order.country or 'India',
             'phone': phone,
             'order': str(order.order_number),
-            'payment_mode': payment_mode,
-            'pt': payment_mode,
+            'payment_mode': delhivery_mode,
+            'pt': delhivery_mode,
+            'package_type': delhivery_mode,
+            'order_type': delhivery_mode,
             'cod_amount': cod_num,
             'cod': cod_num,
             'total_amount': total_num,
@@ -269,7 +276,7 @@ class DelhiveryShippingProvider(ShippingProvider):
             'data': json.dumps(request_payload)
         }
 
-        logger.info("Creating Delhivery shipment for Order #%s (Mode: %s, Total: %s, COD: %s)", order.order_number, payment_mode, total_num, cod_num)
+        logger.info("Creating Delhivery shipment for Order #%s (Mode: %s, Total: %s, COD: %s)", order.order_number, delhivery_mode, total_num, cod_num)
         response = self._make_request(
             'POST',
             '/api/cmu/create.json',

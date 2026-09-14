@@ -146,6 +146,15 @@ def auto_dispatch_delhivery_shipment(order):
         tracking_url = f"https://www.delhivery.com/track/package/{awb}" if awb else ''
         label_url = f"{provider.base_url}/api/p/packing_slip?wbns={awb}" if awb else ''
 
+        pm = str(getattr(order, 'payment_method', '') or '').strip().lower()
+        ps = str(getattr(order, 'payment_status', '') or '').strip().lower()
+        is_order_cod = (('cod' in pm) or ('cash on delivery' in pm)) and (ps != 'paid')
+        expected_mode = 'COD' if is_order_cod else 'Prepaid'
+        expected_cod_amount = Decimal(str(round(float(order.total_amount), 2))) if is_order_cod else Decimal('0.00')
+
+        resolved_mode = creation_data.get('payment_mode') or expected_mode
+        resolved_cod = creation_data.get('cod_amount', expected_cod_amount) if is_order_cod else Decimal('0.00')
+
         shipment, _ = Shipment.objects.update_or_create(
             order=order,
             defaults={
@@ -156,8 +165,8 @@ def auto_dispatch_delhivery_shipment(order):
                 'tracking_number': awb,
                 'shipment_status': 'manifested',
                 'provider_status': creation_data.get('provider_status', 'Manifested'),
-                'payment_mode': creation_data.get('payment_mode', 'Prepaid'),
-                'cod_amount': creation_data.get('cod_amount', Decimal('0.00')),
+                'payment_mode': resolved_mode,
+                'cod_amount': resolved_cod,
                 'weight_grams': creation_data.get('weight_grams', getattr(provider, 'default_weight_g', 200)),
                 'length_cm': creation_data.get('length_cm', getattr(provider, 'default_length_cm', 10)),
                 'breadth_cm': creation_data.get('breadth_cm', getattr(provider, 'default_breadth_cm', 10)),

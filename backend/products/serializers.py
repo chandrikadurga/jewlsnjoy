@@ -227,6 +227,7 @@ class OrderCreateSerializer(serializers.Serializer):
     cashfree_payment_session_id = serializers.CharField(max_length=255, required=False, allow_blank=True, default='')
     currency = serializers.CharField(max_length=10, required=False, default='INR')
     total_amount = serializers.DecimalField(max_digits=12, decimal_places=2, required=False)
+    notes = serializers.CharField(required=False, allow_blank=True, default='')
     items = serializers.ListField(child=serializers.DictField())
 
     def validate_customer_email(self, value):

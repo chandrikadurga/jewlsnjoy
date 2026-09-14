@@ -26,7 +26,7 @@ export default function Checkout() {
   const [confirmedOrderNumber, setConfirmedOrderNumber] = useState('');
   const [confirmedPaymentId, setConfirmedPaymentId] = useState('');
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState('');
-  const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
+  const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null); // { code: 'JOY30', type: 'flat', value: 30 }

@@ -488,14 +488,33 @@ class AdminProductListView(APIView):
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request):
-        ids = request.data.get('ids') or request.query_params.getlist('id')
+    def _delete_products(self, request):
+        ids = request.data.get('ids') or request.query_params.getlist('id') or request.query_params.getlist('ids')
+        if not ids and request.query_params.get('ids'):
+            ids = [i.strip() for i in request.query_params.get('ids', '').split(',') if i.strip()]
         if ids:
-            Product.objects.filter(id__in=ids).delete()
-            response = Response({'message': f'{len(ids)} products deleted successfully'}, status=status.HTTP_200_OK)
+            cleaned_ids = [int(i) for i in ids if str(i).isdigit()]
+            deleted_count, _ = Product.objects.filter(id__in=cleaned_ids).delete()
+            response = Response({'message': f'{deleted_count} products deleted successfully'}, status=status.HTTP_200_OK)
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
             return response
         return Response({'error': 'No product IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        return self._delete_products(request)
+
+
+class AdminProductBulkDeleteView(APIView):
+    """
+    POST /api/admin/products/delete/
+    DELETE /api/admin/products/delete/
+    Resilient endpoint for bulk deletion of products (handles proxies that strip DELETE bodies).
+    """
+    def post(self, request):
+        return AdminProductListView()._delete_products(request)
+
+    def delete(self, request):
+        return AdminProductListView()._delete_products(request)
 
 
 
@@ -643,6 +662,9 @@ class AdminProductDetailView(APIView):
         response = Response({'message': 'Product deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         return response
+
+    def post(self, request, pk):
+        return self.delete(request, pk)
 
 
 class AdminImageUploadView(APIView):

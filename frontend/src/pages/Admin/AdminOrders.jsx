@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import {
   Search,
   ShoppingBag,
@@ -26,9 +27,11 @@ import { broadcastOrderUpdate, subscribeToOrderUpdates } from '../../utils/catal
 import './AdminOrders.css';
 
 export default function AdminOrders() {
+  const isMobile = useIsMobile(768);
   const [orders, setOrders] = useState([]);
   const [verifications, setVerifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -38,6 +41,10 @@ export default function AdminOrders() {
   const [copiedUtr, setCopiedUtr] = useState(null);
   const [shippingActionLoading, setShippingActionLoading] = useState(false);
   const [shippingFeedback, setShippingFeedback] = useState({ type: '', text: '' });
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
 
   // Delete & Multi-selection states
   const [selectedIds, setSelectedIds] = useState([]);
@@ -181,9 +188,13 @@ export default function AdminOrders() {
 
   const [fetchError, setFetchError] = useState(null);
 
-  const loadOrders = async (isRetry = false) => {
+  const loadOrders = async (isRetry = false, isSilent = false) => {
     try {
-      setLoading(true);
+      if (orders.length === 0 && !isSilent) {
+        setLoading(true);
+      } else {
+        setRefreshing(true);
+      }
       setFetchError(null);
       const [ordersData, verifData] = await Promise.allSettled([
         adminApi.getOrders(),
@@ -205,37 +216,49 @@ export default function AdminOrders() {
         console.warn('Orders fetch initial error:', ordersData.reason);
         if (!isRetry) {
           // Auto retry once after 1.5s in case Render server is waking up
-          setTimeout(() => loadOrders(true), 1500);
+          setTimeout(() => loadOrders(true, isSilent), 1500);
           return;
-        } else {
+        } else if (orders.length === 0) {
           setFetchError(ordersData.reason?.message || 'Server did not respond in time.');
         }
       }
 
-      setOrders(fetchedOrders);
+      if (ordersData.status === 'fulfilled') {
+        setOrders(fetchedOrders);
+      }
 
       if (verifData.status === 'fulfilled' && Array.isArray(verifData.value)) {
         setVerifications(verifData.value);
       }
     } catch (err) {
       console.error('Failed to load orders/verifications:', err);
-      setFetchError(err.message || 'Failed to load orders.');
+      if (orders.length === 0) {
+        setFetchError(err.message || 'Failed to load orders.');
+      }
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
   useEffect(() => {
     loadOrders();
     const unsubscribe = subscribeToOrderUpdates(() => {
-      loadOrders();
+      loadOrders(false, true);
     });
-    // Auto-poll real-time DB every 25 seconds for new orders
+    // Auto-poll real-time DB every 30 seconds for new orders silently
     const pollTimer = setInterval(() => {
-      loadOrders();
-    }, 25000);
-    // Refresh instantly when admin window regains focus
-    const onFocus = () => loadOrders();
+      loadOrders(false, true);
+    }, 30000);
+    // Refresh when admin window regains focus (throttled to at most once per 30s)
+    let lastFocus = Date.now();
+    const onFocus = () => {
+      const now = Date.now();
+      if (now - lastFocus > 30000) {
+        lastFocus = now;
+        loadOrders(false, true);
+      }
+    };
     window.addEventListener('focus', onFocus);
 
     return () => {
@@ -548,37 +571,52 @@ export default function AdminOrders() {
 
   const executeDelete = async () => {
     if (!deleteTarget) return;
-    setDeleteLoading(true);
+    const target = deleteTarget;
 
-    try {
-      if (deleteTarget.isBulk) {
-        const idsToDelete = deleteTarget.ids || [];
+    // 1. Immediately close modal - 0ms perceived lag!
+    closeDeleteConfirm();
+
+    // 2. Snapshot current state for rollback if needed
+    const prevOrders = orders;
+    const prevSelected = selectedIds;
+
+    if (target.isBulk) {
+      const idsToDelete = target.ids || [];
+      const remaining = prevOrders.filter((o) => !idsToDelete.includes(o.id));
+      setOrders(remaining);
+      setSelectedIds([]);
+      showToast(`${idsToDelete.length} order${idsToDelete.length > 1 ? 's' : ''} permanently deleted.`);
+      broadcastOrderUpdate();
+
+      // Background server execution
+      try {
         await adminApi.deleteOrders(idsToDelete);
-        setOrders((prev) => prev.filter((o) => !idsToDelete.includes(o.id)));
-        setSelectedIds([]);
-        showToast(`${idsToDelete.length} order${idsToDelete.length > 1 ? 's' : ''} permanently deleted from database.`);
-      } else {
-        const idToDelete = deleteTarget.id;
-        await adminApi.deleteOrder(idToDelete, deleteTarget.order_number);
-        setOrders((prev) => prev.filter((o) => o.id !== idToDelete));
-        setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
-        showToast(`Order #${deleteTarget.order_number} permanently deleted from database.`);
-        if (selectedOrder && selectedOrder.id === idToDelete) {
-          setSelectedOrder(null);
-        }
+      } catch (err) {
+        console.error('Error deleting orders from database, rolling back:', err);
+        setOrders(prevOrders);
+        setSelectedIds(prevSelected);
+        showToast('Could not delete orders on server. Rolled back.');
+      }
+    } else {
+      const idToDelete = target.id;
+      const remaining = prevOrders.filter((o) => o.id !== idToDelete);
+      setOrders(remaining);
+      setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
+      showToast(`Order #${target.order_number} permanently deleted.`);
+      if (selectedOrder && selectedOrder.id === idToDelete) {
+        setSelectedOrder(null);
       }
       broadcastOrderUpdate();
-      closeDeleteConfirm();
-      // Re-fetch from real-time PostgreSQL database to verify sync
-      await loadOrders();
-    } catch (err) {
-      console.error('Error deleting order from database:', err);
-      const errMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'Server error occurred.';
-      alert(`Could not delete from database: ${errMsg}`);
-      closeDeleteConfirm();
-      await loadOrders();
-    } finally {
-      setDeleteLoading(false);
+
+      // Background server execution
+      try {
+        await adminApi.deleteOrder(idToDelete, target.order_number);
+      } catch (err) {
+        console.error('Error deleting order from database, rolling back:', err);
+        setOrders(prevOrders);
+        setSelectedIds(prevSelected);
+        showToast('Could not delete order on server. Rolled back.');
+      }
     }
   };
 
@@ -615,6 +653,11 @@ export default function AdminOrders() {
     { id: 'cancelled', label: 'Cancelled' },
   ], [pendingVerificationCount]);
 
+  // Reset pagination when active tab or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchQuery]);
+
   const filteredOrders = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     const activeTabLower = activeTab.toLowerCase();
@@ -638,6 +681,16 @@ export default function AdminOrders() {
       );
     });
   }, [orders, activeTab, searchQuery]);
+
+  const totalItems = filteredOrders.length;
+  const effectivePageSize = pageSize === 0 ? totalItems : pageSize;
+  const totalPages = effectivePageSize > 0 ? Math.ceil(totalItems / effectivePageSize) || 1 : 1;
+
+  const paginatedOrders = useMemo(() => {
+    if (pageSize === 0) return filteredOrders;
+    const start = (currentPage - 1) * pageSize;
+    return filteredOrders.slice(start, start + pageSize);
+  }, [filteredOrders, currentPage, pageSize]);
 
   return (
     <div className="admin-orders-page">
@@ -712,13 +765,13 @@ export default function AdminOrders() {
           <button
             type="button"
             className="admin-btn admin-btn--secondary"
-            onClick={() => loadOrders()}
-            disabled={loading}
+            onClick={() => loadOrders(false, false)}
+            disabled={refreshing || loading}
             title="Refresh order records"
             style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.55rem 0.9rem', fontSize: '0.82rem' }}
           >
-            <RotateCcw size={14} className={loading ? 'admin-spin' : ''} />
-            <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
+            <RotateCcw size={14} className={refreshing ? 'admin-spin' : ''} />
+            <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
           </button>
         </div>
       </div>
@@ -770,416 +823,423 @@ export default function AdminOrders() {
             )}
           </div>
 
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '40px' }}>
-                    <input
-                      type="checkbox"
-                      className="admin-table-checkbox"
-                      checked={
-                        selectedIds.length === filteredOrders.length &&
-                        filteredOrders.length > 0
-                      }
-                      onChange={toggleSelectAll}
-                      title="Select / deselect all visible orders"
-                    />
-                  </th>
-                  <th>Order #</th>
-                  <th>Customer</th>
-                  <th>Date Placed</th>
-                  <th>Total</th>
-                  <th>Payment</th>
-                  <th>Proof &amp; UTR</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredOrders.length === 0 ? (
+          {!isMobile && (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
                   <tr>
-                    <td colSpan={9} style={{ textAlign: 'center', padding: '3.5rem 1rem', color: 'rgba(247, 239, 230, 0.5)', fontSize: '0.9rem' }}>
-                      {orders.length === 0
-                        ? 'No customer orders found in database.'
-                        : `No orders match filter "${activeTab}"${searchQuery ? ` and search "${searchQuery}"` : ''}.`}
-                    </td>
-                  </tr>
-                ) : (
-                  filteredOrders.map((order) => {
-                const verification = getVerificationForOrder(order);
-                const isAwaiting =
-                  order.status === 'awaiting_payment_verification' ||
-                  order.payment_status === 'pending_verification';
-                const isSelected = selectedIds.includes(order.id);
-
-                return (
-                  <tr key={order.id} className={isSelected ? 'admin-row--selected' : ''}>
-                    <td>
+                    <th style={{ width: '40px' }}>
                       <input
                         type="checkbox"
                         className="admin-table-checkbox"
-                        checked={isSelected}
-                        onChange={(e) => toggleSelect(order.id, e)}
-                        title={`Select Order #${order.order_number}`}
+                        checked={
+                          selectedIds.length === filteredOrders.length &&
+                          filteredOrders.length > 0
+                        }
+                        onChange={toggleSelectAll}
+                        title="Select / deselect all visible orders"
                       />
-                    </td>
-                    <td>
-                      <span
-                        className="admin-order-link"
-                        onClick={() => setSelectedOrder(order)}
-                      >
-                        {order.order_number}
-                      </span>
-                      {isAwaiting && (
-                        <div style={{ marginTop: '4px' }}>
-                          <span
-                            className="admin-verification-badge--pending"
-                            style={{
-                              padding: '2px 6px',
-                              fontSize: '0.7rem',
-                              borderRadius: '4px',
-                              display: 'inline-block',
-                            }}
-                          >
-                            ⏳ Verify Proof
-                          </span>
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      <div className="admin-table-customer">
-                        <span className="admin-customer-name">{order.customer_name}</span>
-                        <span className="admin-customer-email">{order.customer_email}</span>
-                      </div>
-                    </td>
-                    <td className="admin-table-dim">{formatDate(order.created_at)}</td>
-                    <td className="admin-table-bold">{formatCurrency(order.total_amount)}</td>
-                    <td>
-                      {(() => {
-                        const isOrderCod = String(order.payment_method || '').toLowerCase().includes('cod') ||
-                                           String(order.payment_method || '').toLowerCase().includes('cash on delivery');
-                        const delhiveryMode = order.shipment?.payment_mode;
-                        return (
-                          <>
-                            <span className="admin-payment-pill">
-                              {order.payment_method === 'manual_upi'
-                                ? 'UPI (QR Code)'
-                                : isOrderCod
-                                ? 'Cash on Delivery (COD)'
-                                : (order.payment_method || 'Online')}
-                            </span>
-                            <div style={{ marginTop: '4px' }}>
-                              <span className={`admin-paystatus-pill ${isOrderCod ? 'admin-paystatus-pill--cod' : `admin-paystatus-pill--${order.payment_status}`}`}>
+                    </th>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Date Placed</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Proof &amp; UTR</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedOrders.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} style={{ textAlign: 'center', padding: '3rem 1rem', color: 'rgba(247, 239, 230, 0.5)' }}>
+                        No customer orders found matching your filters.
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedOrders.map((order) => {
+                      const verification = getVerificationForOrder(order);
+                      const isSelected = selectedIds.includes(order.id);
+                      const isAwaiting =
+                        order.status === 'awaiting_payment_verification' ||
+                        order.payment_status === 'pending_verification';
+
+                      return (
+                        <tr
+                          key={order.id}
+                          className={`${isSelected ? 'admin-row--selected' : ''} ${isAwaiting ? 'admin-row--awaiting' : ''}`}
+                        >
+                          <td>
+                            <input
+                              type="checkbox"
+                              className="admin-table-checkbox"
+                              checked={isSelected}
+                              onChange={(e) => toggleSelect(order.id, e)}
+                              title={`Select Order #${order.order_number}`}
+                            />
+                          </td>
+                          <td>
+                            <div className="admin-order-num-cell">
+                              <span
+                                className="admin-order-link"
+                                onClick={() => setSelectedOrder(order)}
+                              >
+                                {order.order_number}
+                              </span>
+                              {isAwaiting && (
+                                <span className="admin-verification-badge--pending" title="Manual payment proof pending verification">
+                                  Verification Needed
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="admin-customer-cell">
+                              <span className="admin-customer-name">{order.customer_name}</span>
+                              <span className="admin-customer-contact">{order.customer_email}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="admin-date-text">{formatDate(order.created_at)}</span>
+                          </td>
+                          <td>
+                            <span className="admin-order-total">{formatCurrency(order.total_amount)}</span>
+                          </td>
+                          <td>
+                            <div className="admin-payment-info">
+                              <span className="admin-payment-pill">
+                                {order.payment_method === 'manual_upi' ? 'UPI (QR)' : (order.payment_method || 'Online')}
+                              </span>
+                              <span className={`admin-paystatus-pill admin-paystatus-pill--${order.payment_status}`}>
                                 {order.payment_status === 'paid'
                                   ? 'Paid'
-                                  : isOrderCod
-                                  ? 'COD (Pending Collection)'
                                   : order.payment_status === 'pending_verification'
-                                  ? 'Pending Review'
+                                  ? 'Reviewing'
                                   : order.payment_status === 'rejected'
                                   ? 'Rejected'
                                   : (order.payment_status || 'Pending')}
                               </span>
                             </div>
-                            {order.shipment?.awb_number && (
-                              <div style={{ marginTop: '4px', fontSize: '0.72rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <span style={{ color: delhiveryMode === 'COD' ? '#4ade80' : '#fde047', fontWeight: 600 }}>
-                                  Delhivery: {delhiveryMode || 'Prepaid'}
-                                </span>
-                                {delhiveryMode === 'COD' && (
-                                  <span style={{ color: 'rgba(247, 239, 230, 0.6)' }}>
-                                    (₹{Number(order.shipment.cod_amount || order.total_amount).toLocaleString('en-IN')})
-                                  </span>
+                          </td>
+                          <td>
+                            {verification ? (
+                              <div className="admin-proof-cell">
+                                {verification.payment_proof_url ? (
+                                  <div
+                                    className="admin-proof-thumb-preview"
+                                    onClick={() =>
+                                      setLightboxData({
+                                        url: resolveProofUrl(verification.payment_proof_url),
+                                        orderNumber: order.order_number,
+                                        utr: verification.transaction_id,
+                                        amount: verification.amount,
+                                      })
+                                    }
+                                    title="Click to view full screenshot"
+                                  >
+                                    <img
+                                      src={resolveProofUrl(verification.payment_proof_url)}
+                                      alt="Proof"
+                                      className="admin-proof-thumb-img"
+                                      loading="lazy"
+                                      decoding="async"
+                                      onError={(e) => {
+                                        if (!e.currentTarget.dataset.retried) {
+                                          e.currentTarget.dataset.retried = 'true';
+                                          e.currentTarget.src = `https://jewlsnjoy.onrender.com/media/payment_proofs/${order.order_number}.svg`;
+                                        }
+                                      }}
+                                    />
+                                    <div className="admin-proof-thumb-hover">
+                                      <ZoomIn size={12} />
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="admin-proof-no-thumb" title="No screenshot uploaded">
+                                    <ImageIcon size={14} />
+                                  </div>
                                 )}
+                                <div className="admin-utr-group">
+                                  <span className="admin-utr-val" title={verification.transaction_id}>
+                                    {verification.transaction_id || 'No UTR'}
+                                  </span>
+                                  {verification.transaction_id && (
+                                    <button
+                                      type="button"
+                                      className="admin-copy-utr-btn"
+                                      onClick={(e) => handleCopyUtr(verification.transaction_id, e)}
+                                      title="Copy UTR reference"
+                                    >
+                                      {copiedUtr === verification.transaction_id ? (
+                                        <Check size={11} color="#4ade80" />
+                                      ) : (
+                                        <Copy size={11} />
+                                      )}
+                                    </button>
+                                  )}
+                                </div>
                               </div>
+                            ) : (
+                              <span className="admin-na-text">—</span>
                             )}
-                          </>
-                        );
-                      })()}
-                    </td>
-                    <td>
-                      {verification ? (
-                        <div className="admin-proof-cell">
-                          {verification.payment_proof_url ? (
-                            <div
-                              className="admin-proof-thumb-preview"
-                              onClick={() =>
-                                setLightboxData({
-                                  url: verification.payment_proof_url,
-                                  orderNumber: order.order_number,
-                                  utr: verification.transaction_id,
-                                  amount: verification.amount,
-                                })
-                              }
-                              title="Click to zoom screenshot"
+                          </td>
+                          <td>
+                            <select
+                              value={order.status}
+                              onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                              className={`admin-status-select admin-status-select--${order.status}`}
                             >
-                              <img
-                                src={resolveProofUrl(verification.payment_proof_url)}
-                                alt="Payment Proof"
-                                className="admin-proof-thumb-img"
-                                onError={(e) => {
-                                  if (!e.currentTarget.dataset.retried) {
-                                    e.currentTarget.dataset.retried = 'true';
-                                    e.currentTarget.src = `https://jewlsnjoy.onrender.com/media/payment_proofs/${order.order_number}.svg`;
-                                  }
-                                }}
-                              />
-                              <div className="admin-proof-thumb-hover">
-                                <ZoomIn size={13} />
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="admin-proof-no-thumb" title="No screenshot uploaded">
-                              <ImageIcon size={16} />
-                            </div>
-                          )}
-
-                          <div className="admin-proof-meta">
-                            <div className="admin-proof-utr-row">
-                              <span
-                                className="admin-proof-utr-text"
-                                title={`UTR: ${verification.transaction_id}`}
-                              >
-                                {verification.transaction_id}
-                              </span>
+                              <option value="awaiting_payment_verification">Awaiting</option>
+                              <option value="pending">Pending</option>
+                              <option value="confirmed">Confirmed</option>
+                              <option value="processing">Processing</option>
+                              <option value="shipped">Shipped</option>
+                              <option value="delivered">Delivered</option>
+                              <option value="cancelled">Cancelled</option>
+                            </select>
+                          </td>
+                          <td>
+                            <div className="admin-order-actions">
                               <button
                                 type="button"
-                                className="admin-copy-utr-btn"
-                                onClick={(e) => handleCopyUtr(verification.transaction_id, e)}
-                                title="Copy UTR"
+                                className="admin-btn admin-btn--secondary admin-btn--sm"
+                                onClick={() => setSelectedOrder(order)}
+                                title="View details & packing slip"
                               >
-                                {copiedUtr === verification.transaction_id ? (
-                                  <Check size={12} color="#4ade80" />
-                                ) : (
-                                  <Copy size={12} />
-                                )}
+                                View
+                              </button>
+                              <button
+                                type="button"
+                                className="admin-btn admin-btn--danger-sm"
+                                onClick={(e) => openDeleteConfirm(order, e)}
+                                title={`Delete Order #${order.order_number}`}
+                                aria-label="Delete order"
+                              >
+                                <Trash2 size={14} />
                               </button>
                             </div>
-                            {verification.payment_proof_url && (
-                              <button
-                                type="button"
-                                className="admin-proof-view-btn"
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Mobile Order Cards (Optimized, lightweight, 60fps mobile list) */}
+          {isMobile && (
+            <div className="admin-mobile-orders">
+              {paginatedOrders.length === 0 ? (
+                <div className="admin-mobile-empty">No orders found</div>
+              ) : (
+                paginatedOrders.map((order) => {
+                  const verification = getVerificationForOrder(order);
+                  const isAwaiting =
+                    order.status === 'awaiting_payment_verification' ||
+                    order.payment_status === 'pending_verification';
+
+                  return (
+                    <div
+                      key={order.id}
+                      className={`admin-mobile-order-card ${isAwaiting ? 'admin-mobile-order-card--awaiting' : ''}`}
+                    >
+                      <div className="admin-mobile-order-header">
+                        <div className="admin-mobile-order-id-wrap">
+                          <span
+                            className="admin-order-link"
+                            onClick={() => setSelectedOrder(order)}
+                          >
+                            {order.order_number}
+                          </span>
+                          {isAwaiting && (
+                            <span className="admin-verification-badge--pending admin-mobile-awaiting-badge">
+                              Verify Proof
+                            </span>
+                          )}
+                        </div>
+                        <select
+                          value={order.status}
+                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                          className={`admin-status-select admin-status-select--${order.status}`}
+                        >
+                          <option value="awaiting_payment_verification">Awaiting</option>
+                          <option value="pending">Pending</option>
+                          <option value="confirmed">Confirmed</option>
+                          <option value="processing">Processing</option>
+                          <option value="shipped">Shipped</option>
+                          <option value="delivered">Delivered</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </div>
+
+                      <div className="admin-mobile-order-customer">
+                        <span className="admin-customer-name">{order.customer_name}</span>
+                        <span className="admin-mobile-date">{formatDate(order.created_at)}</span>
+                      </div>
+
+                      <div className="admin-mobile-order-meta">
+                        <span className="admin-mobile-total">{formatCurrency(order.total_amount)}</span>
+                        <div className="admin-mobile-tags">
+                          <span className="admin-payment-pill">
+                            {order.payment_method === 'manual_upi' ? 'UPI (QR)' : (order.payment_method || 'Online')}
+                          </span>
+                          <span className={`admin-paystatus-pill admin-paystatus-pill--${order.payment_status}`}>
+                            {order.payment_status === 'paid'
+                              ? 'Paid'
+                              : order.payment_status === 'pending_verification'
+                              ? 'Reviewing'
+                              : order.payment_status === 'rejected'
+                              ? 'Rejected'
+                              : (order.payment_status || 'Pending')}
+                          </span>
+                        </div>
+                      </div>
+
+                      {verification && (
+                        <div className="admin-mobile-verif-box">
+                          <div className="admin-mobile-verif-left">
+                            {verification.payment_proof_url ? (
+                              <div
+                                className="admin-proof-thumb-preview"
                                 onClick={() =>
                                   setLightboxData({
-                                    url: verification.payment_proof_url,
+                                    url: resolveProofUrl(verification.payment_proof_url),
                                     orderNumber: order.order_number,
                                     utr: verification.transaction_id,
                                     amount: verification.amount,
                                   })
                                 }
+                                title="Click to zoom screenshot"
                               >
-                                Inspect Proof <ZoomIn size={10} />
-                              </button>
+                                <img
+                                  src={resolveProofUrl(verification.payment_proof_url)}
+                                  alt="Proof"
+                                  className="admin-proof-thumb-img"
+                                  loading="lazy"
+                                  decoding="async"
+                                  onError={(e) => {
+                                    if (!e.currentTarget.dataset.retried) {
+                                      e.currentTarget.dataset.retried = 'true';
+                                      e.currentTarget.src = `https://jewlsnjoy.onrender.com/media/payment_proofs/${order.order_number}.svg`;
+                                    }
+                                  }}
+                                />
+                                <div className="admin-proof-thumb-hover">
+                                  <ZoomIn size={12} />
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="admin-proof-no-thumb" title="No screenshot">
+                                <ImageIcon size={14} />
+                              </div>
                             )}
-                          </div>
-                        </div>
-                      ) : order.payment_method === 'manual_upi' ? (
-                        <span style={{ fontSize: '0.74rem', color: 'rgba(247, 239, 230, 0.4)', fontStyle: 'italic' }}>
-                          Awaiting proof
-                        </span>
-                      ) : (
-                        <span style={{ fontSize: '0.74rem', color: 'rgba(247, 239, 230, 0.3)' }}>
-                          -
-                        </span>
-                      )}
-                    </td>
-                    <td>
-                      <select
-                        value={order.status}
-                        onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                        className={`admin-status-select admin-status-select--${order.status}`}
-                      >
-                        <option value="awaiting_payment_verification">Awaiting Verification</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="processing">Processing</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </td>
-                    <td>
-                      <div className="admin-order-actions-cell">
-                        <button
-                          type="button"
-                          className="admin-btn admin-btn--secondary admin-btn--sm"
-                          onClick={() => setSelectedOrder(order)}
-                          title="View order details, shipping & packing slip"
-                        >
-                          Details
-                        </button>
-                        <button
-                          type="button"
-                          className="admin-icon-btn admin-icon-btn--delete"
-                          onClick={(e) => openDeleteConfirm(order, e)}
-                          aria-label={`Delete order ${order.order_number}`}
-                          title={`Delete Order #${order.order_number}`}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              }))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile Order Cards (Optimized, lightweight, 60fps mobile list) */}
-        <div className="admin-mobile-orders">
-          {filteredOrders.length === 0 ? (
-            <div className="admin-mobile-empty">No orders found</div>
-          ) : (
-            filteredOrders.map((order) => {
-              const verification = getVerificationForOrder(order);
-              const isAwaiting =
-                order.status === 'awaiting_payment_verification' ||
-                order.payment_status === 'pending_verification';
-
-              return (
-                <div
-                  key={order.id}
-                  className={`admin-mobile-order-card ${isAwaiting ? 'admin-mobile-order-card--awaiting' : ''}`}
-                >
-                  <div className="admin-mobile-order-header">
-                    <div className="admin-mobile-order-id-wrap">
-                      <span
-                        className="admin-order-link"
-                        onClick={() => setSelectedOrder(order)}
-                      >
-                        {order.order_number}
-                      </span>
-                      {isAwaiting && (
-                        <span className="admin-verification-badge--pending admin-mobile-awaiting-badge">
-                          Verify Proof
-                        </span>
-                      )}
-                    </div>
-                    <select
-                      value={order.status}
-                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                      className={`admin-status-select admin-status-select--${order.status}`}
-                    >
-                      <option value="awaiting_payment_verification">Awaiting</option>
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="processing">Processing</option>
-                      <option value="shipped">Shipped</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                  </div>
-
-                  <div className="admin-mobile-order-customer">
-                    <span className="admin-customer-name">{order.customer_name}</span>
-                    <span className="admin-mobile-date">{formatDate(order.created_at)}</span>
-                  </div>
-
-                  <div className="admin-mobile-order-meta">
-                    <span className="admin-mobile-total">{formatCurrency(order.total_amount)}</span>
-                    <div className="admin-mobile-tags">
-                      <span className="admin-payment-pill">
-                        {order.payment_method === 'manual_upi' ? 'UPI (QR)' : (order.payment_method || 'Online')}
-                      </span>
-                      <span className={`admin-paystatus-pill admin-paystatus-pill--${order.payment_status}`}>
-                        {order.payment_status === 'paid'
-                          ? 'Paid'
-                          : order.payment_status === 'pending_verification'
-                          ? 'Reviewing'
-                          : order.payment_status === 'rejected'
-                          ? 'Rejected'
-                          : (order.payment_status || 'Pending')}
-                      </span>
-                    </div>
-                  </div>
-
-                  {verification && (
-                    <div className="admin-mobile-verif-box">
-                      <div className="admin-mobile-verif-left">
-                        {verification.payment_proof_url ? (
-                          <div
-                            className="admin-proof-thumb-preview"
-                            onClick={() =>
-                              setLightboxData({
-                                url: resolveProofUrl(verification.payment_proof_url),
-                                orderNumber: order.order_number,
-                                utr: verification.transaction_id,
-                                amount: verification.amount,
-                              })
-                            }
-                            title="Click to zoom screenshot"
-                          >
-                            <img
-                              src={resolveProofUrl(verification.payment_proof_url)}
-                              alt="Proof"
-                              className="admin-proof-thumb-img"
-                              loading="lazy"
-                              onError={(e) => {
-                                if (!e.currentTarget.dataset.retried) {
-                                  e.currentTarget.dataset.retried = 'true';
-                                  e.currentTarget.src = `https://jewlsnjoy.onrender.com/media/payment_proofs/${order.order_number}.svg`;
-                                }
-                              }}
-                            />
-                            <div className="admin-proof-thumb-hover">
-                              <ZoomIn size={12} />
+                            <div className="admin-mobile-utr">
+                              <span className="admin-mobile-utr-label">UTR:</span>
+                              <span className="admin-mobile-utr-val" title={verification.transaction_id}>
+                                {verification.transaction_id || 'Not Provided'}
+                              </span>
                             </div>
                           </div>
-                        ) : (
-                          <div className="admin-proof-no-thumb" title="No screenshot">
-                            <ImageIcon size={14} />
-                          </div>
-                        )}
-                        <div className="admin-mobile-utr">
-                          <span className="admin-mobile-utr-label">UTR:</span>
-                          <span className="admin-mobile-utr-val" title={verification.transaction_id}>
-                            {verification.transaction_id || 'Not Provided'}
-                          </span>
+                          {verification.transaction_id && (
+                            <button
+                              type="button"
+                              className="admin-copy-utr-btn"
+                              onClick={(e) => handleCopyUtr(verification.transaction_id, e)}
+                              title="Copy UTR"
+                            >
+                              {copiedUtr === verification.transaction_id ? (
+                                <Check size={12} color="#4ade80" />
+                              ) : (
+                                <Copy size={12} />
+                              )}
+                            </button>
+                          )}
                         </div>
-                      </div>
-                      {verification.transaction_id && (
+                      )}
+
+                      <div className="admin-mobile-order-actions">
                         <button
                           type="button"
-                          className="admin-copy-utr-btn"
-                          onClick={(e) => handleCopyUtr(verification.transaction_id, e)}
-                          title="Copy UTR"
+                          className="admin-btn admin-btn--secondary admin-btn--sm admin-mobile-details-btn"
+                          onClick={() => setSelectedOrder(order)}
                         >
-                          {copiedUtr === verification.transaction_id ? (
-                            <Check size={12} color="#4ade80" />
-                          ) : (
-                            <Copy size={12} />
-                          )}
+                          View Details &amp; Packing Slip
                         </button>
-                      )}
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--danger-sm"
+                          onClick={(e) => openDeleteConfirm(order, e)}
+                          title={`Delete Order #${order.order_number}`}
+                          aria-label="Delete order"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
                     </div>
-                  )}
+                  );
+                })
+              )}
+            </div>
+          )}
 
-                  <div className="admin-mobile-order-actions">
+          {/* Pagination Bar */}
+          {totalItems > 0 && (
+            <div className="admin-pagination-bar">
+              <div className="admin-pagination-info">
+                Showing <strong>{(currentPage - 1) * effectivePageSize + 1}–{pageSize === 0 ? totalItems : Math.min(currentPage * pageSize, totalItems)}</strong> of <strong>{totalItems}</strong> orders
+              </div>
+
+              <div className="admin-pagination-controls">
+                <div className="admin-pagination-size">
+                  <span>Per page:</span>
+                  <select
+                    value={pageSize}
+                    onChange={(e) => {
+                      setPageSize(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="admin-select admin-select--sm"
+                    aria-label="Orders per page"
+                  >
+                    <option value={15}>15</option>
+                    <option value={30}>30</option>
+                    <option value={50}>50</option>
+                    <option value={0}>All</option>
+                  </select>
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="admin-pagination-buttons">
                     <button
                       type="button"
-                      className="admin-btn admin-btn--secondary admin-btn--sm admin-mobile-details-btn"
-                      onClick={() => setSelectedOrder(order)}
+                      className="admin-page-btn"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      title="Previous Page"
                     >
-                      View Details &amp; Packing Slip
+                      &larr; Prev
                     </button>
+                    <span className="admin-page-current">
+                      Page {currentPage} of {totalPages}
+                    </span>
                     <button
                       type="button"
-                      className="admin-btn admin-btn--danger-sm"
-                      onClick={(e) => openDeleteConfirm(order, e)}
-                      title={`Delete Order #${order.order_number}`}
-                      aria-label="Delete order"
+                      className="admin-page-btn"
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      title="Next Page"
                     >
-                      <Trash2 size={15} />
+                      Next &rarr;
                     </button>
                   </div>
-                </div>
-              );
-            })
+                )}
+              </div>
+            </div>
           )}
         </div>
-      </div>
       )}
 
       {/* Order Detail / Packing Slip Modal */}

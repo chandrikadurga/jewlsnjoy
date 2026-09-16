@@ -19,11 +19,16 @@ import './AdminDashboard.css';
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchStats = async () => {
+  const fetchStats = async (isManual = false) => {
     try {
-      setLoading(true);
+      if (stats && isManual) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
       const data = await adminApi.getStats();
       setStats(data);
       setError(null);
@@ -57,6 +62,7 @@ export default function AdminDashboard() {
       });
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -109,6 +115,29 @@ export default function AdminDashboard() {
 
   return (
     <div className="admin-dashboard">
+      {/* Dashboard Top Header */}
+      <div className="admin-dashboard__header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', paddingBottom: '0.5rem' }}>
+        <div>
+          <h1 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.45rem', color: '#c2a370', margin: 0, letterSpacing: '0.5px' }}>
+            Executive Overview
+          </h1>
+          <p style={{ fontSize: '0.84rem', color: 'rgba(247, 239, 230, 0.55)', margin: '0.25rem 0 0 0' }}>
+            Real-time luxury boutique performance &amp; inventory analytics
+          </p>
+        </div>
+        <button
+          type="button"
+          className="admin-btn admin-btn--secondary"
+          onClick={() => fetchStats(true)}
+          disabled={refreshing || loading}
+          title="Refresh analytics and order metrics"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 1rem', fontSize: '0.84rem', cursor: 'pointer' }}
+        >
+          <RotateCcw size={14} className={refreshing ? 'admin-spin' : ''} />
+          <span>{refreshing ? 'Refreshing...' : 'Refresh Metrics'}</span>
+        </button>
+      </div>
+
       {/* KPI Cards Grid */}
       <div className="admin-kpi-grid">
         <div className="admin-kpi-card admin-kpi-card--gold">

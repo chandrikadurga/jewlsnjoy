@@ -363,6 +363,10 @@
   to { transform: rotate(360deg); }
 }
 
+.admin-spin {
+  animation: admin-spin 0.75s linear infinite;
+}
+
 @media (max-width: 1024px) {
   .admin-dashboard__grid {
     grid-template-columns: 1fr;

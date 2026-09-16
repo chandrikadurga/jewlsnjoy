@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import {
   Plus,
   Search,
@@ -96,11 +97,17 @@ const AVAILABLE_FEATURE_TAGS = [
 
 export default function AdminProducts() {
   const [searchParams] = useSearchParams();
+  const isMobile = useIsMobile(768);
   const [products, setProducts] = useState(() => getCachedProductsList() || []);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !(getCachedProductsList()?.length));
+  const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
 
   // Multi-selection for bulk delete
   const [selectedIds, setSelectedIds] = useState([]);
@@ -152,9 +159,13 @@ export default function AdminProducts() {
   const [uploadError, setUploadError] = useState('');
   const [dragActive, setDragActive] = useState(false);
 
-  const loadData = async () => {
+  const loadData = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent && products.length === 0) {
+        setLoading(true);
+      } else {
+        setRefreshing(true);
+      }
       const [prodsData, catsData] = await Promise.all([
         adminApi.getProducts(),
         categoryApi.getAll().catch(() => []),
@@ -166,13 +177,18 @@ export default function AdminProducts() {
         const cached = getCachedProductsList();
         setProducts(cached || FALLBACK_PRODUCTS);
       }
-      setCategories(catsData);
+      if (Array.isArray(catsData) && catsData.length) {
+        setCategories(catsData);
+      }
     } catch (err) {
       console.error('Failed to load products:', err);
       const cached = getCachedProductsList();
-      setProducts(cached || FALLBACK_PRODUCTS);
+      if (!products.length) {
+        setProducts(cached || FALLBACK_PRODUCTS);
+      }
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -649,55 +665,56 @@ export default function AdminProducts() {
 
   const executeDelete = async () => {
     if (!deleteTarget) return;
-    setDeleteLoading(true);
+    const target = deleteTarget;
 
-    try {
-      if (deleteTarget.isBulk) {
-        // Bulk delete
-        const idsToDelete = deleteTarget.ids || [];
-        try {
-          await adminApi.deleteProducts(idsToDelete);
-        } catch {
-          // Fallback delete individually
-          await Promise.all(idsToDelete.map((id) => adminApi.deleteProduct(id).catch(() => {})));
-        }
-        setProducts((prev) => prev.filter((p) => !idsToDelete.includes(p.id)));
-        setSelectedIds([]);
-        showFeedback(`${idsToDelete.length} piece${idsToDelete.length > 1 ? 's' : ''} deleted.`);
-      } else {
-        // Single piece delete
-        const idToDelete = deleteTarget.id;
+    // 1. Immediately close modal - 0ms perceived lag!
+    closeDeleteConfirm();
+
+    // 2. Snapshot current state for rollback if needed
+    const prevProducts = products;
+    const prevSelected = selectedIds;
+
+    if (target.isBulk) {
+      const idsToDelete = target.ids || [];
+      const remaining = prevProducts.filter((p) => !idsToDelete.includes(p.id));
+      setProducts(remaining);
+      setSelectedIds([]);
+      cacheProductsList(remaining);
+      showFeedback(`${idsToDelete.length} piece${idsToDelete.length > 1 ? 's' : ''} deleted.`);
+      broadcastCatalogUpdate();
+
+      // Background server execution
+      try {
+        await adminApi.deleteProducts(idsToDelete);
+      } catch (err) {
+        console.error('Failed to delete on server, rolling back:', err);
+        setProducts(prevProducts);
+        setSelectedIds(prevSelected);
+        cacheProductsList(prevProducts);
+        showFeedback('Could not delete pieces on server. Rolled back.');
+      }
+    } else {
+      const idToDelete = target.id;
+      const remaining = prevProducts.filter((p) => p.id !== idToDelete);
+      setProducts(remaining);
+      setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
+      cacheProductsList(remaining);
+      showFeedback(`"${target.name}" deleted from catalog.`);
+      if (editingProduct && editingProduct.id === idToDelete) {
+        closeModal();
+      }
+      broadcastCatalogUpdate();
+
+      // Background server execution
+      try {
         await adminApi.deleteProduct(idToDelete);
-        setProducts((prev) => prev.filter((p) => p.id !== idToDelete));
-        setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
-        showFeedback(`"${deleteTarget.name}" deleted from catalog.`);
-        if (editingProduct && editingProduct.id === idToDelete) {
-          closeModal();
-        }
+      } catch (err) {
+        console.error('Failed to delete on server, rolling back:', err);
+        setProducts(prevProducts);
+        setSelectedIds(prevSelected);
+        cacheProductsList(prevProducts);
+        showFeedback('Could not delete piece on server. Rolled back.');
       }
-      broadcastCatalogUpdate();
-      closeDeleteConfirm();
-      await loadData();
-    } catch (err) {
-      console.error('Error deleting:', err);
-      if (deleteTarget.isBulk) {
-        const idsToDelete = deleteTarget.ids || [];
-        setProducts((prev) => prev.filter((p) => !idsToDelete.includes(p.id)));
-        setSelectedIds([]);
-        showFeedback(`${idsToDelete.length} piece(s) removed.`);
-      } else {
-        const idToDelete = deleteTarget.id;
-        setProducts((prev) => prev.filter((p) => p.id !== idToDelete));
-        setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
-        showFeedback(`Removed locally.`);
-        if (editingProduct && editingProduct.id === idToDelete) {
-          closeModal();
-        }
-      }
-      broadcastCatalogUpdate();
-      closeDeleteConfirm();
-    } finally {
-      setDeleteLoading(false);
     }
   };
 
@@ -753,12 +770,31 @@ export default function AdminProducts() {
     setTimeout(() => setFeedbackMsg(''), 3000);
   };
 
-  const filteredProducts = products.filter((p) => {
-    const nameMatch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const cat = (p.category_name || p.category || '').toLowerCase();
-    const catMatch = selectedCategory === 'All' || cat === selectedCategory.toLowerCase();
-    return nameMatch && catMatch;
-  });
+  // Reset to first page whenever search query or category filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory]);
+
+  const filteredProducts = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    const catLower = selectedCategory.toLowerCase();
+    return products.filter((p) => {
+      const nameMatch = !q || (p.name && p.name.toLowerCase().includes(q)) || String(p.id).includes(q);
+      const cat = (p.category_name || p.category || '').toLowerCase();
+      const catMatch = selectedCategory === 'All' || cat === catLower;
+      return nameMatch && catMatch;
+    });
+  }, [products, searchQuery, selectedCategory]);
+
+  const totalItems = filteredProducts.length;
+  const effectivePageSize = pageSize === 0 ? totalItems : pageSize;
+  const totalPages = effectivePageSize > 0 ? Math.ceil(totalItems / effectivePageSize) || 1 : 1;
+
+  const paginatedProducts = useMemo(() => {
+    if (pageSize === 0) return filteredProducts;
+    const start = (currentPage - 1) * pageSize;
+    return filteredProducts.slice(start, start + pageSize);
+  }, [filteredProducts, currentPage, pageSize]);
 
   // Calculate discount preview in form
   const priceVal = parseFloat(formData.price);
@@ -826,6 +862,18 @@ export default function AdminProducts() {
 
           <button
             type="button"
+            className="admin-btn admin-btn--secondary"
+            onClick={() => loadData(false)}
+            disabled={refreshing || loading}
+            title="Refresh catalog from database"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}
+          >
+            <RotateCcw size={15} className={refreshing ? 'admin-spin' : ''} />
+            <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+          </button>
+
+          <button
+            type="button"
             className="admin-btn admin-btn--primary"
             onClick={openAddModal}
           >
@@ -855,38 +903,179 @@ export default function AdminProducts() {
           )}
         </div>
 
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th style={{ width: '40px' }}>
-                  <input
-                    type="checkbox"
-                    className="admin-table-checkbox"
-                    checked={
-                      selectedIds.length === filteredProducts.length &&
-                      filteredProducts.length > 0
-                    }
-                    onChange={toggleSelectAll}
-                    title="Select / deselect all visible pieces"
-                  />
-                </th>
-                <th>Piece &amp; Angles</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Inventory</th>
-                <th>In Stock</th>
-                <th>Badges</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.map((prod) => {
+        {!isMobile && (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '40px' }}>
+                    <input
+                      type="checkbox"
+                      className="admin-table-checkbox"
+                      checked={
+                        selectedIds.length === filteredProducts.length &&
+                        filteredProducts.length > 0
+                      }
+                      onChange={toggleSelectAll}
+                      title="Select / deselect all visible pieces"
+                    />
+                  </th>
+                  <th>Piece &amp; Angles</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Inventory</th>
+                  <th>In Stock</th>
+                  <th>Badges</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedProducts.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} style={{ textAlign: 'center', padding: '3rem 1rem', color: 'rgba(247, 239, 230, 0.5)' }}>
+                      No jewellery pieces match your search or filter.
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedProducts.map((prod) => {
+                    const imgUrls = extractProductImageUrls(prod);
+                    const isSelected = selectedIds.includes(prod.id);
+                    return (
+                      <tr key={prod.id} className={isSelected ? 'admin-row--selected' : ''}>
+                        <td>
+                          <input
+                            type="checkbox"
+                            className="admin-table-checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleSelect(prod.id)}
+                            title={`Select ${prod.name}`}
+                          />
+                        </td>
+                        <td>
+                          <div className="admin-prod-cell">
+                            <div className="admin-prod-thumb-wrap">
+                              <img
+                                src={prod.primary_image_url || prod.image || `/products/${prod.id}/1.jpeg`}
+                                onError={(e) => {
+                                  e.currentTarget.src = `/products/${(prod.id % 7) + 1}/1.jpeg`;
+                                }}
+                                alt={prod.name}
+                                className="admin-prod-thumb"
+                                loading="lazy"
+                                decoding="async"
+                              />
+                              {imgUrls.length > 1 && (
+                                <span className="admin-angle-count-pill" title={`${imgUrls.length} photo angles`}>
+                                  {imgUrls.length} pics
+                                </span>
+                              )}
+                            </div>
+                            <div className="admin-prod-info">
+                              <span className="admin-prod-name">{prod.name}</span>
+                              <span className="admin-prod-sku">ID #{prod.id}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span className="admin-cat-pill">
+                            {prod.category_name || prod.category || 'Necklaces'}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="admin-price-cell">
+                            <span className="admin-price-main">₹{prod.price}</span>
+                            {prod.original_price && (
+                              <span className="admin-price-orig">₹{prod.original_price}</span>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <span
+                            className={`admin-stock-num ${(prod.stock_quantity ?? 0) < 15 ? 'admin-stock-num--low' : ''}`}
+                          >
+                            {prod.stock_quantity ?? 0} units
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleStock(prod)}
+                            className={`admin-toggle ${prod.in_stock ? 'admin-toggle--on' : ''}`}
+                            title="Toggle availability"
+                          >
+                            <span className="admin-toggle__thumb" />
+                          </button>
+                        </td>
+                        <td>
+                          <div className="admin-badge-toggles">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleBadge(prod, 'is_featured')}
+                              className={`admin-badge-btn ${prod.is_featured ? 'admin-badge-btn--gold' : ''}`}
+                              title="Toggle Featured on Homepage"
+                            >
+                              <Star size={13} fill={prod.is_featured ? 'currentColor' : 'none'} />
+                              <span>Featured</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleBadge(prod, 'is_bestseller')}
+                              className={`admin-badge-btn ${prod.is_bestseller ? 'admin-badge-btn--rose' : ''}`}
+                              title="Toggle Bestseller Badge"
+                            >
+                              <Flame size={13} fill={prod.is_bestseller ? 'currentColor' : 'none'} />
+                              <span>Bestseller</span>
+                            </button>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="admin-action-icons">
+                            <button
+                              type="button"
+                              className="admin-icon-btn admin-icon-btn--edit"
+                              onClick={() => openEditModal(prod)}
+                              aria-label="Edit piece & policies"
+                              title="Edit piece, policies & photography"
+                            >
+                              <Edit2 size={16} />
+                            </button>
+                            <button
+                              type="button"
+                              className="admin-icon-btn admin-icon-btn--delete"
+                              onClick={() => openDeleteConfirm(prod)}
+                              aria-label="Delete piece"
+                              title="Delete piece from catalog"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Mobile Product Cards View (<= 768px portrait) */}
+        {isMobile && (
+          <div className="admin-products-mobile-list">
+            {paginatedProducts.length === 0 ? (
+              <div className="admin-empty-mobile">
+                <p>No jewellery pieces match your search or category filter.</p>
+              </div>
+            ) : (
+              paginatedProducts.map((prod) => {
                 const imgUrls = extractProductImageUrls(prod);
                 const isSelected = selectedIds.includes(prod.id);
                 return (
-                  <tr key={prod.id} className={isSelected ? 'admin-row--selected' : ''}>
-                    <td>
+                  <div
+                    key={prod.id}
+                    className={`admin-prod-mobile-card ${isSelected ? 'admin-prod-mobile-card--selected' : ''}`}
+                  >
+                    <div className="admin-prod-mobile-card__header">
                       <input
                         type="checkbox"
                         className="admin-table-checkbox"
@@ -894,61 +1083,63 @@ export default function AdminProducts() {
                         onChange={() => toggleSelect(prod.id)}
                         title={`Select ${prod.name}`}
                       />
-                    </td>
-                    <td>
-                      <div className="admin-prod-cell">
-                        <div className="admin-prod-thumb-wrap">
-                          <img
-                            src={prod.primary_image_url || prod.image || `/products/${prod.id}/1.jpeg`}
-                            onError={(e) => {
-                              e.currentTarget.src = `/products/${(prod.id % 7) + 1}/1.jpeg`;
-                            }}
-                            alt={prod.name}
-                            className="admin-prod-thumb"
-                          />
-                          {imgUrls.length > 1 && (
-                            <span className="admin-angle-count-pill" title={`${imgUrls.length} photo angles`}>
-                              {imgUrls.length} pics
-                            </span>
-                          )}
-                        </div>
-                        <div className="admin-prod-info">
-                          <span className="admin-prod-name">{prod.name}</span>
+                      <div className="admin-prod-thumb-wrap">
+                        <img
+                          src={prod.primary_image_url || prod.image || `/products/${prod.id}/1.jpeg`}
+                          onError={(e) => {
+                            e.currentTarget.src = `/products/${(prod.id % 7) + 1}/1.jpeg`;
+                          }}
+                          alt={prod.name}
+                          className="admin-prod-thumb"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        {imgUrls.length > 1 && (
+                          <span className="admin-angle-count-pill" title={`${imgUrls.length} photo angles`}>
+                            {imgUrls.length} pics
+                          </span>
+                        )}
+                      </div>
+                      <div className="admin-prod-mobile-card__details">
+                        <span className="admin-prod-name">{prod.name}</span>
+                        <div className="admin-prod-mobile-card__meta">
+                          <span className="admin-cat-pill">
+                            {prod.category_name || prod.category || 'Necklaces'}
+                          </span>
                           <span className="admin-prod-sku">ID #{prod.id}</span>
                         </div>
                       </div>
-                    </td>
-                    <td>
-                      <span className="admin-cat-pill">
-                        {prod.category_name || prod.category || 'Necklaces'}
-                      </span>
-                    </td>
-                    <td>
+                    </div>
+
+                    <div className="admin-prod-mobile-card__body">
                       <div className="admin-price-cell">
                         <span className="admin-price-main">₹{prod.price}</span>
                         {prod.original_price && (
                           <span className="admin-price-orig">₹{prod.original_price}</span>
                         )}
                       </div>
-                    </td>
-                    <td>
                       <span
                         className={`admin-stock-num ${(prod.stock_quantity ?? 0) < 15 ? 'admin-stock-num--low' : ''}`}
                       >
                         {prod.stock_quantity ?? 0} units
                       </span>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleStock(prod)}
-                        className={`admin-toggle ${prod.in_stock ? 'admin-toggle--on' : ''}`}
-                        title="Toggle availability"
-                      >
-                        <span className="admin-toggle__thumb" />
-                      </button>
-                    </td>
-                    <td>
+                    </div>
+
+                    <div className="admin-prod-mobile-card__footer">
+                      <div className="admin-prod-mobile-card__stock-switch">
+                        <span className="admin-prod-mobile-card__switch-label">
+                          {prod.in_stock ? 'In Stock' : 'Out of Stock'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleStock(prod)}
+                          className={`admin-toggle ${prod.in_stock ? 'admin-toggle--on' : ''}`}
+                          title="Toggle availability"
+                        >
+                          <span className="admin-toggle__thumb" />
+                        </button>
+                      </div>
+
                       <div className="admin-badge-toggles">
                         <button
                           type="button"
@@ -969,8 +1160,7 @@ export default function AdminProducts() {
                           <span>Bestseller</span>
                         </button>
                       </div>
-                    </td>
-                    <td>
+
                       <div className="admin-action-icons">
                         <button
                           type="button"
@@ -991,139 +1181,68 @@ export default function AdminProducts() {
                           <Trash2 size={16} />
                         </button>
                       </div>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 );
-              })}
-            </tbody>
-          </table>
-        </div>
+              })
+            )}
+          </div>
+        )}
 
-        {/* Mobile Product Cards View (<= 768px portrait) */}
-        <div className="admin-products-mobile-list">
-          {filteredProducts.length === 0 ? (
-            <div className="admin-empty-mobile">
-              <p>No jewellery pieces match your search or category filter.</p>
+        {/* Pagination Controls */}
+        {totalItems > 0 && (
+          <div className="admin-pagination-bar">
+            <div className="admin-pagination-info">
+              Showing <strong>{(currentPage - 1) * effectivePageSize + 1}–{pageSize === 0 ? totalItems : Math.min(currentPage * pageSize, totalItems)}</strong> of <strong>{totalItems}</strong> pieces
             </div>
-          ) : (
-            filteredProducts.map((prod) => {
-              const imgUrls = extractProductImageUrls(prod);
-              const isSelected = selectedIds.includes(prod.id);
-              return (
-                <div
-                  key={prod.id}
-                  className={`admin-prod-mobile-card ${isSelected ? 'admin-prod-mobile-card--selected' : ''}`}
+
+            <div className="admin-pagination-controls">
+              <div className="admin-pagination-size">
+                <span>Per page:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="admin-select admin-select--sm"
+                  aria-label="Pieces per page"
                 >
-                  <div className="admin-prod-mobile-card__header">
-                    <input
-                      type="checkbox"
-                      className="admin-table-checkbox"
-                      checked={isSelected}
-                      onChange={() => toggleSelect(prod.id)}
-                      title={`Select ${prod.name}`}
-                    />
-                    <div className="admin-prod-thumb-wrap">
-                      <img
-                        src={prod.primary_image_url || prod.image || `/products/${prod.id}/1.jpeg`}
-                        onError={(e) => {
-                          e.currentTarget.src = `/products/${(prod.id % 7) + 1}/1.jpeg`;
-                        }}
-                        alt={prod.name}
-                        className="admin-prod-thumb"
-                      />
-                      {imgUrls.length > 1 && (
-                        <span className="admin-angle-count-pill" title={`${imgUrls.length} photo angles`}>
-                          {imgUrls.length} pics
-                        </span>
-                      )}
-                    </div>
-                    <div className="admin-prod-mobile-card__details">
-                      <span className="admin-prod-name">{prod.name}</span>
-                      <div className="admin-prod-mobile-card__meta">
-                        <span className="admin-cat-pill">
-                          {prod.category_name || prod.category || 'Necklaces'}
-                        </span>
-                        <span className="admin-prod-sku">ID #{prod.id}</span>
-                      </div>
-                    </div>
-                  </div>
+                  <option value={15}>15</option>
+                  <option value={30}>30</option>
+                  <option value={50}>50</option>
+                  <option value={0}>All</option>
+                </select>
+              </div>
 
-                  <div className="admin-prod-mobile-card__body">
-                    <div className="admin-price-cell">
-                      <span className="admin-price-main">₹{prod.price}</span>
-                      {prod.original_price && (
-                        <span className="admin-price-orig">₹{prod.original_price}</span>
-                      )}
-                    </div>
-                    <span
-                      className={`admin-stock-num ${(prod.stock_quantity ?? 0) < 15 ? 'admin-stock-num--low' : ''}`}
-                    >
-                      {prod.stock_quantity ?? 0} units
-                    </span>
-                  </div>
-
-                  <div className="admin-prod-mobile-card__footer">
-                    <div className="admin-prod-mobile-card__stock-switch">
-                      <span className="admin-prod-mobile-card__switch-label">
-                        {prod.in_stock ? 'In Stock' : 'Out of Stock'}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleStock(prod)}
-                        className={`admin-toggle ${prod.in_stock ? 'admin-toggle--on' : ''}`}
-                        title="Toggle availability"
-                      >
-                        <span className="admin-toggle__thumb" />
-                      </button>
-                    </div>
-
-                    <div className="admin-badge-toggles">
-                      <button
-                        type="button"
-                        onClick={() => handleToggleBadge(prod, 'is_featured')}
-                        className={`admin-badge-btn ${prod.is_featured ? 'admin-badge-btn--gold' : ''}`}
-                        title="Toggle Featured on Homepage"
-                      >
-                        <Star size={13} fill={prod.is_featured ? 'currentColor' : 'none'} />
-                        <span>Featured</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleBadge(prod, 'is_bestseller')}
-                        className={`admin-badge-btn ${prod.is_bestseller ? 'admin-badge-btn--rose' : ''}`}
-                        title="Toggle Bestseller Badge"
-                      >
-                        <Flame size={13} fill={prod.is_bestseller ? 'currentColor' : 'none'} />
-                        <span>Bestseller</span>
-                      </button>
-                    </div>
-
-                    <div className="admin-action-icons">
-                      <button
-                        type="button"
-                        className="admin-icon-btn admin-icon-btn--edit"
-                        onClick={() => openEditModal(prod)}
-                        aria-label="Edit piece & policies"
-                        title="Edit piece, policies & photography"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-icon-btn admin-icon-btn--delete"
-                        onClick={() => openDeleteConfirm(prod)}
-                        aria-label="Delete piece"
-                        title="Delete piece from catalog"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
+              {totalPages > 1 && (
+                <div className="admin-pagination-buttons">
+                  <button
+                    type="button"
+                    className="admin-page-btn"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    title="Previous Page"
+                  >
+                    &larr; Prev
+                  </button>
+                  <span className="admin-page-current">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="admin-page-btn"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    title="Next Page"
+                  >
+                    Next &rarr;
+                  </button>
                 </div>
-              );
-            })
-          )}
-        </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Add / Edit Modal with Tabs */}

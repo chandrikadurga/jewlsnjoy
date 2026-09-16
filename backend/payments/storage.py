@@ -198,57 +198,19 @@ def create_signed_proof_url(storage_path, expires_in=3600):
         if len(parts) == 2:
             b_name, rel_path = parts
             public_url = f"{supabase_url}/storage/v1/object/public/{b_name}/{rel_path}" if supabase_url else ''
-
-            if supabase_url and headers:
-                try:
-                    sign_url = f"{supabase_url}/storage/v1/object/sign/{b_name}/{rel_path}"
-                    res = requests.post(
-                        sign_url,
-                        headers={**headers, 'Content-Type': 'application/json'},
-                        json={'expiresIn': int(expires_in)},
-                        timeout=2.0  # Fast timeout so listing is never blocked
-                    )
-                    if res.status_code == 200:
-                        data = res.json()
-                        signed_part = data.get('signedURL') or data.get('url') or ''
-                        if signed_part:
-                            final_url = signed_part if signed_part.startswith('http') else f"{supabase_url}/storage/v1{signed_part}"
-                            _SIGNED_URL_CACHE[storage_path] = (final_url, now + min(int(expires_in) - 60, 1800))
-                            return final_url
-                except Exception as e:
-                    logger.warning("Could not generate Supabase signed URL: %s", str(e))
-
-            # Reliable fallback: public object URL from Supabase CDN
+            
+            # Immediately cache and return public URL so list endpoints never block on external HTTP calls
             if public_url:
-                _SIGNED_URL_CACHE[storage_path] = (public_url, now + 3600)
+                _SIGNED_URL_CACHE[storage_path] = (public_url, now + 86400)
                 return public_url
 
     elif storage_path.startswith('local://'):
         local_rel = storage_path.replace('local://', '', 1).lstrip('/')
-        # Check if the file is mirrored in Supabase Storage
-        if supabase_url and headers:
-            try:
-                clean_rel = local_rel.replace('payment_proofs/', '', 1) if local_rel.startswith('payment_proofs/') else local_rel
-                sign_url = f"{supabase_url}/storage/v1/object/sign/{bucket}/{clean_rel}"
-                res = requests.post(
-                    sign_url,
-                    headers={**headers, 'Content-Type': 'application/json'},
-                    json={'expiresIn': int(expires_in)},
-                    timeout=5
-                )
-                if res.status_code == 200:
-                    data = res.json()
-                    signed_part = data.get('signedURL') or data.get('url') or ''
-                    if signed_part:
-                        if signed_part.startswith('http'):
-                            return signed_part
-                        return f"{supabase_url}/storage/v1{signed_part}"
-            except Exception:
-                pass
-
         media_url = getattr(settings, 'MEDIA_URL', '/media/')
         base_origin = 'http://localhost:8000' if getattr(settings, 'DEBUG', False) else 'https://jewlsnjoy.onrender.com'
-        return f"{base_origin}{media_url}{local_rel}"
+        local_url = f"{base_origin}{media_url}{local_rel}"
+        _SIGNED_URL_CACHE[storage_path] = (local_url, now + 86400)
+        return local_url
 
     # If already a valid absolute URL
     if storage_path.startswith('http://') or storage_path.startswith('https://'):

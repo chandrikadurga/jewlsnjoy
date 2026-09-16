@@ -311,12 +311,31 @@ export const adminApi = {
     return resolveProductImages(response.data);
   },
   deleteProduct: async (id) => {
-    const response = await api.delete(`/api/admin/products/${id}/`);
-    return response.data;
+    try {
+      const response = await api.delete(`/api/admin/products/${id}/`);
+      return response.data;
+    } catch (err) {
+      if (err.response?.status === 405 || err.response?.status === 404) {
+        const response = await api.post(`/api/admin/products/${id}/delete/`);
+        return response.data;
+      }
+      throw err;
+    }
   },
-  deleteProducts: async (ids) => {
-    const response = await api.delete('/api/admin/products/', { data: { ids } });
-    return response.data;
+  deleteProducts: async (ids = []) => {
+    try {
+      const response = await api.delete('/api/admin/products/', { data: { ids } });
+      return response.data;
+    } catch (err) {
+      try {
+        const response = await api.post('/api/admin/products/delete/', { ids });
+        return response.data;
+      } catch {
+        const idList = ids.join(',');
+        const response = await api.delete(`/api/admin/products/?ids=${encodeURIComponent(idList)}`);
+        return response.data;
+      }
+    }
   },
 
   uploadProductImage: async (file) => {

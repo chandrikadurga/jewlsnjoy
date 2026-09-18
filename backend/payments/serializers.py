@@ -29,6 +29,7 @@ class PaymentOrderCreateSerializer(serializers.Serializer):
     country = serializers.CharField(max_length=100, default='India')
     notes = serializers.CharField(required=False, allow_blank=True, default='')
     coupon_code = serializers.CharField(max_length=50, required=False, allow_blank=True, default='')
+    shipping_method = serializers.ChoiceField(choices=['standard', 'express'], required=False, default='standard')
     items = serializers.ListField(child=PaymentOrderItemSerializer(), min_length=1)
 
     def validate_customer_email(self, value):

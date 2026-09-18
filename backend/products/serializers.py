@@ -228,6 +228,7 @@ class OrderCreateSerializer(serializers.Serializer):
     currency = serializers.CharField(max_length=10, required=False, default='INR')
     total_amount = serializers.DecimalField(max_digits=12, decimal_places=2, required=False)
     notes = serializers.CharField(required=False, allow_blank=True, default='')
+    shipping_method = serializers.ChoiceField(choices=['standard', 'express'], required=False, default='standard')
     items = serializers.ListField(child=serializers.DictField())
 
     def validate_customer_email(self, value):
@@ -257,10 +258,25 @@ class OrderCreateSerializer(serializers.Serializer):
 
         # Calculate total
         explicit_total = validated_data.pop('total_amount', None)
+        shipping_method = validated_data.pop('shipping_method', 'standard')
         if explicit_total is not None:
             total = explicit_total
         else:
-            total = sum(parse_price(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
+            subtotal = sum(parse_price(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
+            # Server-side shipping cost: free above ₹999, else standard=₹60, express=₹80
+            if subtotal >= 999:
+                shipping_cost = 0
+            elif shipping_method == 'express':
+                shipping_cost = 80
+            else:
+                shipping_cost = 60
+            total = subtotal + shipping_cost
+        
+        # Append shipping method to notes
+        raw_notes = validated_data.get('notes', '')
+        shipping_label = 'Express' if shipping_method == 'express' else 'Standard'
+        shipping_note = f'Shipping: {shipping_label}'
+        validated_data['notes'] = f"{shipping_note} | {raw_notes}" if raw_notes else shipping_note
         
         # For COD and new orders, payment_status is 'pending' until authoritatively verified
         raw_pay_method = str(validated_data.get('payment_method', '')).strip()

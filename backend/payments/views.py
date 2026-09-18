@@ -205,7 +205,13 @@ class RazorpayCreateOrderView(APIView):
             discount_amount = min(subtotal, Decimal('30.00'))
 
         subtotal_after_discount = max(Decimal('0.00'), subtotal - discount_amount)
-        shipping_cost = Decimal('0.00') if subtotal >= Decimal('999.00') else Decimal('80.00')
+        shipping_method = validated_data.get('shipping_method', 'standard')
+        if subtotal >= Decimal('999.00'):
+            shipping_cost = Decimal('0.00')
+        elif shipping_method == 'express':
+            shipping_cost = Decimal('80.00')
+        else:
+            shipping_cost = Decimal('60.00')
         grand_total = subtotal_after_discount + shipping_cost
 
         order_num = f"ORD-{uuid.uuid4().hex[:6].upper()}"
@@ -227,7 +233,7 @@ class RazorpayCreateOrderView(APIView):
             payment_method='Razorpay',
             payment_status='pending',
             status='order_placed',
-            notes=validated_data.get('notes', ''),
+            notes=f"Shipping: {'Express' if shipping_method == 'express' else 'Standard'}" + (f" | {validated_data.get('notes', '')}" if validated_data.get('notes', '') else ''),
         )
 
         for item_info in order_items_to_create:

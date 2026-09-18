@@ -28,6 +28,7 @@ export default function Checkout() {
   const [confirmedPaymentMethod, setConfirmedPaymentMethod] = useState('');
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
+  const [shippingMethod, setShippingMethod] = useState('standard');
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null); // { code: 'JOY30', type: 'flat', value: 30 }
   const [couponMsg, setCouponMsg] = useState({ type: '', text: '' });
@@ -93,7 +94,8 @@ export default function Checkout() {
   }, [user, profile]);
 
   const codFee = paymentMethod === 'cod' ? 25 : 0;
-  const rawShipping = cartTotal >= 999 ? 0 : 80;
+  const shippingRates = { standard: 60, express: 80 };
+  const rawShipping = cartTotal >= 999 ? 0 : (shippingRates[shippingMethod] || 60);
 
   let discountAmount = 0;
   if (appliedCoupon?.type === 'flat') {
@@ -188,6 +190,10 @@ export default function Checkout() {
       }
     }
 
+    const shippingNote = `Shipping: ${shippingMethod === 'express' ? 'Express' : 'Standard'}`;
+    const couponNote = appliedCoupon?.code ? `Coupon: ${appliedCoupon.code} (-₹${discountAmount})` : '';
+    const combinedNotes = [shippingNote, couponNote].filter(Boolean).join(' | ');
+
     const baseOrderPayload = {
       customer_name: `${form.firstName} ${form.lastName}`.trim(),
       customer_email: cleanEmail,
@@ -197,7 +203,8 @@ export default function Checkout() {
       state: form.state,
       postal_code: form.postalCode,
       total_amount: total,
-      notes: appliedCoupon?.code ? `Coupon: ${appliedCoupon.code} (-₹${discountAmount})` : '',
+      shipping_method: shippingMethod,
+      notes: combinedNotes,
       items: items.map((item) => ({
         id: item.product.id,
         name: item.product.name,
@@ -269,6 +276,7 @@ export default function Checkout() {
         postal_code: form.postalCode,
         country: 'India',
         coupon_code: appliedCoupon?.code || couponCode.trim().toUpperCase(),
+        shipping_method: shippingMethod,
         notes: appliedCoupon?.code ? `Coupon: ${appliedCoupon.code} (-₹${discountAmount})` : (couponCode ? `Coupon applied: ${couponCode}` : ''),
         items: items.map((item) => ({
           id: Number(item.product?.id || item.id),
@@ -591,7 +599,7 @@ export default function Checkout() {
                   </div>
                 )}
                 <div className="checkout-summary__row">
-                  <span>Standard Shipping</span>
+                  <span>{shippingMethod === 'express' ? 'Express Shipping' : 'Standard Shipping'}</span>
                   <span>{rawShipping === 0 ? <strong className="free-shipping-tag">FREE</strong> : `₹${rawShipping}`}</span>
                 </div>
                 {paymentMethod === 'cod' && (
@@ -842,10 +850,76 @@ export default function Checkout() {
                 </div>
               </section>
 
-              {/* Step 3: Payment Method Selection */}
+              {/* Step 3: Shipping Method Selection */}
               <section className="checkout-section">
                 <div className="checkout-section__header">
                   <span className="checkout-section__step">3</span>
+                  <div className="checkout-section__title-group">
+                    <h2 className="checkout-section__title">Shipping Method</h2>
+                    <p className="checkout-section__subtitle">
+                      {cartTotal >= 999 ? 'You qualify for FREE shipping on this order!' : 'Choose your preferred delivery speed'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="checkout-shipping-options">
+                  {/* Standard Shipping */}
+                  <label className={`checkout-shipping-option ${shippingMethod === 'standard' ? 'active' : ''}`}>
+                    <input
+                      type="radio"
+                      name="shippingMethod"
+                      value="standard"
+                      checked={shippingMethod === 'standard'}
+                      onChange={() => setShippingMethod('standard')}
+                    />
+                    <div className="checkout-shipping-option__content">
+                      <div className="checkout-shipping-option__top">
+                        <div className="checkout-shipping-option__title-row">
+                          <span className="checkout-shipping-option__name">Standard Shipping</span>
+                          {cartTotal >= 999 && <span className="checkout-shipping-option__tag checkout-shipping-option__tag--free">FREE</span>}
+                        </div>
+                        <span className="checkout-shipping-option__price">
+                          {cartTotal >= 999 ? <s style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>₹60</s> : '₹60'}
+                        </span>
+                      </div>
+                      <p className="checkout-shipping-option__desc">
+                        <span className="checkout-shipping-option__eta">📦 5–7 business days</span> · Reliable delivery via Delhivery
+                      </p>
+                    </div>
+                  </label>
+
+                  {/* Express Shipping */}
+                  <label className={`checkout-shipping-option ${shippingMethod === 'express' ? 'active' : ''}`}>
+                    <input
+                      type="radio"
+                      name="shippingMethod"
+                      value="express"
+                      checked={shippingMethod === 'express'}
+                      onChange={() => setShippingMethod('express')}
+                    />
+                    <div className="checkout-shipping-option__content">
+                      <div className="checkout-shipping-option__top">
+                        <div className="checkout-shipping-option__title-row">
+                          <span className="checkout-shipping-option__name">Express Shipping</span>
+                          <span className="checkout-shipping-option__tag checkout-shipping-option__tag--fast">FASTEST</span>
+                          {cartTotal >= 999 && <span className="checkout-shipping-option__tag checkout-shipping-option__tag--free">FREE</span>}
+                        </div>
+                        <span className="checkout-shipping-option__price">
+                          {cartTotal >= 999 ? <s style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>₹80</s> : '₹80'}
+                        </span>
+                      </div>
+                      <p className="checkout-shipping-option__desc">
+                        <span className="checkout-shipping-option__eta">🚀 2–3 business days</span> · Priority dispatch via Delhivery Express
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </section>
+
+              {/* Step 4: Payment Method Selection */}
+              <section className="checkout-section">
+                <div className="checkout-section__header">
+                  <span className="checkout-section__step">4</span>
                   <div className="checkout-section__title-group">
                     <h2 className="checkout-section__title">Payment Method</h2>
                     <p className="checkout-section__subtitle">
@@ -1074,7 +1148,7 @@ export default function Checkout() {
                 </div>
               )}
               <div className="checkout-summary__row">
-                <span>Shipping</span>
+                <span>{shippingMethod === 'express' ? 'Express Shipping' : 'Standard Shipping'}</span>
                 <span>{rawShipping === 0 ? <strong className="free-shipping-tag">FREE</strong> : `₹${rawShipping}`}</span>
               </div>
               {paymentMethod === 'cod' && (

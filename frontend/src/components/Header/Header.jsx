@@ -9,7 +9,7 @@ import './Header.css';
 
 const NAV_LINKS = [
   { to: '/',            label: 'Home'        },
-  { to: '/shop',        label: 'Shop'        },
+  { to: '/shop',        label: 'All Products' },
   { to: '/collections', label: 'Collections' },
   { to: '/about',       label: 'About Us'    },
   { to: '/contact',     label: 'Contact Us'  },

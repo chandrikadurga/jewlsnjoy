@@ -124,7 +124,10 @@ api.interceptors.request.use(async (config) => {
       config.headers['X-Admin-Token'] = adminToken;
     }
 
-    if (!config.headers.Authorization) {
+    if (!config.headers.Authorization && config.url && (
+      config.url.includes('/orders/') ||
+      config.url.includes('/account/')
+    )) {
       const { data } = await supabase.auth.getSession();
       const token = data?.session?.access_token;
       if (token) {

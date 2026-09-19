@@ -36,8 +36,8 @@ export default function ProductGrid({ products, loading, error, emptyMessage }) 
       {products.map((product, index) => (
         <div
           key={product.id}
-          className="product-grid__item fade-in-up"
-          style={{ animationDelay: `${index * 60}ms` }}
+          className={`product-grid__item ${index < 8 ? 'fade-in-up' : ''}`}
+          style={index < 8 ? { animationDelay: `${index * 25}ms` } : undefined}
         >
           <ProductCard product={product} />
         </div>

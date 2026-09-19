@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Check, ExternalLink, Play, Pause, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
@@ -311,8 +311,31 @@ const REEL_VIDEOS = [
 
 function ReelCard({ item }) {
   const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Use IntersectionObserver to play video only when scrolled into view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().then(() => setIsPlaying(true)).catch(() => {});
+          } else {
+            video.pause();
+            setIsPlaying(false);
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -338,7 +361,6 @@ function ReelCard({ item }) {
         ref={videoRef}
         src={item.src}
         className="home-reel-video"
-        autoPlay
         loop
         muted
         playsInline

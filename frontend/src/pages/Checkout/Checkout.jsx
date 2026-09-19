@@ -8,13 +8,13 @@ import { UpiCardIcon, VisaCardIcon, MastercardIcon, PlusMoreIcon } from '../../c
 import './Checkout.css';
 
 const INDIAN_STATES = [
-  'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh',
-  'Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka',
-  'Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram',
-  'Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana',
-  'Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
-  'Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli',
-  'Daman and Diu','Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+  'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana',
+  'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+  'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli',
+  'Daman and Diu', 'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry'
 ];
 
 
@@ -406,12 +406,12 @@ export default function Checkout() {
             <div className="checkout-success__icon-seal">
               <span className="checkout-success__sparkle">✦</span>
             </div>
-            
+
             <span className="checkout-success__pill">
               Order Confirmed
             </span>
             <h1 className="checkout-success__title">Thank You, {form.firstName || 'Valued Client'}!</h1>
-            
+
             <p className="checkout-success__sub">
               Your order has been registered with <strong>Jewels &apos;n&apos; Joys</strong>. We are hand-packing your jewellery with care.
             </p>
@@ -421,8 +421,8 @@ export default function Checkout() {
                 <span className="checkout-success__ref-label">Order Reference</span>
                 <span className="checkout-success__ref-value">{confirmedOrderNumber}</span>
               </div>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="checkout-success__copy-btn"
                 onClick={handleCopyOrder}
                 aria-label="Copy order reference"
@@ -480,7 +480,7 @@ export default function Checkout() {
                 className="btn btn-gold btn-lg checkout-success__wa-btn"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.311.045-.698.034-1.84-.44-1.458-.605-2.39-2.083-2.463-2.181-.072-.097-.591-.786-.591-1.498 0-.713.374-1.063.507-1.209.133-.146.29-.182.387-.182s.193.003.277.008c.088.005.207-.033.324.249.121.289.412 1.004.448 1.077.036.073.06.158.012.255-.049.097-.073.158-.145.242-.073.085-.153.19-.219.255-.073.072-.149.15-.064.296.085.145.378.623.811 1.009.558.497 1.028.651 1.174.723.145.073.23.06.315-.036.085-.097.364-.424.461-.57.097-.145.194-.121.327-.073.133.048.847.399.992.472.145.073.242.109.278.17.036.06.036.35-.108.755z"/>
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.311.045-.698.034-1.84-.44-1.458-.605-2.39-2.083-2.463-2.181-.072-.097-.591-.786-.591-1.498 0-.713.374-1.063.507-1.209.133-.146.29-.182.387-.182s.193.003.277.008c.088.005.207-.033.324.249.121.289.412 1.004.448 1.077.036.073.06.158.012.255-.049.097-.073.158-.145.242-.073.085-.153.19-.219.255-.073.072-.149.15-.064.296.085.145.378.623.811 1.009.558.497 1.028.651 1.174.723.145.073.23.06.315-.036.085-.097.364-.424.461-.57.097-.145.194-.121.327-.073.133.048.847.399.992.472.145.073.242.109.278.17.036.06.036.35-.108.755z" />
                 </svg>
                 Track via WhatsApp
               </a>
@@ -644,7 +644,7 @@ export default function Checkout() {
             <h1 className="checkout-page__title">Checkout</h1>
             <div className="checkout-page__badge">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
+                <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z" />
               </svg>
               <span>256-Bit SSL Encrypted & Razorpay Protected</span>
             </div>
@@ -883,7 +883,7 @@ export default function Checkout() {
                         </span>
                       </div>
                       <p className="checkout-shipping-option__desc">
-                        <span className="checkout-shipping-option__eta">📦 5–7 business days</span> · Reliable delivery via Delhivery
+                        <span className="checkout-shipping-option__eta">📦 2–3 business days</span> · Reliable delivery via Delhivery
                       </p>
                     </div>
                   </label>
@@ -909,7 +909,7 @@ export default function Checkout() {
                         </span>
                       </div>
                       <p className="checkout-shipping-option__desc">
-                        <span className="checkout-shipping-option__eta">🚀 2–3 business days</span> · Priority dispatch via Delhivery Express
+                        <span className="checkout-shipping-option__eta">🚀 1–2 business days</span> · Priority dispatch via Delhivery Express
                       </p>
                     </div>
                   </label>
@@ -1064,7 +1064,7 @@ export default function Checkout() {
                     Add <strong>₹{amountForFreeShipping.toLocaleString('en-IN')}</strong> more for <strong>FREE Delivery</strong>
                   </p>
                   <div className="checkout-progress-track">
-                    <div 
+                    <div
                       className="checkout-progress-bar"
                       style={{ width: `${Math.min(100, Math.round((cartTotal / 999) * 100))}%` }}
                     />

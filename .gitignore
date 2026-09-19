@@ -37,7 +37,14 @@ Thumbs.db
 # Local scratches & raw backups
 scratch/
 products_raw_backup/
+frontend/public/products_backup_raw/
 frontend/public/products/new_products/
+frontend/public/videos/Downloads/
+frontend/public/1/
+frontend/public/101/
+frontend/public/102/
+frontend/public/103/
+frontend/public/104/
 *.zip
 frontend/public/yarn implementation and report/
 frontend/public/WhatsApp Unknown*

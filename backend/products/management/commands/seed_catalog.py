@@ -101,8 +101,7 @@ class Command(BaseCommand):
 
             self.stdout.write(f"  Product #{prod.id}: {prod.name} ({prod.images.count()} angles)")
 
-        # 3. Seed Sample Orders
-        Order.objects.filter(order_number__startswith='ORD-1094').delete()
+        # 3. Seed Sample Orders (safe against existing shipments)
         now = timezone.now()
         demo_orders = [
             {
@@ -192,6 +191,11 @@ class Command(BaseCommand):
         for o_data in demo_orders:
             items_data = o_data.pop('items')
             created_date = o_data.pop('created_at')
+
+            existing_order = Order.objects.filter(order_number=o_data['order_number']).first()
+            if existing_order:
+                self.stdout.write(f"  Order #{existing_order.order_number} already exists, preserving.")
+                continue
 
             total = sum(p.price * qty for p, qty in items_data)
             order = Order.objects.create(

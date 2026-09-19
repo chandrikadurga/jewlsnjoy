@@ -4941,6 +4941,1048 @@ PRODUCTS = [
                     "Store in the provided jewellery pouch when not in use.",
                     "Clean gently with a soft dry cloth."
             ]
+    },
+    {
+            "id": 100,
+            "name": "Classic Gold Herringbone Snake Chain Choker",
+            "slug": "classic-gold-herringbone-snake-chain-choker",
+            "price": 269,
+            "original_price": 999,
+            "category": "Necklaces",
+            "style": [
+                    "Minimalist",
+                    "Classic",
+                    "Everyday"
+            ],
+            "short_description": "Smooth liquid-gold herringbone snake chain choker that sits gracefully along the collarbone.",
+            "description": "A luxurious staple for everyday wear and layering. Featuring a high-shine flat herringbone weave with silky fluid drape, this 18K gold-plated choker catches the light from every curve. Crafted from hypoallergenic stainless steel with durable anti-tarnish PVD coating.",
+            "image": "/products/100/1.jpeg",
+            "thumbnail": "/products/100/1.jpeg",
+            "images": [
+                    "/products/100/1.jpeg",
+                    "/products/100/2.jpeg",
+                    "/products/100/3.jpeg",
+                    "/products/100/4.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 114,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "316L Grade Stainless Steel",
+                    "Finish": "18K Gold PVD Mirror Finish",
+                    "Chain Style": "Flat Herringbone Snake Chain",
+                    "Length": "40 cm + 5 cm Extender",
+                    "Features": "Anti-tarnish, Waterproof, Hypoallergenic"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 101,
+            "name": "Golden Heart Charm Zircon Station Bracelet",
+            "slug": "golden-heart-charm-zircon-station-bracelet",
+            "price": 249,
+            "original_price": 899,
+            "category": "Bracelets",
+            "style": [
+                    "Romantic",
+                    "Minimalist",
+                    "Delicate"
+            ],
+            "short_description": "Delicate gold link chain bracelet featuring a polished puffed heart pendant and bezel-set zircon stations.",
+            "description": "Romantic elegance crafted for daily wear. This fine link bracelet features a gleaming dimensional heart charm flanked by brilliant bezel-set cubic zirconia accent stations along a delicate bead-accented chain. Finished with an adjustable extender and lobster clasp.",
+            "image": "/products/101/1.jpeg",
+            "thumbnail": "/products/101/1.jpeg",
+            "images": [
+                    "/products/101/1.jpeg",
+                    "/products/101/2.jpeg",
+                    "/products/101/3.jpeg",
+                    "/products/101/4.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": False,
+            "rating": 4.8,
+            "review_count": 82,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "Titanium Stainless Steel",
+                    "Finish": "18K Gold Plated",
+                    "Stones": "Bezel-Set AAA Cubic Zirconia",
+                    "Charm": "Dimensional Puffed Heart",
+                    "Length": "16 cm + 4 cm Extender"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 102,
+            "name": "Gold \"D\" Initial Geometric Y-Lariat Necklace",
+            "slug": "gold-d-initial-geometric-y-lariat-necklace",
+            "price": 299,
+            "original_price": 1199,
+            "category": "Necklaces",
+            "style": [
+                    "Modern",
+                    "Statement",
+                    "Geometric"
+            ],
+            "short_description": "Contemporary Y-lariat necklace featuring sleek bar links, letter D motif, and dangling geometric cube charm.",
+            "description": "Make a chic, architectural statement. This avant-garde lariat necklace combines alternating round and tubular bar chain links, a polished \"D\" monogram connector, and a drop chain ending in a multifaceted geometric cube pendant. Precision-crafted in stainless steel with durable 18K gold PVD plating.",
+            "image": "/products/102/1.jpeg",
+            "thumbnail": "/products/102/1.jpeg",
+            "images": [
+                    "/products/102/1.jpeg",
+                    "/products/102/2.jpeg",
+                    "/products/102/3.jpeg",
+                    "/products/102/4.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 96,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "316L Titanium Stainless Steel",
+                    "Finish": "18K Gold PVD Coating",
+                    "Pendant": "D Monogram & Geometric Cube Drop",
+                    "Chain Style": "Asymmetrical Bar & Link Lariat",
+                    "Features": "Anti-tarnish, Waterproof, Hypoallergenic"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 103,
+            "name": "Silver Crystal Four-Petal Blossom Stud Earrings",
+            "slug": "silver-crystal-four-petal-blossom-stud-earrings",
+            "price": 219,
+            "original_price": 799,
+            "category": "Earrings",
+            "style": [
+                    "Floral",
+                    "Sparkling",
+                    "Delicate"
+            ],
+            "short_description": "Sparkling clover blossom studs set with cluster-cut brilliant cubic zircon crystals in high-polish silver tone.",
+            "description": "Luminous floral sparkle for any occasion. These delicate stud earrings feature four faceted pear and round cubic zirconia crystals clustered into a blooming clover motif. Set in high-shine platinum-toned stainless steel for sensitive ears.",
+            "image": "/products/103/1.jpeg",
+            "thumbnail": "/products/103/1.jpeg",
+            "images": [
+                    "/products/103/1.jpeg",
+                    "/products/103/2.jpeg",
+                    "/products/103/3.jpeg",
+                    "/products/103/4.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": False,
+            "is_bestseller": True,
+            "rating": 4.8,
+            "review_count": 75,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "Quality Guarantee",
+                    "Hypoallergenic"
+            ],
+            "specifications": {
+                    "Material": "S925 Post / Titanium Stainless Steel",
+                    "Finish": "Platinum / Silver Rhodium Plated",
+                    "Stones": "Brilliant-Cut AAA Cubic Zirconia",
+                    "Dimensions": "9 mm x 9 mm",
+                    "Features": "Hypoallergenic, Anti-tarnish"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 104,
+            "name": "Solitaire Pear-Cut Teardrop Crystal Pendant Necklace",
+            "slug": "solitaire-pear-cut-teardrop-crystal-pendant-necklace",
+            "price": 259,
+            "original_price": 999,
+            "category": "Necklaces",
+            "style": [
+                    "Classic",
+                    "Minimalist",
+                    "Luxury"
+            ],
+            "short_description": "Timeless pear-cut solitaire cubic zirconia pendant suspended on a delicate liquid snake chain.",
+            "description": "Effortless grace in a single drop. A sparkling teardrop pear-cut cubic zirconia is bezel-set to maximize light refraction and suspended from a fine silver-tone snake chain. Perfect worn solo for understated sophistication or layered with chokers.",
+            "image": "/products/104/1.jpeg",
+            "thumbnail": "/products/104/1.jpeg",
+            "images": [
+                    "/products/104/1.jpeg",
+                    "/products/104/2.jpeg",
+                    "/products/104/3.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": False,
+            "rating": 4.9,
+            "review_count": 64,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "Quality Guarantee",
+                    "Hypoallergenic"
+            ],
+            "specifications": {
+                    "Material": "Titanium Stainless Steel",
+                    "Finish": "Platinum Rhodium Plated",
+                    "Stone": "Pear-Cut AAA Cubic Zirconia",
+                    "Length": "42 cm + 5 cm Extender",
+                    "Features": "Anti-tarnish, Waterproof, Hypoallergenic"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 105,
+            "name": "Mermaid Tail Mother-of-Pearl & Freshwater Pearl Necklace",
+            "slug": "mermaid-tail-mother-of-pearl-freshwater-pearl-necklace",
+            "price": 289,
+            "original_price": 1099,
+            "category": "Necklaces",
+            "style": [
+                    "Oceanic",
+                    "Bohemian",
+                    "Luxury"
+            ],
+            "short_description": "Iridescent natural mother-of-pearl mermaid tail pendant paired with a glowing luster pearl charm.",
+            "description": "Inspired by ocean tides and seaside myth. This captivating necklace features a carved mother-of-pearl whale fluke / mermaid tail set in 18K gold casing alongside a floating simulated freshwater pearl charm. Crafted with waterproof, sweatproof stainless steel for everyday wear.",
+            "image": "/products/105/1.jpeg",
+            "thumbnail": "/products/105/1.jpeg",
+            "images": [
+                    "/products/105/1.jpeg",
+                    "/products/105/2.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 88,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "316L Stainless Steel",
+                    "Finish": "18K Gold Plated",
+                    "Pendant": "Natural Mother-of-Pearl & Luster Pearl",
+                    "Length": "42 cm + 5 cm Extender",
+                    "Features": "Anti-tarnish, Waterproof, Hypoallergenic"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 106,
+            "name": "White Shell Butterfly Herringbone Choker Necklace",
+            "slug": "white-shell-butterfly-herringbone-choker-necklace",
+            "price": 279,
+            "original_price": 1099,
+            "category": "Necklaces",
+            "style": [
+                    "Trendy",
+                    "Chic",
+                    "Statement"
+            ],
+            "short_description": "Silky flat herringbone chain choker crowned with a luminous white shell butterfly centerpiece.",
+            "description": "Modern romance meets high-fashion styling. A lustrous white mother-of-pearl butterfly inlay is seamlessly integrated into a sleek, wide herringbone snake chain. The mirror-like 18K gold finish hugs the neck comfortably without flipping or snagging.",
+            "image": "/products/106/1.jpeg",
+            "thumbnail": "/products/106/1.jpeg",
+            "images": [
+                    "/products/106/1.jpeg",
+                    "/products/106/2.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 92,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "Titanium Stainless Steel",
+                    "Finish": "18K Gold PVD Mirror Plated",
+                    "Inlay": "Natural White Mother-of-Pearl",
+                    "Chain Width": "3.5 mm Flat Herringbone",
+                    "Features": "Anti-tarnish, Waterproof, Anti-snag"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 107,
+            "name": "Golden Sunset Orange Enamel Butterfly Dangle Necklace",
+            "slug": "golden-sunset-orange-enamel-butterfly-dangle-necklace",
+            "price": 289,
+            "original_price": 1199,
+            "category": "Necklaces",
+            "style": [
+                    "Vintage",
+                    "Artisan",
+                    "Warm Tones"
+            ],
+            "short_description": "Intricately embossed butterfly pendant with sunset orange enamel wings and playful golden bead dangles.",
+            "description": "A celebration of artisan detail and color. This enchanting pendant features fine filigree butterfly wings filled with graduated sunset orange and amber enamel, accented with beaded edges and delicate hanging gold droplet beads that chime softly with movement.",
+            "image": "/products/107/1.jpeg",
+            "thumbnail": "/products/107/1.jpeg",
+            "images": [
+                    "/products/107/1.jpeg",
+                    "/products/107/2.jpeg",
+                    "/products/107/3.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": False,
+            "is_bestseller": True,
+            "rating": 4.8,
+            "review_count": 59,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "Stainless Steel Brass Core",
+                    "Finish": "18K Gold Plated",
+                    "Enamel": "Hand-applied Sunset Orange Cloisonné Enamel",
+                    "Chain Style": "Dainty Cable Link with Extender",
+                    "Features": "Anti-tarnish, Waterproof, Nickel-free"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 108,
+            "name": "Canary Yellow Cushion-Cut Zircon Bezel Stud Earrings",
+            "slug": "canary-yellow-cushion-cut-zircon-bezel-stud-earrings",
+            "price": 199,
+            "original_price": 799,
+            "category": "Earrings",
+            "style": [
+                    "Minimalist",
+                    "Colorful",
+                    "Modern"
+            ],
+            "short_description": "Vibrant sunny canary yellow cushion-cut zircon studs set in rounded smooth gold bezels.",
+            "description": "Add a warm pop of golden sunshine to your ear stack. Featuring faceted square cushion-cut canary yellow cubic zirconia enclosed in smooth, rounded 18K gold bezels. Designed with hypoallergenic posts for comfortable all-day and overnight wear.",
+            "image": "/products/108/1.jpeg",
+            "thumbnail": "/products/108/1.jpeg",
+            "images": [
+                    "/products/108/1.jpeg",
+                    "/products/108/2.jpeg",
+                    "/products/108/3.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": False,
+            "is_bestseller": False,
+            "rating": 4.8,
+            "review_count": 47,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "18K Gold Plated",
+                    "Quality Guarantee",
+                    "Hypoallergenic"
+            ],
+            "specifications": {
+                    "Material": "S925 Silver Post / Stainless Steel Bezel",
+                    "Finish": "18K Gold Plated",
+                    "Stones": "Canary Yellow Cushion-Cut Cubic Zirconia",
+                    "Dimensions": "6 mm x 6 mm",
+                    "Features": "Hypoallergenic, Waterproof, Anti-tarnish"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 109,
+            "name": "Lucky Four-Leaf Clover Herringbone Chain Bracelet",
+            "slug": "lucky-four-leaf-clover-herringbone-chain-bracelet",
+            "price": 269,
+            "original_price": 999,
+            "category": "Bracelets",
+            "style": [
+                    "Lucky Charms",
+                    "Minimalist",
+                    "Chic"
+            ],
+            "short_description": "Sleek liquid herringbone bracelet featuring an engraved textured four-leaf clover centerpiece.",
+            "description": "Carry good fortune wherever you go. This elegant bracelet pairs a flat, supple snake herringbone band with an engraved sunburst-textured four-leaf clover charm. Cast in waterproof 316L titanium steel that won't fade or discolor in water.",
+            "image": "/products/109/1.jpeg",
+            "thumbnail": "/products/109/1.jpeg",
+            "images": [
+                    "/products/109/1.jpeg",
+                    "/products/109/2.jpeg",
+                    "/products/109/3.jpeg",
+                    "/products/109/4.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 102,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "316L Stainless Steel",
+                    "Finish": "18K Gold PVD Plated",
+                    "Motif": "Sunburst Engraved Four-Leaf Clover",
+                    "Chain Type": "3 mm Flexible Herringbone",
+                    "Features": "Anti-tarnish, 100% Waterproof, Hypoallergenic"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 110,
+            "name": "Pearl & Crescent Pavé Zircon Stud Earrings",
+            "slug": "pearl-and-crescent-pave-zircon-stud-earrings",
+            "price": 229,
+            "original_price": 899,
+            "category": "Earrings",
+            "style": [
+                    "Celestial",
+                    "Classic",
+                    "Glamour"
+            ],
+            "short_description": "Lustrous simulated pearl button studs embraced by a sparkling micro-pavé crescent halo.",
+            "description": "A celestial twist on classic pearl studs. A luminous half-dome pearl button is nestled snugly within a dazzling arc of micro-pavé cubic zirconia crystals. High-polish gold setting adds warmth and timeless luxury to bridal, festive, or office wear.",
+            "image": "/products/110/1.jpeg",
+            "thumbnail": "/products/110/1.jpeg",
+            "images": [
+                    "/products/110/1.jpeg",
+                    "/products/110/2.jpeg",
+                    "/products/110/3.jpeg",
+                    "/products/110/4.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": False,
+            "rating": 4.8,
+            "review_count": 53,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "Titanium Steel / S925 Post",
+                    "Finish": "18K Gold Plated",
+                    "Stones": "Luster Faux Pearl & Micro-Pavé Cubic Zirconia",
+                    "Diameter": "11 mm",
+                    "Features": "Hypoallergenic, Anti-tarnish, Nickel-free"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 111,
+            "name": "Midnight Onyx Tennis & Paperclip Dual-Chain Bracelet",
+            "slug": "midnight-onyx-tennis-paperclip-dual-chain-bracelet",
+            "price": 299,
+            "original_price": 1199,
+            "category": "Bracelets",
+            "style": [
+                    "Modern Edge",
+                    "Contrast",
+                    "Luxury"
+            ],
+            "short_description": "Half black onyx prong-set tennis chain, half elongated gold paperclip links in one striking bracelet.",
+            "description": "The ultimate hybrid of sporty glam and urban cool. One half features deep midnight-black faceted crystal tennis links prong-set in gold; the other flows into an airy elongated paperclip link chain. Finished with a logo tag and secure lobster clasp.",
+            "image": "/products/111/1.jpeg",
+            "thumbnail": "/products/111/1.jpeg",
+            "images": [
+                    "/products/111/1.jpeg",
+                    "/products/111/2.jpeg",
+                    "/products/111/3.jpeg",
+                    "/products/111/4.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 128,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "316L Titanium Stainless Steel",
+                    "Finish": "18K Gold PVD Plated",
+                    "Stones": "Faceted Jet Black Cubic Zirconia Crystals",
+                    "Chain Type": "Dual Half Tennis / Half Paperclip Link",
+                    "Features": "Anti-tarnish, Waterproof, Hypoallergenic"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 112,
+            "name": "Golden Bow-Tie Zircon Station Beaded Bracelet",
+            "slug": "golden-bow-tie-zircon-station-beaded-bracelet",
+            "price": 239,
+            "original_price": 899,
+            "category": "Bracelets",
+            "style": [
+                    "Dainty",
+                    "Coquette",
+                    "Charming"
+            ],
+            "short_description": "Delicate gold satellite beaded chain bracelet highlighted by a sparkling bow-knot zircon center.",
+            "description": "Charming coquette styling with timeless sparkle. A tiny bow tie formed by two heart-faceted cubic zirconia gems glimmers at the center of an 18K gold bead-station chain. Lightweight, sweet, and perfectly stackable.",
+            "image": "/products/112/1.jpeg",
+            "thumbnail": "/products/112/1.jpeg",
+            "images": [
+                    "/products/112/1.jpeg",
+                    "/products/112/2.jpeg",
+                    "/products/112/3.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": False,
+            "is_bestseller": True,
+            "rating": 4.8,
+            "review_count": 69,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "Stainless Steel",
+                    "Finish": "18K Gold Plated",
+                    "Centerpiece": "Heart-Cut Zircon Bow-Tie Motif",
+                    "Chain Type": "Satellite Ball Bead Chain",
+                    "Features": "Anti-tarnish, Waterproof, Adjustable Length"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 113,
+            "name": "Rainbow Crystal Blossom Beaded Charm Bracelet",
+            "slug": "rainbow-crystal-blossom-beaded-charm-bracelet",
+            "price": 259,
+            "original_price": 999,
+            "category": "Bracelets",
+            "style": [
+                    "Playful",
+                    "Summer",
+                    "Colorful"
+            ],
+            "short_description": "Multicolor faceted crystal flower charms interspersed with gold spacer beads on a delicate chain.",
+            "description": "A cheerful burst of summer color. Hand-strung miniature blossoms in fuchsia, sky blue, tangerine, emerald, and blush pink crystal beads dance along an 18K gold fine link chain. Brings vibrant joy and playful elegance to any outfit.",
+            "image": "/products/113/1.jpeg",
+            "thumbnail": "/products/113/1.jpeg",
+            "images": [
+                    "/products/113/1.jpeg",
+                    "/products/113/2.jpeg",
+                    "/products/113/3.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 83,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "Stainless Steel & Faceted Crystal Glass",
+                    "Finish": "18K Gold Plated",
+                    "Charms": "5 Multicolor Beaded Daisy Flowers",
+                    "Length": "16 cm + 4 cm Extender",
+                    "Features": "Waterproof, Anti-tarnish, Hypoallergenic"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 114,
+            "name": "Amethyst & Lavender Crystal Vine Tennis Bracelet",
+            "slug": "amethyst-lavender-crystal-vine-tennis-bracelet",
+            "price": 299,
+            "original_price": 1199,
+            "category": "Bracelets",
+            "style": [
+                    "Botanical",
+                    "Feminine",
+                    "Luxury"
+            ],
+            "short_description": "Wavy silver vine tennis bracelet adorned with oval lilac amethyst and blush pink crystal leaves.",
+            "description": "Artful botanical curves sculpted in radiant silver tone. An undulating wavy vine frame cradles alternating oval-cut amethyst purple gems and marquise-cut pink crystal bud accents. Equipped with a fold-over box safety clasp for security.",
+            "image": "/products/114/1.jpeg",
+            "thumbnail": "/products/114/1.jpeg",
+            "images": [
+                    "/products/114/1.jpeg",
+                    "/products/114/2.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": False,
+            "is_bestseller": False,
+            "rating": 4.8,
+            "review_count": 42,
+            "features": [
+                    "Anti-tarnish",
+                    "Quality Guarantee",
+                    "Hypoallergenic"
+            ],
+            "specifications": {
+                    "Material": "Copper / Stainless Steel Hybrid",
+                    "Finish": "Platinum Rhodium Plated",
+                    "Stones": "Oval & Marquise Cut Amethyst / Pink Cubic Zirconia",
+                    "Clasp": "Fold-over Safety Jewelry Clasp",
+                    "Features": "Anti-tarnish, Hypoallergenic, Lead-free"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 115,
+            "name": "Gold Bamboo Joint Open Cuff Bangle Bracelet",
+            "slug": "gold-bamboo-joint-open-cuff-bangle-bracelet",
+            "price": 279,
+            "original_price": 1099,
+            "category": "Bracelets",
+            "style": [
+                    "Zen",
+                    "Organic",
+                    "Minimalist"
+            ],
+            "short_description": "Sculptural open cuff bangle inspired by natural bamboo stalks, finished in gleaming high-polish gold.",
+            "description": "Embrace strength and flexibility with this organic bamboo stalk cuff. Sculpted with authentic segmented bamboo nodes and a smooth mirror-polished finish, this open cuff can be gently adjusted for the perfect wrist fit. Substantial weight and enduring PVD finish.",
+            "image": "/products/115/1.jpeg",
+            "thumbnail": "/products/115/1.jpeg",
+            "images": [
+                    "/products/115/1.jpeg",
+                    "/products/115/2.jpeg",
+                    "/products/115/3.jpeg",
+                    "/products/115/4.jpeg",
+                    "/products/115/5.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 91,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "316L Solid Titanium Stainless Steel",
+                    "Finish": "18K Heavy Gold PVD Plated",
+                    "Design": "Sculpted Segmented Bamboo Cane",
+                    "Size": "Adjustable Open Cuff (58 mm Inner Diameter)",
+                    "Features": "Anti-tarnish, Waterproof, Fade-resistant"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 116,
+            "name": "Lily of the Valley Pearl & Bow Drop Stud Earrings",
+            "slug": "lily-of-the-valley-pearl-bow-drop-stud-earrings",
+            "price": 239,
+            "original_price": 899,
+            "category": "Earrings",
+            "style": [
+                    "Fairycore",
+                    "Romantic",
+                    "Vintage"
+            ],
+            "short_description": "Twisted rope gold bows dangling twin carved white mother-of-pearl lily bell flower blossoms.",
+            "description": "Symbolizing return of happiness and pure beauty. These enchanting drop studs feature twisted ribbon gold bows from which two bell-shaped carved white pearl flowers dangle delicately. Designed to flutter gracefully near the jawline.",
+            "image": "/products/116/1.jpeg",
+            "thumbnail": "/products/116/1.jpeg",
+            "images": [
+                    "/products/116/1.jpeg",
+                    "/products/116/2.jpeg",
+                    "/products/116/3.jpeg",
+                    "/products/116/4.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 78,
+            "features": [
+                    "Anti-tarnish",
+                    "18K Gold Plated",
+                    "Quality Guarantee",
+                    "Hypoallergenic"
+            ],
+            "specifications": {
+                    "Material": "S925 Silver Post / Brass Alloy",
+                    "Finish": "18K Light Gold Plated",
+                    "Flowers": "Carved Luster Bell Blossom Beads",
+                    "Dimensions": "22 mm Drop Length",
+                    "Features": "Hypoallergenic, Lightweight, Comfortable"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 117,
+            "name": "Golden Starfish & Scallop Shell Pearl Charm Necklace",
+            "slug": "golden-starfish-scallop-shell-pearl-charm-necklace",
+            "price": 289,
+            "original_price": 1199,
+            "category": "Necklaces",
+            "style": [
+                    "Coastal",
+                    "Beach Chic",
+                    "Luxury"
+            ],
+            "short_description": "Sun-drenched gold necklace laden with textured starfish, miniature pearls, and a center scallop shell.",
+            "description": "Capture the sun-soaked magic of Mediterranean shores. This radiant charm necklace features textured golden starfish, bezel-hung simulated pearls, and a ribbed scallop seashell medallion centered on a shimmering cable chain.",
+            "image": "/products/117/1.jpeg",
+            "thumbnail": "/products/117/1.jpeg",
+            "images": [
+                    "/products/117/1.jpeg",
+                    "/products/117/2.jpeg",
+                    "/products/117/3.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": False,
+            "rating": 4.8,
+            "review_count": 51,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "316L Stainless Steel",
+                    "Finish": "18K Gold Vacuum Plated",
+                    "Charms": "Textured Starfish, Scallop Shell & Floating Pearls",
+                    "Length": "40 cm + 6 cm Extender",
+                    "Features": "Anti-tarnish, 100% Waterproof, Sea-proof"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 118,
+            "name": "Royal Pavé Crystal Swan Pendant Box Chain Necklace",
+            "slug": "royal-pave-crystal-swan-pendant-box-chain-necklace",
+            "price": 299,
+            "original_price": 1299,
+            "category": "Necklaces",
+            "style": [
+                    "Regal",
+                    "Graceful",
+                    "Statement"
+            ],
+            "short_description": "A majestic crowned swan pendant with pavé crystal neck and large pear-cut crystal wing.",
+            "description": "A symbol of majesty, fidelity, and royal grace. This exquisite pendant portrays a regal swan crafted in 18K gold-toned filigree, crowned with micro-pavé zircons along the graceful neck and centered with a multifaceted luminous crystal core. Suspended on a fluid box chain.",
+            "image": "/products/118/1.jpeg",
+            "thumbnail": "/products/118/1.jpeg",
+            "images": [
+                    "/products/118/1.jpeg",
+                    "/products/118/2.jpeg",
+                    "/products/118/3.jpeg",
+                    "/products/118/4.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 139,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "Titanium Stainless Steel",
+                    "Finish": "18K Gold PVD Plated",
+                    "Stones": "AAA Micro-Pavé & Large Faceted Crystal Core",
+                    "Chain Type": "Classic Venetian Box Chain (45 cm)",
+                    "Features": "Anti-tarnish, Waterproof, Hypoallergenic"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
+    },
+    {
+            "id": 119,
+            "name": "Vintage Embossed Wild Rose Medallion Rope Chain Necklace",
+            "slug": "vintage-embossed-wild-rose-medallion-rope-chain-necklace",
+            "price": 299,
+            "original_price": 1199,
+            "category": "Necklaces",
+            "style": [
+                    "Vintage",
+                    "Coin Jewelry",
+                    "Parisian Chic"
+            ],
+            "short_description": "Molten organic gold medallion inset with white enamel and an embossed blooming wild rose on a French rope chain.",
+            "description": "Old-world Parisian romanticism reimagined. An organic molten coin rim cradles a luminous milky-white enamel medallion adorned with a raised relief blooming wild rose stem. Paired with a luxurious French rope twist chain for heirloom appeal.",
+            "image": "/products/119/1.jpeg",
+            "thumbnail": "/products/119/1.jpeg",
+            "images": [
+                    "/products/119/1.jpeg",
+                    "/products/119/2.jpeg"
+            ],
+            "variants": [],
+            "in_stock": True,
+            "is_featured": True,
+            "is_bestseller": True,
+            "rating": 4.9,
+            "review_count": 116,
+            "features": [
+                    "Anti-tarnish",
+                    "Waterproof",
+                    "PVD Plated",
+                    "18K Gold Plated",
+                    "Quality Guarantee"
+            ],
+            "specifications": {
+                    "Material": "316L Stainless Steel",
+                    "Finish": "18K Gold Mirror PVD Finish",
+                    "Inlay": "Milky Luster Enamel & Relief Rose Motif",
+                    "Chain Style": "French Twisted Rope Chain (45 cm + 5 cm)",
+                    "Features": "Anti-tarnish, 100% Waterproof, Lifetime Color Retention"
+            },
+            "shipping": {
+                    "standard": "6 to 8 days",
+                    "express": "3 to 4 days",
+                    "free_threshold": 999
+            },
+            "care_instructions": [
+                    "Avoid direct contact with harsh perfumes and chemicals.",
+                    "Store in the provided jewellery pouch when not in use.",
+                    "Clean gently with a soft dry cloth."
+            ]
     }
 ]
 
@@ -4951,7 +5993,7 @@ CATEGORIES = [
         "slug": "necklaces",
         "description": "Handcrafted chains, chokers, and pendant necklaces designed to elevate your everyday elegance.",
         "image": "/products/1/1.jpeg",
-        "product_count": 54
+        "product_count": 63
     },
     {
         "id": 2,
@@ -4959,7 +6001,7 @@ CATEGORIES = [
         "slug": "earrings",
         "description": "Twist hoops, drop studs, and statement earrings crafted with durable PVD plating.",
         "image": "/products/15/1.jpeg",
-        "product_count": 19
+        "product_count": 23
     },
     {
         "id": 3,
@@ -4975,6 +6017,6 @@ CATEGORIES = [
         "slug": "bracelets",
         "description": "Herringbone, Cuban link, and cuff bangles finished in waterproof 18K gold plating.",
         "image": "/products/31/1.jpeg",
-        "product_count": 13
+        "product_count": 20
     }
 ]

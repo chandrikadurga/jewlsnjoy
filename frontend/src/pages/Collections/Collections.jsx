@@ -71,7 +71,7 @@ const CURATED_LOOKS = [
     price: '₹499',
     collection: 'Cocktail Rings',
     image: '/products/8/2.jpeg',
-    badge: 'Adjustable Band',
+    badge: 'Adjustable Rings',
     link: '/products/8',
   },
   {

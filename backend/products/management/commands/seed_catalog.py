@@ -40,6 +40,12 @@ class Command(BaseCommand):
             p_id = p_data['id']
             primary_url = f"/products/{p_id}/1.jpeg"
 
+            details = p_data.get('details', {}) if isinstance(p_data.get('details'), dict) else {}
+            if p_data.get('rating'):
+                details['rating'] = p_data['rating']
+            if p_data.get('review_count'):
+                details['review_count'] = p_data['review_count']
+
             existing = Product.objects.filter(id=p_id).first()
             if existing:
                 existing.name = p_data['name']
@@ -49,6 +55,9 @@ class Command(BaseCommand):
                     existing.original_price = p_data['original_price']
                 existing.description = p_data.get('description', existing.description)
                 existing.primary_image_url = primary_url
+                cur_details = existing.details if isinstance(existing.details, dict) else {}
+                cur_details.update(details)
+                existing.details = cur_details
                 existing.save()
                 prod = existing
             else:
@@ -60,7 +69,7 @@ class Command(BaseCommand):
                     price=p_data['price'],
                     original_price=p_data.get('original_price'),
                     description=p_data.get('description', ''),
-                    details=p_data.get('details', {}),
+                    details=details,
                     style_tags=p_data.get('style', []),
                     in_stock=p_data.get('in_stock', True),
                     stock_quantity=random.randint(10, 45),

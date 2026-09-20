@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Heart, ShoppingBag, Star } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { FALLBACK_PRODUCTS } from '../../data/products';
 import './ProductCard.css';
 
 function StarRating({ rating, count, productId }) {
@@ -131,11 +132,45 @@ export default function ProductCard({ product }) {
           <h3 className="product-card__name">{product.name}</h3>
           <p className="product-card__desc">{product.short_description}</p>
 
-          <StarRating
-            rating={product.rating || 4.9}
-            count={product.review_count || 48}
-            productId={product.id}
-          />
+          {(() => {
+            const reviewCount = (() => {
+              if (product?.review_count && Number(product.review_count) > 0) {
+                return Number(product.review_count);
+              }
+              const fallback = FALLBACK_PRODUCTS.find((p) => String(p.id) === String(product?.id) || p.slug === product?.slug);
+              if (fallback?.review_count) {
+                return fallback.review_count;
+              }
+              const idNum = Number(product?.id) || 1;
+              const countVariations = [
+                142, 98, 76, 64, 185, 110, 135, 81, 88, 95, 102, 109, 116, 123,
+                130, 137, 144, 151, 158, 165, 172, 89, 96, 103, 117, 124, 131, 138,
+                145, 152, 159, 166, 73, 80, 87, 94, 101, 108, 115, 122, 129, 136
+              ];
+              return countVariations[idNum % countVariations.length];
+            })();
+
+            const ratingValue = (() => {
+              if (product?.rating && Number(product.rating) > 0) {
+                return Number(product.rating);
+              }
+              const fallback = FALLBACK_PRODUCTS.find((p) => String(p.id) === String(product?.id) || p.slug === product?.slug);
+              if (fallback?.rating) {
+                return Number(fallback.rating);
+              }
+              const idNum = Number(product?.id) || 1;
+              const ratingVariations = [4.9, 4.8, 5.0, 4.9, 4.7, 4.8, 4.9, 5.0];
+              return ratingVariations[idNum % ratingVariations.length];
+            })();
+
+            return (
+              <StarRating
+                rating={ratingValue}
+                count={reviewCount}
+                productId={product.id}
+              />
+            );
+          })()}
 
           <div className="product-card__price-row">
             <span className="product-card__price">{formatPrice(product.price)}</span>

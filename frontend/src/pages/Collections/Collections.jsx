@@ -17,7 +17,7 @@ const SIGNATURE_COLLECTIONS = [
   {
     id: 'earrings',
     name: 'Statement & Daily Earrings',
-    tagline: 'Hypoallergenic • Titanium Steel',
+    tagline: '',
     desc: 'Hollow heart silhouettes, four-leaf clovers, huggies & drops.',
     count: '15+ Styles',
     image: '/products/15/1.jpeg',
@@ -27,7 +27,7 @@ const SIGNATURE_COLLECTIONS = [
   {
     id: 'rings',
     name: 'Cocktail & Crystal Rings',
-    tagline: 'Adjustable Comfort Fit',
+    tagline: '',
     desc: 'Marquise-cut rainbow crystals, solitaire bands & cocktail rings.',
     count: '12+ Styles',
     image: '/products/8/2.jpeg',

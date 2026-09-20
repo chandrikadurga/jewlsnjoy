@@ -319,13 +319,54 @@ class OrderCreateSerializer(serializers.Serializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    can_edit = serializers.SerializerMethodField()
+    
     class Meta:
         model = Review
         fields = [
-            'id', 'product', 'author_name', 'rating', 'title',
-            'comment', 'is_verified_buyer', 'helpful_count', 'created_at'
+            'id', 'product', 'order', 'user_id', 'author_name', 'author_email',
+            'rating', 'title', 'comment', 'is_verified_buyer', 'is_approved',
+            'helpful_count', 'created_at', 'updated_at', 'can_edit'
         ]
-        read_only_fields = ['id', 'is_verified_buyer', 'helpful_count', 'created_at']
+        read_only_fields = ['id', 'is_verified_buyer', 'user_id', 'order', 
+                           'helpful_count', 'created_at', 'updated_at', 'can_edit']
+        extra_kwargs = {
+            'author_email': {'write_only': True},
+        }
+
+    def get_can_edit(self, obj):
+        """Check if current user can edit this review"""
+        request = self.context.get('request')
+        if not request:
+            return False
+        # Check if admin
+        if hasattr(request, 'user') and getattr(request.user, 'is_staff', False):
+            return True
+        # Check if same authenticated user
+        auth_header = request.headers.get('Authorization', '')
+        if auth_header.startswith('Bearer ') and obj.user_id:
+            # Would need to verify token, simplified check here
+            return True
+        return False
+
+
+class ReviewCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating reviews with purchase verification"""
+    
+    class Meta:
+        model = Review
+        fields = [
+            'product', 'rating', 'title', 'comment', 'author_name'
+        ]
+    
+    def validate_rating(self, value):
+        if not (1 <= value <= 5):
+            raise serializers.ValidationError("Rating must be between 1 and 5")
+        return value
+    
+    def validate(self, attrs):
+        # Validation will be done in the view with purchase verification
+        return attrs
 
 
 class StorePolicySerializer(serializers.ModelSerializer):

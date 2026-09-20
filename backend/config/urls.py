@@ -48,6 +48,7 @@ urlpatterns = [
     path('api/products/', include('products.urls')),
     path('api/categories/', include('products.category_urls')),
     path('api/orders/', include('products.order_urls')),
+    path('api/reviews/', include('products.review_urls')),
     path('api/payments/', include('payments.urls')),
     path('api/shipping/', include('shipping.urls')),
     path('api/policies/', StorePolicyView.as_view(), name='store-policies'),

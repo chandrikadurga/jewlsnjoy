@@ -114,22 +114,236 @@ class ProductDetailView(APIView):
 class ProductReviewsView(APIView):
     """
     GET /api/products/<pk>/reviews/
-    POST /api/products/<pk>/reviews/
+    Returns approved reviews for a product, with verified purchases marked.
     """
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
-        reviews = product.reviews.all()
-        return Response(ReviewSerializer(reviews, many=True).data)
+        # Only show approved reviews to public
+        reviews = product.reviews.filter(is_approved=True).select_related('product', 'order')
+        serializer = ReviewSerializer(reviews, many=True, context={'request': request})
+        
+        # Calculate review statistics
+        total_reviews = reviews.count()
+        if total_reviews > 0:
+            from django.db.models import Avg
+            avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
+            verified_count = reviews.filter(is_verified_buyer=True).count()
+            rating_distribution = {
+                '5': reviews.filter(rating=5).count(),
+                '4': reviews.filter(rating=4).count(),
+                '3': reviews.filter(rating=3).count(),
+                '2': reviews.filter(rating=2).count(),
+                '1': reviews.filter(rating=1).count(),
+            }
+        else:
+            avg_rating = 0
+            verified_count = 0
+            rating_distribution = {'5': 0, '4': 0, '3': 0, '2': 0, '1': 0}
+        
+        return Response({
+            'reviews': serializer.data,
+            'statistics': {
+                'total': total_reviews,
+                'average_rating': round(avg_rating, 1) if avg_rating else 0,
+                'verified_count': verified_count,
+                'distribution': rating_distribution
+            }
+        })
 
-    def post(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        data = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
-        data['product'] = product.id
-        serializer = ReviewSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save(is_verified_buyer=True)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ReviewCreateView(APIView):
+    """
+    POST /api/reviews/create/
+    Creates a review with purchase verification.
+    Requires either authenticated user OR order_number + email for guest verification.
+    """
+    def post(self, request):
+        product_id = request.data.get('product')
+        rating = request.data.get('rating')
+        title = request.data.get('title', '')
+        comment = request.data.get('comment', '')
+        author_name = request.data.get('author_name', '')
+        order_number = request.data.get('order_number', '')
+        
+        if not product_id:
+            return Response({'error': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not rating or not comment:
+            return Response({'error': 'Rating and comment are required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            product = Product.objects.get(pk=product_id)
+        except Product.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Get authenticated user if available
+        auth_user = get_authenticated_supabase_user(request)
+        user_id = auth_user['uid'] if auth_user else ''
+        user_email = auth_user['email'] if auth_user else request.data.get('email', '')
+        
+        # Verify purchase eligibility
+        verified_order = None
+        is_verified = False
+        
+        if user_id:
+            # Authenticated user: find any delivered/shipped order with this product
+            verified_order = Order.objects.filter(
+                user_id=user_id,
+                items__product=product,
+                status__in=['delivered', 'shipped', 'out_for_delivery']
+            ).first()
+            
+            # Check for duplicate review
+            existing = Review.objects.filter(product=product, user_id=user_id).first()
+            if existing:
+                return Response({
+                    'error': 'You have already reviewed this product',
+                    'existing_review_id': existing.id
+                }, status=status.HTTP_400_BAD_REQUEST)
+                
+        elif order_number and user_email:
+            # Guest user: verify with order number and email
+            verified_order = Order.objects.filter(
+                order_number__iexact=order_number,
+                customer_email__iexact=user_email,
+                items__product=product,
+                status__in=['delivered', 'shipped', 'out_for_delivery']
+            ).first()
+            
+            # Check for duplicate review by email
+            existing = Review.objects.filter(product=product, author_email__iexact=user_email).first()
+            if existing:
+                return Response({
+                    'error': 'A review from this email already exists for this product',
+                    'existing_review_id': existing.id
+                }, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({
+                'error': 'Authentication required or provide order_number and email to verify purchase'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+        
+        if verified_order:
+            is_verified = True
+        
+        # Allow review only if purchase is verified OR if you want to allow unverified reviews
+        # For strict policy: require verified purchase
+        if not is_verified:
+            return Response({
+                'error': 'Purchase verification failed. You can only review products you have purchased.',
+                'hint': 'Order must be shipped or delivered to leave a review'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        # Use customer name from order if not provided
+        if not author_name and verified_order:
+            author_name = verified_order.customer_name
+        
+        # Create the review
+        review = Review.objects.create(
+            product=product,
+            order=verified_order,
+            user_id=user_id,
+            author_name=author_name or 'Anonymous',
+            author_email=user_email,
+            rating=int(rating),
+            title=title,
+            comment=comment,
+            is_verified_buyer=is_verified,
+            is_approved=True  # Auto-approve verified purchases; set False for moderation
+        )
+        
+        serializer = ReviewSerializer(review, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ReviewUpdateView(APIView):
+    """
+    PUT /api/reviews/<pk>/
+    DELETE /api/reviews/<pk>/
+    Update or delete own review.
+    """
+    def put(self, request, pk):
+        review = get_object_or_404(Review, pk=pk)
+        
+        # Verify ownership
+        auth_user = get_authenticated_supabase_user(request)
+        if not auth_user or auth_user['uid'] != review.user_id:
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Update fields
+        review.rating = int(request.data.get('rating', review.rating))
+        review.title = request.data.get('title', review.title)
+        review.comment = request.data.get('comment', review.comment)
+        review.save()
+        
+        serializer = ReviewSerializer(review, context={'request': request})
+        return Response(serializer.data)
+    
+    def delete(self, request, pk):
+        review = get_object_or_404(Review, pk=pk)
+        
+        # Verify ownership or admin
+        auth_user = get_authenticated_supabase_user(request)
+        is_admin = hasattr(request, 'user') and getattr(request.user, 'is_staff', False)
+        
+        if not is_admin and (not auth_user or auth_user['uid'] != review.user_id):
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+        
+        review.delete()
+        return Response({'message': 'Review deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class ReviewEligibilityView(APIView):
+    """
+    GET /api/reviews/eligibility/<int:product_id>/
+    Check if authenticated user can review a product.
+    """
+    def get(self, request, product_id):
+        auth_user = get_authenticated_supabase_user(request)
+        if not auth_user:
+            return Response({
+                'eligible': False,
+                'reason': 'Authentication required'
+            })
+        
+        try:
+            product = Product.objects.get(pk=product_id)
+        except Product.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        user_id = auth_user['uid']
+        
+        # Check if already reviewed
+        existing_review = Review.objects.filter(product=product, user_id=user_id).first()
+        if existing_review:
+            return Response({
+                'eligible': False,
+                'reason': 'Already reviewed',
+                'existing_review': ReviewSerializer(existing_review, context={'request': request}).data
+            })
+        
+        # Check if purchased and delivered
+        purchased_order = Order.objects.filter(
+            user_id=user_id,
+            items__product=product,
+            status__in=['delivered', 'shipped', 'out_for_delivery']
+        ).first()
+        
+        if purchased_order:
+            return Response({
+                'eligible': True,
+                'order_number': purchased_order.order_number,
+                'product': {
+                    'id': product.id,
+                    'name': product.name,
+                    'image': product.primary_image_url
+                }
+            })
+        
+        return Response({
+            'eligible': False,
+            'reason': 'No verified purchase found. Order must be shipped or delivered.',
+            'hint': 'You can only review products you have purchased.'
+        })
 
 
 
@@ -968,3 +1182,171 @@ class AdminStorePolicyView(APIView):
         return response
 
 
+
+
+# ─── Admin Review Management Views ────────────────────────────────────────────
+
+class AdminReviewListView(APIView):
+    """
+    GET /api/admin/reviews/
+    Returns all reviews for admin moderation and management.
+    """
+    def get(self, request):
+        reviews = Review.objects.select_related('product', 'order').all().order_by('-created_at')
+        
+        # Filter by approval status
+        approval_status = request.query_params.get('approval_status')
+        if approval_status == 'approved':
+            reviews = reviews.filter(is_approved=True)
+        elif approval_status == 'pending':
+            reviews = reviews.filter(is_approved=False)
+        
+        # Filter by verification status
+        verified = request.query_params.get('verified')
+        if verified == 'true':
+            reviews = reviews.filter(is_verified_buyer=True)
+        elif verified == 'false':
+            reviews = reviews.filter(is_verified_buyer=False)
+        
+        # Filter by product
+        product_id = request.query_params.get('product_id')
+        if product_id:
+            reviews = reviews.filter(product_id=product_id)
+        
+        # Search
+        search = request.query_params.get('search')
+        if search:
+            reviews = reviews.filter(
+                Q(author_name__icontains=search) |
+                Q(comment__icontains=search) |
+                Q(product__name__icontains=search)
+            )
+        
+        serializer = ReviewSerializer(reviews, many=True, context={'request': request})
+        return Response({
+            'count': reviews.count(),
+            'results': serializer.data
+        })
+
+
+class AdminReviewDetailView(APIView):
+    """
+    GET /api/admin/reviews/<pk>/
+    PATCH /api/admin/reviews/<pk>/
+    DELETE /api/admin/reviews/<pk>/
+    Admin can moderate, approve, or delete reviews.
+    """
+    def get(self, request, pk):
+        review = get_object_or_404(Review.objects.select_related('product', 'order'), pk=pk)
+        serializer = ReviewSerializer(review, context={'request': request})
+        return Response(serializer.data)
+    
+    def patch(self, request, pk):
+        review = get_object_or_404(Review, pk=pk)
+        
+        # Admin can update approval status
+        if 'is_approved' in request.data:
+            review.is_approved = request.data.get('is_approved')
+        
+        # Admin can manually mark as verified/unverified
+        if 'is_verified_buyer' in request.data:
+            review.is_verified_buyer = request.data.get('is_verified_buyer')
+        
+        # Admin can edit content if needed
+        if 'comment' in request.data:
+            review.comment = request.data.get('comment')
+        if 'title' in request.data:
+            review.title = request.data.get('title')
+        if 'rating' in request.data:
+            review.rating = int(request.data.get('rating'))
+        
+        review.save()
+        serializer = ReviewSerializer(review, context={'request': request})
+        return Response(serializer.data)
+    
+    def delete(self, request, pk):
+        review = get_object_or_404(Review, pk=pk)
+        product_id = review.product.id
+        review.delete()
+        return Response({
+            'message': 'Review deleted successfully',
+            'product_id': product_id
+        }, status=status.HTTP_204_NO_CONTENT)
+
+
+class AdminReviewBulkActionView(APIView):
+    """
+    POST /api/admin/reviews/bulk-action/
+    Bulk approve, disapprove, or delete reviews.
+    """
+    def post(self, request):
+        review_ids = request.data.get('review_ids', [])
+        action = request.data.get('action')
+        
+        if not review_ids or not action:
+            return Response({
+                'error': 'review_ids and action are required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        reviews = Review.objects.filter(id__in=review_ids)
+        
+        if action == 'approve':
+            reviews.update(is_approved=True)
+            return Response({
+                'message': f'{reviews.count()} reviews approved successfully'
+            })
+        elif action == 'disapprove':
+            reviews.update(is_approved=False)
+            return Response({
+                'message': f'{reviews.count()} reviews disapproved successfully'
+            })
+        elif action == 'delete':
+            count = reviews.count()
+            reviews.delete()
+            return Response({
+                'message': f'{count} reviews deleted successfully'
+            })
+        else:
+            return Response({
+                'error': 'Invalid action. Use: approve, disapprove, or delete'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminReviewStatsView(APIView):
+    """
+    GET /api/admin/reviews/stats/
+    Returns review statistics for admin dashboard.
+    """
+    def get(self, request):
+        from django.db.models import Avg, Count
+        
+        total_reviews = Review.objects.count()
+        approved_reviews = Review.objects.filter(is_approved=True).count()
+        pending_reviews = Review.objects.filter(is_approved=False).count()
+        verified_reviews = Review.objects.filter(is_verified_buyer=True).count()
+        
+        avg_rating = Review.objects.filter(is_approved=True).aggregate(Avg('rating'))['rating__avg'] or 0
+        
+        # Top rated products
+        top_products = Product.objects.annotate(
+            avg_rating=Avg('reviews__rating'),
+            review_count=Count('reviews')
+        ).filter(review_count__gt=0).order_by('-avg_rating')[:5]
+        
+        # Recent reviews
+        recent_reviews = Review.objects.select_related('product').order_by('-created_at')[:10]
+        
+        return Response({
+            'total_reviews': total_reviews,
+            'approved_reviews': approved_reviews,
+            'pending_reviews': pending_reviews,
+            'verified_reviews': verified_reviews,
+            'average_rating': round(avg_rating, 2),
+            'top_products': [{
+                'id': p.id,
+                'name': p.name,
+                'avg_rating': round(p.avg_rating, 1) if p.avg_rating else 0,
+                'review_count': p.review_count
+            } for p in top_products],
+            'recent_reviews': ReviewSerializer(recent_reviews, many=True, context={'request': request}).data
+        })

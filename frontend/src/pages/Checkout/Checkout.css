@@ -1674,3 +1674,204 @@
 .manual-upi-back-btn:hover {
   color: var(--color-brown);
 }
+
+
+/* =============================================================
+   Connect with Us Section - Checkout Page
+   ============================================================= */
+
+.checkout-connect-section {
+  margin-top: var(--space-16);
+  padding: var(--space-12) 0;
+  background: linear-gradient(135deg, #faf8f5 0%, #f5f1eb 100%);
+  border-radius: 16px;
+}
+
+.checkout-connect-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-8);
+  background: var(--color-white);
+  border-radius: 12px;
+  border: 1px solid rgba(198, 161, 91, 0.15);
+  box-shadow: 0 4px 20px rgba(43, 33, 29, 0.05);
+}
+
+.checkout-connect-title {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-brown);
+  margin-bottom: var(--space-3);
+  text-align: center;
+}
+
+.checkout-connect-intro {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+  text-align: center;
+  margin-bottom: var(--space-8);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.checkout-connect-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.checkout-connect-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.checkout-connect-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f7efe6 0%, #ede3d6 100%);
+  color: var(--color-gold);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: 1px solid rgba(198, 161, 91, 0.2);
+}
+
+.checkout-connect-icon:hover {
+  background: linear-gradient(135deg, var(--color-gold) 0%, #b89968 100%);
+  color: var(--color-white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(198, 161, 91, 0.3);
+}
+
+.checkout-connect-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.checkout-connect-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  font-family: var(--font-sans);
+}
+
+.checkout-connect-value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-brown);
+  text-decoration: none;
+  line-height: 1.5;
+  transition: color 0.2s ease;
+}
+
+a.checkout-connect-value:hover {
+  color: var(--color-gold);
+  text-decoration: underline;
+}
+
+.checkout-connect-reassurance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: linear-gradient(135deg, #faf8f5 0%, #f5f1eb 100%);
+  border-radius: 10px;
+  margin-bottom: var(--space-6);
+  border: 1px solid rgba(198, 161, 91, 0.1);
+}
+
+.checkout-connect-reassurance-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.85rem;
+  color: var(--color-brown);
+  font-weight: 500;
+}
+
+.checkout-connect-reassurance-item svg {
+  color: var(--color-gold);
+  flex-shrink: 0;
+}
+
+.checkout-connect-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(198, 161, 91, 0.15);
+}
+
+.checkout-connect-social-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f7efe6 0%, #ede3d6 100%);
+  color: var(--color-brown);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: 1px solid rgba(198, 161, 91, 0.2);
+}
+
+.checkout-connect-social-circle:hover {
+  background: linear-gradient(135deg, var(--color-gold) 0%, #b89968 100%);
+  color: var(--color-white);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(198, 161, 91, 0.35);
+}
+
+.checkout-connect-social-circle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .checkout-connect-section {
+    margin-top: var(--space-10);
+    padding: var(--space-8) var(--space-4);
+    border-radius: 12px;
+  }
+
+  .checkout-connect-card {
+    padding: var(--space-6) var(--space-5);
+  }
+
+  .checkout-connect-title {
+    font-size: 1.5rem;
+  }
+
+  .checkout-connect-intro {
+    font-size: 0.9rem;
+  }
+
+  .checkout-connect-list {
+    gap: var(--space-5);
+  }
+
+  .checkout-connect-reassurance {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .checkout-connect-reassurance-item {
+    font-size: 0.8rem;
+  }
+}

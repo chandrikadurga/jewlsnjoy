@@ -196,19 +196,57 @@ class Review(models.Model):
         related_name='reviews',
         on_delete=models.CASCADE
     )
+    order = models.ForeignKey(
+        Order,
+        related_name='reviews',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text='Order associated with this review for purchase verification'
+    )
+    user_id = models.CharField(
+        max_length=64,
+        blank=True,
+        default='',
+        db_index=True,
+        help_text='Supabase user ID of the reviewer'
+    )
     author_name = models.CharField(max_length=120)
+    author_email = models.EmailField(blank=True, default='', help_text='Email for guest review verification')
     rating = models.PositiveSmallIntegerField(default=5)
     title = models.CharField(max_length=200, blank=True, default='')
     comment = models.TextField()
-    is_verified_buyer = models.BooleanField(default=True)
+    is_verified_buyer = models.BooleanField(
+        default=False,
+        help_text='True if reviewer purchased this product'
+    )
+    is_approved = models.BooleanField(
+        default=True,
+        help_text='Admin can moderate reviews before display'
+    )
     helpful_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created_at']
+        # Prevent duplicate reviews: one review per user/email per product
+        constraints = [
+            models.UniqueConstraint(
+                fields=['product', 'user_id'],
+                condition=~models.Q(user_id=''),
+                name='unique_authenticated_user_review'
+            ),
+            models.UniqueConstraint(
+                fields=['product', 'author_email'],
+                condition=~models.Q(author_email=''),
+                name='unique_guest_email_review'
+            ),
+        ]
 
     def __str__(self):
-        return f"{self.rating}★ by {self.author_name} on {self.product.name}"
+        verified = "✓" if self.is_verified_buyer else ""
+        return f"{self.rating}★ {verified} by {self.author_name} on {self.product.name}"
 
 
 class StorePolicy(models.Model):

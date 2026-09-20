@@ -1,10 +1,10 @@
 """
 Django Admin registration for Jewels N' Joys.
-Includes Product with ProductImage inline, and Order with OrderItem inline.
+Includes Product with ProductImage inline, Order with OrderItem inline, and Review management.
 """
 
 from django.contrib import admin
-from .models import Category, Product, ProductImage, Order, OrderItem
+from .models import Category, Product, ProductImage, Order, OrderItem, Review, StorePolicy
 
 
 class ProductImageInline(admin.TabularInline):
@@ -131,3 +131,72 @@ class OrderAdmin(admin.ModelAdmin):
             )
         return "-"
     payment_proof_preview.short_description = "Proof Image"
+
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = [
+        'id', 'product_name_display', 'author_name', 'rating',
+        'is_verified_buyer', 'is_approved', 'order_display', 'created_at'
+    ]
+    list_filter = ['is_verified_buyer', 'is_approved', 'rating', 'created_at']
+    search_fields = ['author_name', 'author_email', 'comment', 'title', 'product__name']
+    list_editable = ['is_approved']
+    readonly_fields = ['created_at', 'updated_at', 'user_id', 'order']
+    
+    fieldsets = (
+        ('Review Details', {
+            'fields': ('product', 'order', 'rating', 'title', 'comment')
+        }),
+        ('Author Information', {
+            'fields': ('author_name', 'author_email', 'user_id')
+        }),
+        ('Verification & Status', {
+            'fields': ('is_verified_buyer', 'is_approved', 'helpful_count')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def product_name_display(self, obj):
+        return obj.product.name
+    product_name_display.short_description = 'Product'
+    product_name_display.admin_order_field = 'product__name'
+    
+    def order_display(self, obj):
+        from django.utils.html import format_html
+        if obj.order:
+            return format_html(
+                '<a href="/admin/products/order/{}/change/">{}</a>',
+                obj.order.id,
+                obj.order.order_number
+            )
+        return '-'
+    order_display.short_description = 'Order'
+    
+    actions = ['approve_reviews', 'disapprove_reviews', 'mark_as_verified']
+    
+    def approve_reviews(self, request, queryset):
+        updated = queryset.update(is_approved=True)
+        self.message_user(request, f'{updated} reviews approved successfully.')
+    approve_reviews.short_description = 'Approve selected reviews'
+    
+    def disapprove_reviews(self, request, queryset):
+        updated = queryset.update(is_approved=False)
+        self.message_user(request, f'{updated} reviews disapproved.')
+    disapprove_reviews.short_description = 'Disapprove selected reviews'
+    
+    def mark_as_verified(self, request, queryset):
+        updated = queryset.update(is_verified_buyer=True)
+        self.message_user(request, f'{updated} reviews marked as verified purchases.')
+    mark_as_verified.short_description = 'Mark as verified purchases'
+
+
+@admin.register(StorePolicy)
+class StorePolicyAdmin(admin.ModelAdmin):
+    list_display = ['key', 'title', 'badge_label', 'last_updated', 'updated_at']
+    search_fields = ['key', 'title']
+    readonly_fields = ['updated_at']

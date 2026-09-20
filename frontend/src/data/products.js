@@ -2380,6 +2380,42 @@ export const FALLBACK_PRODUCTS = [
     shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
     care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
   },
+  {
+    id: 120,
+    name: "Angel Wings Pink Crystal Heart Y-Drop Necklace",
+    slug: "angel-wings-pink-crystal-heart-y-drop-necklace",
+    price: 649,
+    original_price: 1499,
+    category: "Necklaces",
+    style: ["Romantic", "Elegant", "Fairycore", "Luxury"],
+    short_description: "Enchanting silver-tone angel wings encrusted with pavé zircons cradling a faceted blush pink crystal heart with an articulated drop charm.",
+    description: "Ascend into whimsical romance with this celestial statement piece. Expertly crafted in tarnish-resistant platinum-plated titanium stainless steel, this necklace features sculpted angel wings adorned with brilliant micro-pavé cubic zirconia surrounding a radiant heart-cut pink crystal gemstone. A delicate drop chain with an additional polished silver heart drops gracefully from the center for an alluring Y-silhouette.",
+    image: "/products/120/1.jpeg",
+    thumbnail: "/products/120/1.jpeg",
+    images: [
+      "/products/120/1.jpeg",
+      "/products/120/2.jpeg",
+      "/products/120/3.jpeg",
+      "/products/120/4.jpeg"
+    ],
+    variants: [],
+    in_stock: true,
+    is_featured: true,
+    is_bestseller: true,
+    rating: 4.9,
+    review_count: 28,
+    features: ["Anti-tarnish", "Waterproof", "Hypoallergenic", "Platinum Plated", "Quality Guarantee"],
+    specifications: {
+      "Material": "Platinum-Plated Titanium Stainless Steel",
+      "Finish": "High-Polish Platinum Silver",
+      "Stones": "Faceted Blush Pink Crystal Heart & Micro-Pavé Cubic Zirconia",
+      "Design": "Sculpted Angel Wings with Articulated Y-Drop Heart Chain",
+      "Chain Length": "40cm + 5cm extension",
+      "Features": "Anti-tarnish, Waterproof, Hypoallergenic"
+    },
+    shipping: {"standard": "6 to 8 days", "express": "3 to 4 days", "free_threshold": 999},
+    care_instructions: ["Avoid direct contact with harsh perfumes and chemicals.", "Store in the provided jewellery pouch when not in use.", "Clean gently with a soft dry cloth."],
+  },
 ];
 
 export const CATEGORIES = [

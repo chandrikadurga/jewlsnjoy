@@ -26,9 +26,9 @@ const SIGNATURE_COLLECTIONS = [
   },
   {
     id: 'rings',
-    name: 'Cocktail & Crystal Rings',
-    tagline: '',
-    desc: 'Marquise-cut rainbow crystals, solitaire bands & cocktail rings.',
+    name: 'Rings',
+    tagline: 'Adjustable Comfort Fit',
+    desc: 'Marquise-cut rainbow crystals, solitaire bands & statement cocktail rings.',
     count: '12+ Styles',
     image: '/products/8/2.jpeg',
     link: '/shop?category=Rings',

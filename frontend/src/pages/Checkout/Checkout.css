@@ -365,6 +365,35 @@
   font-size: 0.85rem;
 }
 
+/* Custom Textarea for Order Notes */
+.checkout-field--notes {
+  margin-top: var(--space-4);
+  margin-bottom: 0;
+}
+
+.checkout-field__textarea {
+  min-height: 86px;
+  resize: vertical;
+  line-height: 1.5;
+  font-family: var(--font-sans);
+}
+
+.checkout-field__label .opt {
+  color: #8C7E72;
+  font-weight: 400;
+  text-transform: none;
+  font-size: 0.75rem;
+  letter-spacing: normal;
+  margin-left: 4px;
+}
+
+.checkout-field__hint {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
 /* --- Shipping Method Selection Radios --- */
 .checkout-shipping-options {
   display: flex;

@@ -44,6 +44,7 @@ export default function Checkout() {
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', phone: '',
     address: '', city: '', state: '', postalCode: '',
+    orderNotes: '',
   });
 
   // Delhivery Pincode Serviceability State
@@ -193,7 +194,8 @@ export default function Checkout() {
 
     const shippingNote = `Shipping: ${shippingMethod === 'express' ? 'Express' : 'Standard'}`;
     const couponNote = appliedCoupon?.code ? `Coupon: ${appliedCoupon.code} (-₹${discountAmount})` : '';
-    const combinedNotes = [shippingNote, couponNote].filter(Boolean).join(' | ');
+    const userNote = form.orderNotes?.trim() ? `Order Note: ${form.orderNotes.trim()}` : '';
+    const combinedNotes = [shippingNote, couponNote, userNote].filter(Boolean).join(' | ');
 
     const baseOrderPayload = {
       customer_name: `${form.firstName} ${form.lastName}`.trim(),
@@ -278,7 +280,7 @@ export default function Checkout() {
         country: 'India',
         coupon_code: appliedCoupon?.code || couponCode.trim().toUpperCase(),
         shipping_method: shippingMethod,
-        notes: appliedCoupon?.code ? `Coupon: ${appliedCoupon.code} (-₹${discountAmount})` : (couponCode ? `Coupon applied: ${couponCode}` : ''),
+        notes: combinedNotes,
         items: items.map((item) => ({
           id: Number(item.product?.id || item.id),
           product_id: Number(item.product?.id || item.id),
@@ -313,6 +315,7 @@ export default function Checkout() {
         },
         notes: {
           order_number: rzpOrder.order_number,
+          order_notes: form.orderNotes?.trim() || '',
         },
         onSuccess: (res) => {
           paymentResponse = res;
@@ -451,6 +454,12 @@ export default function Checkout() {
                 <div className="checkout-success__dp-item">
                   <strong>Delivering To:</strong>
                   <span>{form.address}, {form.city}, {form.state} - {form.postalCode}</span>
+                </div>
+              )}
+              {form.orderNotes?.trim() && (
+                <div className="checkout-success__dp-item">
+                  <strong>Order Note:</strong>
+                  <span>{form.orderNotes.trim()}</span>
                 </div>
               )}
               <div className="checkout-success__dp-item">
@@ -848,6 +857,25 @@ export default function Checkout() {
                     </select>
                     <span className="checkout-select-arrow">▾</span>
                   </div>
+                </div>
+
+                {/* Order Notes / Delivery Instructions */}
+                <div className="checkout-field checkout-field--notes">
+                  <label htmlFor="orderNotes" className="checkout-field__label">
+                    Order Notes <span className="opt">(Optional)</span>
+                  </label>
+                  <textarea
+                    id="orderNotes"
+                    name="orderNotes"
+                    rows="3"
+                    className="checkout-field__input checkout-field__textarea"
+                    value={form.orderNotes}
+                    onChange={handleChange}
+                    placeholder="Notes about your order, e.g. special delivery instructions, apartment gate code, or gift note..."
+                  />
+                  <span className="checkout-field__hint">
+                    Add instructions for delivery or a personalized gift note.
+                  </span>
                 </div>
               </section>
 

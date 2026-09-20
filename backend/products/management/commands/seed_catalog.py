@@ -16,8 +16,26 @@ from products.mock_data import PRODUCTS, CATEGORIES
 class Command(BaseCommand):
     help = 'Seeds database with categories, products, multi-angle images, and sample orders'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--force',
+            action='store_true',
+            help='Force re-seed even if products already exist in the database.',
+        )
+
     def handle(self, *args, **options):
+        # Skip seeding if products already exist (prevents overwriting admin changes on redeploy)
+        existing_count = Product.objects.count()
+        if existing_count > 0 and not options.get('force'):
+            self.stdout.write(self.style.SUCCESS(
+                f'Database already has {existing_count} products. '
+                f'Skipping seed to preserve existing data. '
+                f'Use --force to re-seed.'
+            ))
+            return
+
         self.stdout.write(self.style.NOTICE('Beginning database seeding...'))
+
 
         # 1. Seed Categories
         category_map = {}

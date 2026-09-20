@@ -16,8 +16,8 @@ const SIGNATURE_COLLECTIONS = [
   },
   {
     id: 'earrings',
-    name: 'Statement & Daily Earrings',
-    tagline: '',
+    name: 'Earrings',
+    tagline: 'Hypoallergenic • Titanium Steel',
     desc: 'Hollow heart silhouettes, four-leaf clovers, huggies & drops.',
     count: '15+ Styles',
     image: '/products/15/1.jpeg',
@@ -35,14 +35,14 @@ const SIGNATURE_COLLECTIONS = [
     featuredTag: 'Trending Now',
   },
   {
-    id: 'layered',
-    name: 'Royal Crown & Layered Sets',
-    tagline: 'Fairytale Crystals & Layering',
-    desc: 'Regal crown heart zircons, dual-strand herringbone & medallion sets.',
+    id: 'bracelets',
+    name: 'Bracelet Collection',
+    tagline: 'Liquid Gold & Charms',
+    desc: 'Herringbone chains, lucky clover charms, Cuban links & luxury bangles.',
     count: '20+ Styles',
-    image: '/products/6/2.jpeg',
-    link: '/shop?style=Luxury',
-    featuredTag: 'Curated Sets',
+    image: '/products/31/1.jpeg',
+    link: '/shop?category=Bracelets',
+    featuredTag: 'Curated Bracelets',
   },
 ];
 
@@ -101,6 +101,15 @@ const CURATED_LOOKS = [
     badge: 'Onyx Heart',
     link: '/products/2',
   },
+  {
+    id: 31,
+    title: 'Liquid Gold Herringbone Chain Bracelet',
+    price: '₹549',
+    collection: 'Bracelets & Chains',
+    image: '/products/31/1.jpeg',
+    badge: 'Liquid Gold Drape',
+    link: '/products/31',
+  },
 ];
 
 export default function Collections() {
@@ -112,6 +121,7 @@ export default function Collections() {
         if (selectedFilter === 'necklaces') return item.collection.includes('Necklaces') || item.collection.includes('Romantic');
         if (selectedFilter === 'earrings') return item.collection.includes('Earrings');
         if (selectedFilter === 'rings') return item.collection.includes('Rings');
+        if (selectedFilter === 'bracelets') return item.collection.includes('Bracelet');
         if (selectedFilter === 'sets') return item.collection.includes('Royal') || item.collection.includes('Layered');
         return true;
       });
@@ -205,6 +215,13 @@ export default function Collections() {
                 onClick={() => setSelectedFilter('rings')}
               >
                 Rings
+              </button>
+              <button
+                type="button"
+                className={`collections-filter-tab ${selectedFilter === 'bracelets' ? 'active' : ''}`}
+                onClick={() => setSelectedFilter('bracelets')}
+              >
+                Bracelets
               </button>
               <button
                 type="button"

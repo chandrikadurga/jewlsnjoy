@@ -107,58 +107,6 @@ PRODUCTS = [
         ]
     },
     {
-        "id": 3,
-        "name": "Royal Crown Pink Crystal Necklace",
-        "slug": "royal-crown-pink-crystal-necklace",
-        "price": 219,
-        "original_price": 799,
-        "category": "Necklaces",
-        "style": [
-            "Romantic",
-            "Statement"
-        ],
-        "short_description": "An enchanting silver-tone necklace showcasing a regal crown perched atop a faceted pink heart zircon crystal.",
-        "description": "An enchanting silver-tone necklace showcasing a regal crown accented with clear crystals perched atop a vivid faceted pink heart zircon. A delicate titanium steel chain ensures lasting brilliance and comfort for any royal occasion.",
-        "image": "/api/placeholder/product_3/1",
-        "thumbnail": "/api/placeholder/product_3/1",
-        "images": [
-            "/api/placeholder/product_3/1",
-            "/api/placeholder/product_3/2",
-            "/api/placeholder/product_3/3",
-            "/api/placeholder/product_3/4",
-            "/api/placeholder/product_3/5"
-        ],
-        "variants": [],
-        "in_stock": True,
-        "is_featured": True,
-        "is_bestseller": False,
-        "rating": 4.7,
-        "review_count": 76,
-        "features": [
-            "Anti-tarnish",
-            "Waterproof",
-            "Rhodium Plated",
-            "Faceted Zircon"
-        ],
-        "specifications": {
-            "Material": "Titanium Stainless Steel Chain, Copper Pendant",
-            "Finish": "Rhodium Color Plated",
-            "Plating": "Long-lasting PVD Plated",
-            "Stones": "High Quality Pink Zircon Crystal",
-            "Features": "Anti-tarnish, Waterproof, Quality Guarantee"
-        },
-        "shipping": {
-            "standard": "6 to 8 days",
-            "express": "3 to 4 days",
-            "free_threshold": 999
-        },
-        "care_instructions": [
-            "Avoid direct contact with harsh perfumes and chemicals.",
-            "Store in the provided jewellery pouch when not in use.",
-            "Clean gently with a soft dry cloth."
-        ]
-    },
-    {
         "id": 4,
         "name": "Onyx Solitaire Medallion Necklace",
         "slug": "onyx-solitaire-medallion-necklace",

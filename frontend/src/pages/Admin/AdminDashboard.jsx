@@ -57,7 +57,7 @@ export default function AdminDashboard() {
         recent_products: [
           { id: 1, name: 'Emerald Luxe Tennis Necklace', price: '799.00', primary_image_url: '/products/1/1.jpeg', in_stock: true },
           { id: 2, name: 'Midnight Heart Pendant Necklace', price: '599.00', primary_image_url: '/products/2/1.jpeg', in_stock: true },
-          { id: 3, name: 'Royal Crown Pink Crystal Necklace', price: '649.00', primary_image_url: '/products/3/1.jpeg', in_stock: true },
+          { id: 4, name: 'Onyx Solitaire Medallion Necklace', price: '209.00', primary_image_url: '/products/4/1.jpeg', in_stock: true },
         ]
       });
     } finally {

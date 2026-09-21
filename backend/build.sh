@@ -11,5 +11,6 @@ python manage.py collectstatic --no-input
 echo "=== Running database migrations ==="
 python manage.py migrate --no-input
 
-echo "=== Seeding catalog data ==="
-python manage.py seed_catalog || true
+# Note: Database seeding is intentionally omitted from production builds
+# to prevent any possibility of overwriting admin changes or re-creating deleted products.
+

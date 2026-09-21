@@ -1,10 +1,24 @@
 /**
  * Persistent product cache to eliminate visual flicker and stale fallback units on page refresh.
  * Keeps local product state synchronized with database modifications.
+ * Version: v3 (auto-invalidates older cached product catalogs)
  */
 
-const CACHE_KEY = 'jewlsnjoy_product_catalog_cache';
-const SINGLE_CACHE_PREFIX = 'jewlsnjoy_prod_';
+const CACHE_KEY = 'jewlsnjoy_product_catalog_cache_v3';
+const SINGLE_CACHE_PREFIX = 'jewlsnjoy_prod_v3_';
+
+// Purge obsolete legacy cache keys on load
+try {
+  localStorage.removeItem('jewlsnjoy_product_catalog_cache');
+  localStorage.removeItem('jewlsnjoy_product_catalog_cache_v2');
+  Object.keys(localStorage).forEach((k) => {
+    if (k.startsWith('jewlsnjoy_prod_') && !k.startsWith(SINGLE_CACHE_PREFIX)) {
+      localStorage.removeItem(k);
+    }
+  });
+} catch {
+  // Ignore localStorage access restrictions
+}
 
 /**
  * Get all cached products mapped by ID and slug.
@@ -43,11 +57,13 @@ export function cacheProduct(product) {
 
 /**
  * Save an array of products to cache.
+ * @param {Array} products - List of products to cache
+ * @param {boolean} replaceAll - If true, replaces catalog cache completely (purges deleted products)
  */
-export function cacheProductsList(products) {
+export function cacheProductsList(products, replaceAll = false) {
   if (!Array.isArray(products) || products.length === 0) return;
   try {
-    const map = getProductCacheMap();
+    const map = replaceAll ? {} : getProductCacheMap();
     products.forEach((p) => {
       if (p && p.id) {
         const enriched = { ...p, _fromLive: true };
@@ -60,6 +76,62 @@ export function cacheProductsList(products) {
     localStorage.setItem(CACHE_KEY, JSON.stringify(map));
   } catch (e) {
     // Ignore storage quota errors
+  }
+}
+
+/**
+ * Remove a single product from all cache locations (map and single items).
+ */
+export function removeProductFromCache(idOrSlug) {
+  if (!idOrSlug) return;
+  try {
+    const targetKey = String(idOrSlug);
+    const map = getProductCacheMap();
+    let foundId = null;
+    let foundSlug = null;
+
+    if (map[targetKey]) {
+      foundId = map[targetKey].id;
+      foundSlug = map[targetKey].slug;
+      delete map[targetKey];
+    }
+    if (foundId && map[String(foundId)]) {
+      delete map[String(foundId)];
+    }
+    if (foundSlug && map[String(foundSlug)]) {
+      delete map[String(foundSlug)];
+    }
+
+    localStorage.setItem(CACHE_KEY, JSON.stringify(map));
+    localStorage.removeItem(`${SINGLE_CACHE_PREFIX}${targetKey}`);
+    if (foundId) localStorage.removeItem(`${SINGLE_CACHE_PREFIX}${foundId}`);
+    if (foundSlug) localStorage.removeItem(`${SINGLE_CACHE_PREFIX}${foundSlug}`);
+  } catch (e) {
+    // Ignore error
+  }
+}
+
+/**
+ * Remove multiple products from cache by IDs.
+ */
+export function removeProductsFromCache(ids = []) {
+  if (!Array.isArray(ids)) return;
+  ids.forEach(removeProductFromCache);
+}
+
+/**
+ * Completely clear the product cache.
+ */
+export function clearProductCache() {
+  try {
+    localStorage.removeItem(CACHE_KEY);
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith(SINGLE_CACHE_PREFIX) || key.startsWith('jewlsnjoy_prod_')) {
+        localStorage.removeItem(key);
+      }
+    });
+  } catch (e) {
+    // Ignore error
   }
 }
 

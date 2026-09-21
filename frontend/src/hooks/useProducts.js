@@ -73,7 +73,8 @@ export function useProducts(params = {}) {
       const data = await productApi.getAll(parsed);
       const rawList = data?.results || (Array.isArray(data) ? data : []);
       if (rawList.length > 0) {
-        cacheProductsList(rawList);
+        const isFullCatalog = !parsed.category && !parsed.style && !parsed.search && !parsed.featured && !parsed.bestseller;
+        cacheProductsList(rawList, isFullCatalog);
         setProducts(rawList);
       } else {
         const cached = getCachedProductsList();

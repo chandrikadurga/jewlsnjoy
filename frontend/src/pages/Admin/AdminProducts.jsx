@@ -32,6 +32,8 @@ import {
   cacheProduct,
   cacheProductsList,
   getCachedProductsList,
+  removeProductFromCache,
+  removeProductsFromCache,
 } from '../../utils/productCache';
 import './AdminProducts.css';
 
@@ -172,7 +174,7 @@ export default function AdminProducts() {
       ]);
       if (prodsData && prodsData.length) {
         setProducts(prodsData);
-        cacheProductsList(prodsData);
+        cacheProductsList(prodsData, true);
       } else {
         const cached = getCachedProductsList();
         setProducts(cached || FALLBACK_PRODUCTS);
@@ -679,7 +681,8 @@ export default function AdminProducts() {
       const remaining = prevProducts.filter((p) => !idsToDelete.includes(p.id));
       setProducts(remaining);
       setSelectedIds([]);
-      cacheProductsList(remaining);
+      removeProductsFromCache(idsToDelete);
+      cacheProductsList(remaining, true);
       showFeedback(`${idsToDelete.length} piece${idsToDelete.length > 1 ? 's' : ''} deleted.`);
       broadcastCatalogUpdate();
 
@@ -690,7 +693,7 @@ export default function AdminProducts() {
         console.error('Failed to delete on server, rolling back:', err);
         setProducts(prevProducts);
         setSelectedIds(prevSelected);
-        cacheProductsList(prevProducts);
+        cacheProductsList(prevProducts, true);
         showFeedback('Could not delete pieces on server. Rolled back.');
       }
     } else {
@@ -698,7 +701,8 @@ export default function AdminProducts() {
       const remaining = prevProducts.filter((p) => p.id !== idToDelete);
       setProducts(remaining);
       setSelectedIds((prev) => prev.filter((id) => id !== idToDelete));
-      cacheProductsList(remaining);
+      removeProductFromCache(idToDelete);
+      cacheProductsList(remaining, true);
       showFeedback(`"${target.name}" deleted from catalog.`);
       if (editingProduct && editingProduct.id === idToDelete) {
         closeModal();
@@ -712,7 +716,7 @@ export default function AdminProducts() {
         console.error('Failed to delete on server, rolling back:', err);
         setProducts(prevProducts);
         setSelectedIds(prevSelected);
-        cacheProductsList(prevProducts);
+        cacheProductsList(prevProducts, true);
         showFeedback('Could not delete piece on server. Rolled back.');
       }
     }

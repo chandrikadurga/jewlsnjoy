@@ -273,6 +273,9 @@ class OrderCreateSerializer(serializers.Serializer):
     def create(self, validated_data):
         import uuid
         import re
+        from django.db import transaction
+        from django.db.models import F
+        
         items_data = validated_data.pop('items', [])
         
         def parse_price(val):
@@ -318,25 +321,43 @@ class OrderCreateSerializer(serializers.Serializer):
         order_num = f"ORD-{uuid.uuid4().hex[:6].upper()}"
         user_id = validated_data.pop('user_id', '')
 
-        order = Order.objects.create(
-            order_number=order_num,
-            total_amount=total,
-            user_id=user_id,
-            **validated_data
-        )
-
-        for item in items_data:
-            prod_id = item.get('id') or item.get('product_id')
-            prod = Product.objects.filter(id=prod_id).first() if prod_id else None
-            unit_price = parse_price(item.get('price', 0))
-            OrderItem.objects.create(
-                order=order,
-                product=prod,
-                product_name=item.get('name') or (prod.name if prod else 'Jewellery Item'),
-                price=unit_price,
-                quantity=int(item.get('quantity', 1)),
-                image_url=item.get('image_url') or (prod.primary_image_url if prod else '/products/1/1.jpeg')
+        with transaction.atomic():
+            order = Order.objects.create(
+                order_number=order_num,
+                total_amount=total,
+                user_id=user_id,
+                **validated_data
             )
+
+            for item in items_data:
+                prod_id = item.get('id') or item.get('product_id')
+                prod = Product.objects.filter(id=prod_id).first() if prod_id else None
+                unit_price = parse_price(item.get('price', 0))
+                quantity = int(item.get('quantity', 1))
+                
+                OrderItem.objects.create(
+                    order=order,
+                    product=prod,
+                    product_name=item.get('name') or (prod.name if prod else 'Jewellery Item'),
+                    price=unit_price,
+                    quantity=quantity,
+                    image_url=item.get('image_url') or (prod.primary_image_url if prod else '/products/1/1.jpeg')
+                )
+                
+                # Decrement stock immediately for confirmed orders (COD)
+                # For online payment orders that go through /api/payments/create/ flow,
+                # stock will be decremented when payment is verified
+                # This endpoint is primarily used for COD orders
+                if prod and order.status in ('confirmed', 'processing', 'shipped'):
+                    Product.objects.filter(id=prod.id).update(
+                        stock_quantity=F('stock_quantity') - quantity
+                    )
+                    prod.refresh_from_db(fields=['stock_quantity'])
+                    if prod.stock_quantity <= 0:
+                        Product.objects.filter(id=prod.id).update(
+                            stock_quantity=0,
+                            in_stock=False
+                        )
 
         # For COD orders, do NOT immediately manifest or generate an AWB upon customer checkout.
         # The order remains safely in 'confirmed' with payment_status='pending'.

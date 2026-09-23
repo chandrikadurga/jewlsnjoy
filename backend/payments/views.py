@@ -210,7 +210,10 @@ class RazorpayCreateOrderView(APIView):
         elif coupon in ('JOY99', 'SAVE99', 'FLAT99', '99OFF', 'OFF99', 'JEWELS99', 'WELCOME99'):
             if subtotal >= Decimal('999.00'):
                 discount_amount = min(subtotal, Decimal('99.00'))
-        elif coupon in ('JOY30', 'SAVE30', 'FLAT30', 'WELCOME30', 'SPECIAL30', 'OFF30'):
+        elif coupon in ('JOY49', 'SAVE49', 'FLAT49', '49OFF', 'OFF49', 'JEWELS49', 'WELCOME49'):
+            if subtotal >= Decimal('499.00'):
+                discount_amount = min(subtotal, Decimal('49.00'))
+        elif coupon in ('JOY30', 'SAVE30', 'FLAT30', 'WELCOME30', 'SPECIAL30', 'OFF30', '30OFF'):
             discount_amount = min(subtotal, Decimal('30.00'))
 
         subtotal_after_discount = max(Decimal('0.00'), subtotal - discount_amount)

@@ -21,6 +21,22 @@ const INDIAN_STATES = [
 
 const DISCOUNT_OFFERS = [
   {
+    code: 'JOY30',
+    discount: 30,
+    minAmount: 0,
+    title: 'Get Flat ₹30 OFF',
+    desc: 'All items (any order value)',
+    aliases: ['JOY30', 'SAVE30', 'FLAT30', 'WELCOME30', 'OFF30', 'SPECIAL30', '30OFF'],
+  },
+  {
+    code: 'JOY49',
+    discount: 49,
+    minAmount: 499,
+    title: 'Get Flat ₹49 OFF',
+    desc: 'Orders ₹499+',
+    aliases: ['JOY49', 'SAVE49', 'FLAT49', '49OFF', 'OFF49', 'JEWELS49', 'WELCOME49'],
+  },
+  {
     code: 'JOY99',
     discount: 99,
     minAmount: 999,
@@ -182,11 +198,13 @@ export default function Checkout() {
     const code = (rawCode || couponCode).trim().toUpperCase();
     if (!code) return;
 
-    const offer299 = DISCOUNT_OFFERS[2]; // ₹1999 -> ₹299 off
-    const offer199 = DISCOUNT_OFFERS[1]; // ₹1499 -> ₹199 off
-    const offer99 = DISCOUNT_OFFERS[0];  // ₹999 -> ₹99 off
+    const offer299 = DISCOUNT_OFFERS.find((o) => o.code === 'JOY299'); // ₹1999 -> ₹299 off
+    const offer199 = DISCOUNT_OFFERS.find((o) => o.code === 'JOY199'); // ₹1499 -> ₹199 off
+    const offer99 = DISCOUNT_OFFERS.find((o) => o.code === 'JOY99');   // ₹999 -> ₹99 off
+    const offer49 = DISCOUNT_OFFERS.find((o) => o.code === 'JOY49');   // ₹499 -> ₹49 off
+    const offer30 = DISCOUNT_OFFERS.find((o) => o.code === 'JOY30');   // All items -> ₹30 off
 
-    if (offer299.aliases.includes(code)) {
+    if (offer299 && offer299.aliases.includes(code)) {
       if (cartTotal < 1999) {
         const needed = 1999 - cartTotal;
         setCouponMsg({
@@ -198,7 +216,7 @@ export default function Checkout() {
       setAppliedCoupon({ code, type: 'flat', value: 299, minTotal: 1999 });
       setCouponCode(code);
       setCouponMsg({ type: 'success', text: '₹299 flat discount applied successfully!' });
-    } else if (offer199.aliases.includes(code)) {
+    } else if (offer199 && offer199.aliases.includes(code)) {
       if (cartTotal < 1499) {
         const needed = 1499 - cartTotal;
         setCouponMsg({
@@ -210,7 +228,7 @@ export default function Checkout() {
       setAppliedCoupon({ code, type: 'flat', value: 199, minTotal: 1499 });
       setCouponCode(code);
       setCouponMsg({ type: 'success', text: '₹199 flat discount applied successfully!' });
-    } else if (offer99.aliases.includes(code)) {
+    } else if (offer99 && offer99.aliases.includes(code)) {
       if (cartTotal < 999) {
         const needed = 999 - cartTotal;
         setCouponMsg({
@@ -222,7 +240,19 @@ export default function Checkout() {
       setAppliedCoupon({ code, type: 'flat', value: 99, minTotal: 999 });
       setCouponCode(code);
       setCouponMsg({ type: 'success', text: '₹99 flat discount applied successfully!' });
-    } else if (code === 'JOY30' || code === 'SAVE30' || code === 'FLAT30' || code === 'WELCOME30' || code === 'OFF30' || code === 'SPECIAL30') {
+    } else if (offer49 && offer49.aliases.includes(code)) {
+      if (cartTotal < 499) {
+        const needed = 499 - cartTotal;
+        setCouponMsg({
+          type: 'error',
+          text: `Minimum order of ₹499 required for ${code}. Add ₹${needed.toLocaleString('en-IN')} more to unlock!`
+        });
+        return;
+      }
+      setAppliedCoupon({ code, type: 'flat', value: 49, minTotal: 499 });
+      setCouponCode(code);
+      setCouponMsg({ type: 'success', text: '₹49 flat discount applied successfully!' });
+    } else if (offer30 && offer30.aliases.includes(code)) {
       setAppliedCoupon({ code, type: 'flat', value: 30, minTotal: 0 });
       setCouponCode(code);
       setCouponMsg({ type: 'success', text: '₹30 flat discount applied successfully!' });
@@ -235,7 +265,7 @@ export default function Checkout() {
       setCouponCode(code);
       setCouponMsg({ type: 'success', text: '5% member discount applied!' });
     } else {
-      setCouponMsg({ type: 'error', text: 'Invalid coupon code. Try JOY99, JOY199, or JOY299' });
+      setCouponMsg({ type: 'error', text: 'Invalid coupon code. Try JOY30, JOY49, or JOY99' });
     }
   };
 
@@ -268,7 +298,9 @@ export default function Checkout() {
                 <div className="checkout-coupon-offer__text">
                   <strong>{offer.title}</strong>
                   <span>
-                    {isEligible
+                    {offer.minAmount === 0
+                      ? 'Valid on all items (Any order value)'
+                      : isEligible
                       ? `Orders ₹${offer.minAmount.toLocaleString('en-IN')}+ with code ${offer.code}`
                       : `Add ₹${amountNeeded.toLocaleString('en-IN')} more to unlock`}
                   </span>
@@ -284,7 +316,7 @@ export default function Checkout() {
                     applyCouponCode(offer.code);
                   }
                 }}
-                title={isApplied ? 'Click to remove coupon' : !isEligible ? `Add ₹${amountNeeded.toLocaleString('en-IN')} more to unlock` : `Apply code ${offer.code}`}
+                title={isApplied ? 'Click to remove coupon' : !isEligible ? `Add ₹${amountNeeded} more to unlock` : `Apply code ${offer.code}`}
               >
                 {isApplied ? 'Applied ✓' : isEligible ? 'Apply' : `Unlock at ₹${offer.minAmount.toLocaleString('en-IN')}`}
               </button>
@@ -299,7 +331,7 @@ export default function Checkout() {
           <input
             type="text"
             className="checkout-coupon-input"
-            placeholder="Discount code (e.g. JOY99, JOY199, JOY299)"
+            placeholder="Discount code (e.g. JOY30, JOY49, JOY99)"
             value={couponCode}
             onChange={(e) => setCouponCode(e.target.value)}
           />

@@ -539,6 +539,54 @@ export default function ProductDetail() {
               </div>
             )}
 
+            {/* Special Offers Box */}
+            <div className="pd-special-offers" aria-label="Special Offers">
+              <div className="pd-special-offer-item">
+                <span className="pd-special-offer-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M 12.00 3.50 Q 15.13 0.34 16.25 4.64 Q 20.54 3.46 19.36 7.75 Q 23.66 8.87 20.50 12.00 Q 23.66 15.13 19.36 16.25 Q 20.54 20.54 16.25 19.36 Q 15.13 23.66 12.00 20.50 Q 8.87 23.66 7.75 19.36 Q 3.46 20.54 4.64 16.25 Q 0.34 15.13 3.50 12.00 Q 0.34 8.87 4.64 7.75 Q 3.46 3.46 7.75 4.64 Q 8.87 0.34 12.00 3.50 Z"
+                      fill="#ff2b70"
+                    />
+                    <line x1="15.2" y1="8.8" x2="8.8" y2="15.2" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                    <circle cx="9.2" cy="9.2" r="1.3" fill="#ffffff" />
+                    <circle cx="14.8" cy="14.8" r="1.3" fill="#ffffff" />
+                  </svg>
+                </span>
+                <span className="pd-special-offer-text">Buy 2 Get 1 Free — Limited Time Offer</span>
+              </div>
+
+              <div className="pd-special-offer-item">
+                <span className="pd-special-offer-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M 12.00 3.50 Q 15.13 0.34 16.25 4.64 Q 20.54 3.46 19.36 7.75 Q 23.66 8.87 20.50 12.00 Q 23.66 15.13 19.36 16.25 Q 20.54 20.54 16.25 19.36 Q 15.13 23.66 12.00 20.50 Q 8.87 23.66 7.75 19.36 Q 3.46 20.54 4.64 16.25 Q 0.34 15.13 3.50 12.00 Q 0.34 8.87 4.64 7.75 Q 3.46 3.46 7.75 4.64 Q 8.87 0.34 12.00 3.50 Z"
+                      fill="#ff2b70"
+                    />
+                    <line x1="15.2" y1="8.8" x2="8.8" y2="15.2" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                    <circle cx="9.2" cy="9.2" r="1.3" fill="#ffffff" />
+                    <circle cx="14.8" cy="14.8" r="1.3" fill="#ffffff" />
+                  </svg>
+                </span>
+                <span className="pd-special-offer-text">Extra Discount on Prepaid Orders</span>
+              </div>
+
+              <div className="pd-special-offer-item">
+                <span className="pd-special-offer-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M 12.00 3.50 Q 15.13 0.34 16.25 4.64 Q 20.54 3.46 19.36 7.75 Q 23.66 8.87 20.50 12.00 Q 23.66 15.13 19.36 16.25 Q 20.54 20.54 16.25 19.36 Q 15.13 23.66 12.00 20.50 Q 8.87 23.66 7.75 19.36 Q 3.46 20.54 4.64 16.25 Q 0.34 15.13 3.50 12.00 Q 0.34 8.87 4.64 7.75 Q 3.46 3.46 7.75 4.64 Q 8.87 0.34 12.00 3.50 Z"
+                      fill="#ff2b70"
+                    />
+                    <line x1="15.2" y1="8.8" x2="8.8" y2="15.2" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                    <circle cx="9.2" cy="9.2" r="1.3" fill="#ffffff" />
+                    <circle cx="14.8" cy="14.8" r="1.3" fill="#ffffff" />
+                  </svg>
+                </span>
+                <span className="pd-special-offer-text">Free Mystery Gift on Orders Above ₹499</span>
+              </div>
+            </div>
+
             {/* Accordions */}
             <Accordion>
               <AccordionItem title="Product Details & Materials" defaultOpen>

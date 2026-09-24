@@ -530,6 +530,76 @@ export default function ProductDetail() {
               </button>
             </div>
 
+            {/* Secure Checkout Strip */}
+            <div className="pd-secure-checkout" aria-label="Secure Checkout With">
+              <div className="pd-secure-checkout__header">
+                <svg className="pd-secure-checkout__lock" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <span className="pd-secure-checkout__title">Secure Checkout With</span>
+              </div>
+              <div className="pd-secure-checkout__badges">
+                {/* PhonePe */}
+                <span className="pd-secure-checkout__badge" title="PhonePe">
+                  <svg height="19" viewBox="0 0 84 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="PhonePe">
+                    <circle cx="10" cy="10" r="10" fill="#5F259F"/>
+                    <path d="M12 4.8L9.8 7.2" stroke="#FFFFFF" strokeWidth="1.6" strokeLinecap="round"/>
+                    <path d="M6.8 7h4.8v9" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M6.8 7v3.8c0 1.2.9 2 2.1 2h2.7" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round"/>
+                    <path d="M8.8 13.8l2.4-4.8" stroke="#FFFFFF" strokeWidth="1.6" strokeLinecap="round"/>
+                    <text x="24" y="14.8" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" fontSize="13" fontWeight="700" fill="#5F259F" letterSpacing="-0.3">PhonePe</text>
+                  </svg>
+                </span>
+
+                {/* Google Pay */}
+                <span className="pd-secure-checkout__badge" title="Google Pay">
+                  <svg height="19" viewBox="0 0 54 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Google Pay">
+                    <g transform="translate(0, 1) scale(0.75)">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                    </g>
+                    <text x="23" y="15" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" fontSize="13.5" fontWeight="600" fill="#5F6368" letterSpacing="-0.2">Pay</text>
+                  </svg>
+                </span>
+
+                {/* Paytm */}
+                <span className="pd-secure-checkout__badge" title="Paytm">
+                  <svg height="17" viewBox="0 0 52 17" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Paytm">
+                    <text x="0" y="13.5" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" fontSize="15" fontWeight="800" fill="#002E6E" letterSpacing="-0.5">pay<tspan fill="#00BAF2">tm</tspan></text>
+                  </svg>
+                </span>
+
+                {/* UPI */}
+                <span className="pd-secure-checkout__badge" title="Unified Payments Interface (UPI)">
+                  <svg height="18" viewBox="0 0 48 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="UPI">
+                    <text x="0" y="14" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" fontSize="13" fontWeight="900" fontStyle="italic" fill="#4B5563" letterSpacing="0.4">UPI</text>
+                    <path d="M28 2.5l-2.4 12h2.8L30.8 2.5H28z" fill="#F47920"/>
+                    <path d="M31.8 2.5l-2.4 12h2.8L34.6 2.5h-2.8z" fill="#0F8B44"/>
+                  </svg>
+                </span>
+
+                {/* Visa */}
+                <span className="pd-secure-checkout__badge" title="Visa">
+                  <svg height="18" viewBox="0 0 46 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Visa">
+                    <text x="0" y="14.5" fontFamily="'Arial Black', -apple-system, sans-serif" fontSize="14" fontWeight="900" fontStyle="italic" fill="#1434CB" letterSpacing="1">VISA</text>
+                  </svg>
+                </span>
+
+                {/* Mastercard */}
+                <span className="pd-secure-checkout__badge" title="Mastercard">
+                  <svg height="21" viewBox="0 0 34 21" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Mastercard">
+                    <circle cx="11.5" cy="9.5" r="7.5" fill="#EB001B"/>
+                    <circle cx="22.5" cy="9.5" r="7.5" fill="#F79E1B"/>
+                    <path d="M17 4.3A7.47 7.47 0 0 0 14.3 9.5c0 2.1.9 4 2.7 5.2 1.8-1.2 2.7-3.1 2.7-5.2 0-2.1-.9-4-2.7-5.2Z" fill="#FF5F00"/>
+                    <text x="17" y="19.5" textAnchor="middle" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" fontSize="4.6" fontWeight="700" fill="#18181B" letterSpacing="-0.2">mastercard</text>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
             {/* Features */}
             {features && features.length > 0 && (
               <div className="pd-features">

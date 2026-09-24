@@ -283,6 +283,98 @@
   border-color: #c0392b;
 }
 
+/* Secure Checkout Stripe */
+.pd-secure-checkout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  background: var(--color-white, #ffffff);
+  border: 1.5px solid rgba(198, 161, 91, 0.32);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(44, 24, 16, 0.03);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.pd-secure-checkout:hover {
+  border-color: rgba(198, 161, 91, 0.5);
+  box-shadow: 0 4px 18px rgba(44, 24, 16, 0.06);
+}
+
+.pd-secure-checkout__header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.pd-secure-checkout__lock {
+  color: var(--color-gold, #C6A15B);
+  flex-shrink: 0;
+}
+
+.pd-secure-checkout__title {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-brown, #2B211D);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.pd-secure-checkout__badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem 0.85rem;
+  flex-wrap: wrap;
+}
+
+.pd-secure-checkout__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  background: #FAF6F0;
+  border: 1px solid rgba(198, 161, 91, 0.22);
+  border-radius: 6px;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  line-height: 1;
+}
+
+.pd-secure-checkout__badge:hover {
+  transform: translateY(-2px);
+  background: #FFFFFF;
+  border-color: var(--color-gold, #C6A15B);
+  box-shadow: 0 2px 8px rgba(198, 161, 91, 0.15);
+}
+
+.pd-secure-checkout__badge svg {
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .pd-secure-checkout {
+    padding: 0.75rem 0.75rem;
+    gap: 0.55rem;
+    border-radius: 12px;
+  }
+
+  .pd-secure-checkout__title {
+    font-size: 0.78rem;
+  }
+
+  .pd-secure-checkout__badges {
+    gap: 0.45rem 0.55rem;
+  }
+
+  .pd-secure-checkout__badge {
+    padding: 3px 6px;
+  }
+}
+
 /* Features */
 .pd-features {
   display: flex;

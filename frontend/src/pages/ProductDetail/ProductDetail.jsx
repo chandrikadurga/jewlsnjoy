@@ -540,18 +540,6 @@ export default function ProductDetail() {
                 <span className="pd-secure-checkout__title">Secure Checkout With</span>
               </div>
               <div className="pd-secure-checkout__badges">
-                {/* PhonePe */}
-                <span className="pd-secure-checkout__badge" title="PhonePe">
-                  <svg height="19" viewBox="0 0 84 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="PhonePe">
-                    <circle cx="10" cy="10" r="10" fill="#5F259F"/>
-                    <path d="M12 4.8L9.8 7.2" stroke="#FFFFFF" strokeWidth="1.6" strokeLinecap="round"/>
-                    <path d="M6.8 7h4.8v9" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M6.8 7v3.8c0 1.2.9 2 2.1 2h2.7" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round"/>
-                    <path d="M8.8 13.8l2.4-4.8" stroke="#FFFFFF" strokeWidth="1.6" strokeLinecap="round"/>
-                    <text x="24" y="14.8" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" fontSize="13" fontWeight="700" fill="#5F259F" letterSpacing="-0.3">PhonePe</text>
-                  </svg>
-                </span>
-
                 {/* Google Pay */}
                 <span className="pd-secure-checkout__badge" title="Google Pay">
                   <svg height="19" viewBox="0 0 54 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Google Pay">

@@ -201,49 +201,85 @@
 }
 
 /* Quantity */
+.pd-quantity {
+  margin: var(--space-4) 0 var(--space-5);
+}
+
+.pd-quantity__label,
 .pd-qty__label {
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-brown);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
 }
 
+.quantity-selector,
 .pd-qty__controls {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-5);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-full);
-  padding: var(--space-2) var(--space-4);
+  justify-content: space-between;
+  width: 136px;
+  height: 46px;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  padding: 4px 6px;
+  box-sizing: border-box;
+  user-select: none;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+.quantity-selector:hover,
+.pd-qty__controls:hover {
+  border-color: #d4d4d8;
+  background: #f0f0f2;
+}
+
+.quantity-selector__btn,
 .pd-qty__btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
+  width: 36px;
+  height: 36px;
+  border-radius: 7px;
   border: none;
-  background: none;
-  color: var(--color-brown-light);
+  background: transparent;
+  color: #18181b;
   cursor: pointer;
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  padding: 0;
+  transition: background-color var(--transition-fast), color var(--transition-fast), transform 0.1s ease;
 }
 
-.pd-qty__btn:hover {
-  color: var(--color-brown);
-  background: var(--color-beige);
+.quantity-selector__btn:hover:not(:disabled),
+.pd-qty__btn:hover:not(:disabled) {
+  background-color: #e4e4e7;
+  color: #09090b;
 }
 
+.quantity-selector__btn:active:not(:disabled),
+.pd-qty__btn:active:not(:disabled) {
+  transform: scale(0.92);
+  background-color: #d4d4d8;
+}
+
+.quantity-selector__btn:disabled,
+.pd-qty__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.quantity-selector__val,
 .pd-qty__value {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--color-brown);
-  min-width: 20px;
+  flex: 1;
   text-align: center;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #18181b;
+  line-height: 1;
 }
 
 /* Actions */

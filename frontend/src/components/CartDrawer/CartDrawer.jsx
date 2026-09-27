@@ -31,7 +31,7 @@ function CartItem({ item }) {
               onClick={() => updateQuantity(item.key, item.quantity - 1)}
               aria-label="Decrease quantity"
             >
-              <Minus size={12} strokeWidth={2.5} />
+              <Minus size={13} strokeWidth={2.2} />
             </button>
             <span className="cart-item__qty-value">{item.quantity}</span>
             <button
@@ -39,7 +39,7 @@ function CartItem({ item }) {
               onClick={() => updateQuantity(item.key, item.quantity + 1)}
               aria-label="Increase quantity"
             >
-              <Plus size={12} strokeWidth={2.5} />
+              <Plus size={13} strokeWidth={2.2} />
             </button>
           </div>
           <button

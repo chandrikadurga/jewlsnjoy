@@ -473,7 +473,7 @@ export default function ProductDetail() {
                   aria-label="Decrease quantity"
                   id="qty-minus"
                 >
-                  <Minus size={14} />
+                  <Minus size={15} strokeWidth={2.2} />
                 </button>
                 <span className="quantity-selector__val">{quantity}</span>
                 <button
@@ -483,7 +483,7 @@ export default function ProductDetail() {
                   aria-label="Increase quantity"
                   id="qty-plus"
                 >
-                  <Plus size={14} />
+                  <Plus size={15} strokeWidth={2.2} />
                 </button>
               </div>
             </div>

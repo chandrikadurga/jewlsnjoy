@@ -265,3 +265,18 @@ class StorePolicy(models.Model):
         return f"Policy: {self.title or self.key}"
 
 
+class StoreCustomization(models.Model):
+    key = models.CharField(max_length=60, unique=True)
+    title = models.CharField(max_length=200, blank=True, default='')
+    data = models.JSONField(default=dict, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'Store Customizations'
+        ordering = ['key']
+
+    def __str__(self):
+        return f"Customization: {self.title or self.key}"
+
+
+

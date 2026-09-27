@@ -4,6 +4,7 @@ import { ArrowRight, Star, Check, ExternalLink, Play, Pause, Volume2, VolumeX, S
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import FAQSection from '../../components/FAQ/FAQSection';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
+import { customizationApi } from '../../services/api';
 import heroImg from '../../assets/hero-necklaces.png';
 import storyMainImg from '../../assets/products/3/2.jpeg';
 import storyAccentImg from '../../assets/products/4/1.jpeg';
@@ -11,34 +12,76 @@ import './Home.css';
 
 // Hero section
 function Hero() {
+  const [heroData, setHeroData] = useState(() => {
+    try {
+      const cached = localStorage.getItem('jewels_store_customization');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.hero) return parsed.hero;
+      }
+    } catch {}
+    return {
+      eyebrow: 'Handcrafted Elegance',
+      heading_prefix: 'Jewellery That Tells',
+      heading_accent: 'Your',
+      heading_suffix: 'Story',
+      description: 'Timeless, anti-tarnish pieces thoughtfully designed to elevate your everyday moments.',
+      primary_cta_text: 'Explore Collection',
+      primary_cta_link: '/shop',
+      secondary_cta_text: 'View Necklaces',
+      secondary_cta_link: '/shop?category=Necklaces',
+      image_url: '',
+      image_alt: "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys",
+    };
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    customizationApi.getCustomization().then((data) => {
+      if (isMounted && data?.hero) {
+        setHeroData(data.hero);
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
+  const imageSrc = heroData.image_url || heroImg;
+
   return (
     <section className="hero" aria-label="Hero">
       <div className="container">
         <div className="hero__inner">
           <div className="hero__content">
-            <span className="eyebrow hero__eyebrow">Handcrafted Elegance</span>
+            <span className="eyebrow hero__eyebrow">{heroData.eyebrow || 'Handcrafted Elegance'}</span>
             <h1 className="hero__heading">
-              Jewellery That Tells<br className="hero__br" /><em>Your</em> Story
+              {heroData.heading_prefix || 'Jewellery That Tells'}<br className="hero__br" />
+              {heroData.heading_accent ? <em>{heroData.heading_accent} </em> : null}
+              {heroData.heading_suffix || 'Story'}
             </h1>
             <p className="hero__desc">
-              Timeless, anti-tarnish pieces thoughtfully designed to elevate your everyday moments.
+              {heroData.description || 'Timeless, anti-tarnish pieces thoughtfully designed to elevate your everyday moments.'}
             </p>
             <div className="hero__cta">
-              <Link to="/shop" className="btn btn-primary btn-lg" id="hero-shop-btn">
-                Explore Collection
+              <Link to={heroData.primary_cta_link || '/shop'} className="btn btn-primary btn-lg" id="hero-shop-btn">
+                {heroData.primary_cta_text || 'Explore Collection'}
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>
-              <Link to="/shop?category=Necklaces" className="btn btn-secondary btn-lg" id="hero-categories-btn">
-                View Necklaces
+              <Link to={heroData.secondary_cta_link || '/shop?category=Necklaces'} className="btn btn-secondary btn-lg" id="hero-categories-btn">
+                {heroData.secondary_cta_text || 'View Necklaces'}
               </Link>
             </div>
           </div>
 
           <div className="hero__image-wrap">
             <img
-              src={heroImg}
-              alt="Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys"
+              src={imageSrc}
+              alt={heroData.image_alt || "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys"}
               className="hero__image"
+              onError={(e) => {
+                if (e.target.src !== heroImg) {
+                  e.target.src = heroImg;
+                }
+              }}
             />
           </div>
         </div>

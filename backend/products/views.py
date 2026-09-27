@@ -24,7 +24,7 @@ admin_signer = TimestampSigner(salt='jewlsnjoy-admin-auth')
 
 logger = logging.getLogger(__name__)
 
-from .models import Category, Product, ProductImage, Order, OrderItem, Review, StorePolicy
+from .models import Category, Product, ProductImage, Order, OrderItem, Review, StorePolicy, StoreCustomization
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
@@ -1180,6 +1180,105 @@ class AdminStorePolicyView(APIView):
         response = Response({'message': 'Policies updated successfully', 'policies': updated_policies})
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         return response
+
+
+# ─── Store Customization Views (Hero & Announcement Bar) ─────────────────────
+
+DEFAULT_CUSTOMIZATIONS = {
+    'announcement_bar': {
+        'enabled': True,
+        'background_color': '#2B211D',
+        'text_color': '#F5EDE2',
+        'speed_seconds': 25,
+        'messages': [
+            {'id': '1', 'icon': '💳', 'text': 'COD and Prepaid all payment methods are available'},
+            {'id': '2', 'icon': '🎁', 'text': 'Free gifts on every order'},
+            {'id': '3', 'icon': '🚚', 'text': 'Free delivery on order above 999rs'},
+        ]
+    },
+    'hero': {
+        'eyebrow': 'Handcrafted Elegance',
+        'heading_prefix': 'Jewellery That Tells',
+        'heading_accent': 'Your',
+        'heading_suffix': 'Story',
+        'description': 'Timeless, anti-tarnish pieces thoughtfully designed to elevate your everyday moments.',
+        'primary_cta_text': 'Explore Collection',
+        'primary_cta_link': '/shop',
+        'secondary_cta_text': 'View Necklaces',
+        'secondary_cta_link': '/shop?category=Necklaces',
+        'image_url': '',
+        'image_alt': "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys",
+    }
+}
+
+
+class StoreCustomizationView(APIView):
+    """
+    GET /api/customization/
+    Public view returning store customization settings (hero, announcement bar, etc.)
+    """
+    def get(self, request):
+        customization = {}
+        for key, default_data in DEFAULT_CUSTOMIZATIONS.items():
+            db_item = StoreCustomization.objects.filter(key=key).first()
+            if db_item and db_item.data:
+                customization[key] = {**default_data, **db_item.data}
+            else:
+                customization[key] = default_data
+        response = Response(customization)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
+
+
+class AdminStoreCustomizationView(APIView):
+    """
+    GET /api/admin/customization/
+    POST / PUT / PATCH /api/admin/customization/
+    Admin view for reading and updating homepage and store customizations.
+    """
+    def get(self, request):
+        customization = {}
+        for key, default_data in DEFAULT_CUSTOMIZATIONS.items():
+            db_item = StoreCustomization.objects.filter(key=key).first()
+            if db_item and db_item.data:
+                customization[key] = {**default_data, **db_item.data}
+            else:
+                customization[key] = default_data
+        response = Response(customization)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
+
+    def post(self, request):
+        payload = request.data
+        updated_customization = {}
+
+        if 'key' in payload and 'data' in payload:
+            key = payload['key']
+            data = payload['data']
+            sc, _ = StoreCustomization.objects.get_or_create(key=key)
+            sc.title = payload.get('title', sc.title or key.replace('_', ' ').title())
+            sc.data = data
+            sc.save()
+            updated_customization[key] = {**DEFAULT_CUSTOMIZATIONS.get(key, {}), **sc.data}
+        else:
+            for k, val in payload.items():
+                if isinstance(val, dict):
+                    sc, _ = StoreCustomization.objects.get_or_create(key=k)
+                    sc.title = val.get('title', sc.title or k.replace('_', ' ').title())
+                    sc.data = val
+                    sc.save()
+                    updated_customization[k] = {**DEFAULT_CUSTOMIZATIONS.get(k, {}), **val}
+
+        response = Response({'message': 'Customization updated successfully', 'customization': updated_customization})
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return response
+
+    def put(self, request):
+        return self.post(request)
+
+    def patch(self, request):
+        return self.post(request)
+
 
 
 

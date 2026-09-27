@@ -4,6 +4,7 @@ import { ShoppingBag, Search, Menu, X, Heart, User } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { customizationApi } from '../../services/api';
 import SearchOverlay from '../SearchOverlay/SearchOverlay';
 import './Header.css';
 
@@ -22,8 +23,39 @@ export default function Header() {
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [searchOpen, setSearchOpen]   = useState(false);
   const [scrolled, setScrolled]       = useState(false);
+  const [announcementBar, setAnnouncementBar] = useState(() => {
+    try {
+      const cached = localStorage.getItem('jewels_store_customization');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.announcement_bar) return parsed.announcement_bar;
+      }
+    } catch {}
+    return {
+      enabled: true,
+      background_color: '#2B211D',
+      text_color: '#F5EDE2',
+      speed_seconds: 25,
+      messages: [
+        { id: '1', icon: '🎁', text: 'Free gifts on every order' },
+        { id: '2', icon: '🚚', text: 'Free delivery on order above 999rs' },
+        { id: '3', icon: '💳', text: 'COD and Prepaid all payment methods are available' },
+      ],
+    };
+  });
   const mobileNavRef = useRef(null);
   const navigate = useNavigate();
+
+  // Fetch live announcement bar settings
+  useEffect(() => {
+    let isMounted = true;
+    customizationApi.getCustomization().then((data) => {
+      if (isMounted && data?.announcement_bar) {
+        setAnnouncementBar(data.announcement_bar);
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   // Detect scroll for shadow
   useEffect(() => {
@@ -52,37 +84,44 @@ export default function Header() {
   return (
     <>
       <header className={`header${scrolled ? ' header--scrolled' : ''}`} role="banner">
-        {/* Top Announcement Bar — Free Gifts, Free Delivery, COD & Prepaid */}
-        <aside className="announcement-bar" role="region" aria-label="Offers Announcement">
-          <div className="announcement-bar__track">
-            <div className="announcement-bar__content">
-              <span className="announcement-bar__msg">
-                <span className="announcement-bar__icon">🎁</span> Free gifts on every order
-              </span>
-              <span className="announcement-bar__bullet">✦</span>
-              <span className="announcement-bar__msg">
-                <span className="announcement-bar__icon">🚚</span> Free delivery on order above 999rs
-              </span>
-              <span className="announcement-bar__bullet">✦</span>
-              <span className="announcement-bar__msg">
-                <span className="announcement-bar__icon">💳</span> COD and Prepaid all payment methods are available
-              </span>
+        {/* Top Announcement Bar — Dynamic Customization */}
+        {announcementBar?.enabled !== false && (
+          <aside
+            className="announcement-bar"
+            role="region"
+            aria-label="Offers Announcement"
+            style={{
+              backgroundColor: announcementBar.background_color || '#2B211D',
+              color: announcementBar.text_color || '#F5EDE2',
+            }}
+          >
+            <div
+              className="announcement-bar__track"
+              style={announcementBar.speed_seconds ? { animationDuration: `${announcementBar.speed_seconds}s` } : {}}
+            >
+              <div className="announcement-bar__content">
+                {(announcementBar.messages || []).map((msg, idx) => (
+                  <span key={msg.id || idx} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="announcement-bar__msg" style={{ color: announcementBar.text_color || '#F5EDE2' }}>
+                      {msg.icon && <span className="announcement-bar__icon">{msg.icon}</span>} {msg.text}
+                    </span>
+                    <span className="announcement-bar__bullet" style={{ color: announcementBar.text_color || '#F5EDE2' }}>✦</span>
+                  </span>
+                ))}
+              </div>
+              <div className="announcement-bar__content announcement-bar__content--dup" aria-hidden="true">
+                {(announcementBar.messages || []).map((msg, idx) => (
+                  <span key={`dup-${msg.id || idx}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="announcement-bar__msg" style={{ color: announcementBar.text_color || '#F5EDE2' }}>
+                      {msg.icon && <span className="announcement-bar__icon">{msg.icon}</span>} {msg.text}
+                    </span>
+                    <span className="announcement-bar__bullet" style={{ color: announcementBar.text_color || '#F5EDE2' }}>✦</span>
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="announcement-bar__content announcement-bar__content--dup" aria-hidden="true">
-              <span className="announcement-bar__msg">
-                <span className="announcement-bar__icon">🎁</span> Free gifts on every order
-              </span>
-              <span className="announcement-bar__bullet">✦</span>
-              <span className="announcement-bar__msg">
-                <span className="announcement-bar__icon">🚚</span> Free delivery on order above 999rs
-              </span>
-              <span className="announcement-bar__bullet">✦</span>
-              <span className="announcement-bar__msg">
-                <span className="announcement-bar__icon">💳</span> COD and Prepaid all payment methods are available
-              </span>
-            </div>
-          </div>
-        </aside>
+          </aside>
+        )}
 
         <div className="container header__inner">
 

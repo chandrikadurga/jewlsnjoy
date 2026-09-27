@@ -503,6 +503,50 @@ export const adminApi = {
     const response = await api.post('/api/admin/policies/', policiesData);
     return response.data;
   },
+  getCustomization: async () => {
+    const response = await api.get('/api/admin/customization/', { params: { _t: Date.now() } });
+    return response.data;
+  },
+  updateCustomization: async (data) => {
+    const response = await api.post('/api/admin/customization/', data);
+    return response.data;
+  },
+  uploadImage: async (formData) => {
+    const response = await api.post('/api/admin/upload-image/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+};
+
+// ─── Customization API (Storefront & Common) ───────────────────
+
+export const customizationApi = {
+  getCustomization: async () => {
+    try {
+      const response = await api.get('/api/customization/', { params: { _t: Date.now() } });
+      if (response.data) {
+        localStorage.setItem('jewels_store_customization', JSON.stringify(response.data));
+      }
+      return response.data;
+    } catch (err) {
+      console.warn('Using cached or fallback store customizations:', err);
+      const cached = localStorage.getItem('jewels_store_customization');
+      if (cached) {
+        try {
+          return JSON.parse(cached);
+        } catch {}
+      }
+      return null;
+    }
+  },
+  updateCustomization: async (data) => {
+    const response = await api.post('/api/admin/customization/', data);
+    if (response.data?.customization) {
+      localStorage.setItem('jewels_store_customization', JSON.stringify(response.data.customization));
+    }
+    return response.data;
+  },
 };
 
 // ─── Policy API (Storefront & Common) ──────────────────────────

@@ -16,5 +16,6 @@ urlpatterns = [
     path('orders/<int:pk>/delete/', views.AdminOrderDetailView.as_view(), name='admin-order-delete-pk'),
     path('orders/<str:identifier>/delete/', views.AdminOrderDetailView.as_view(), name='admin-order-delete-str'),
     path('policies/', views.AdminStorePolicyView.as_view(), name='admin-policies'),
+    path('customization/', views.AdminStoreCustomizationView.as_view(), name='admin-customization'),
 ]
 

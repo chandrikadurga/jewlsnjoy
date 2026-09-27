@@ -5,7 +5,7 @@ Root URL configuration for Jewels N' Joys backend.
 from django.contrib import admin
 from django.urls import path, include
 from django.http import JsonResponse
-from products.views import OrderCreateView, StorePolicyView
+from products.views import OrderCreateView, StorePolicyView, StoreCustomizationView
 
 
 def api_root(request):
@@ -52,6 +52,7 @@ urlpatterns = [
     path('api/payments/', include('payments.urls')),
     path('api/shipping/', include('shipping.urls')),
     path('api/policies/', StorePolicyView.as_view(), name='store-policies'),
+    path('api/customization/', StoreCustomizationView.as_view(), name='store-customization'),
     path('api/admin/', include('products.admin_urls')),
 ]
 

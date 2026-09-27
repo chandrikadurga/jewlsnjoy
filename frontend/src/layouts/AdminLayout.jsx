@@ -56,6 +56,7 @@ export default function AdminLayout() {
     { to: '/admin/products', label: 'Product Catalog', icon: Package },
     { to: '/admin/orders', label: 'Orders & Sales', icon: ShoppingBag },
     { to: '/admin/policies', label: 'Store Policies', icon: ShieldCheck },
+    { to: '/admin/customizer', label: 'Store Customizer', icon: Sparkles },
   ];
 
 

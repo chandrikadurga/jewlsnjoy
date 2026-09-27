@@ -4,7 +4,7 @@ Includes Product with ProductImage inline, Order with OrderItem inline, and Revi
 """
 
 from django.contrib import admin
-from .models import Category, Product, ProductImage, Order, OrderItem, Review, StorePolicy
+from .models import Category, Product, ProductImage, Order, OrderItem, Review, StorePolicy, StoreCustomization
 
 
 class ProductImageInline(admin.TabularInline):
@@ -200,3 +200,11 @@ class StorePolicyAdmin(admin.ModelAdmin):
     list_display = ['key', 'title', 'badge_label', 'last_updated', 'updated_at']
     search_fields = ['key', 'title']
     readonly_fields = ['updated_at']
+
+
+@admin.register(StoreCustomization)
+class StoreCustomizationAdmin(admin.ModelAdmin):
+    list_display = ['key', 'title', 'updated_at']
+    search_fields = ['key', 'title']
+    readonly_fields = ['updated_at']
+

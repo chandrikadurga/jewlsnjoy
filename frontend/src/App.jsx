@@ -30,6 +30,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminProducts from './pages/Admin/AdminProducts';
 import AdminOrders from './pages/Admin/AdminOrders';
 import AdminPolicies from './pages/Admin/AdminPolicies';
+import AdminCustomizer from './pages/Admin/AdminCustomizer';
 
 
 function App() {
@@ -73,6 +74,7 @@ function App() {
             <Route path="products" element={<AdminProducts />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="policies" element={<AdminPolicies />} />
+            <Route path="customizer" element={<AdminCustomizer />} />
           </Route>
 
         </Routes>

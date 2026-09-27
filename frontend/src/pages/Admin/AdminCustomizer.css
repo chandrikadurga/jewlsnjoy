@@ -1,0 +1,427 @@
+/* ─── Admin Store Customizer Styles ─── */
+
+.admin-customizer-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-customizer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-customizer-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.01em;
+}
+
+.admin-customizer-subtitle {
+  font-size: 0.85rem;
+  color: rgba(247, 239, 230, 0.65);
+  margin: 0;
+}
+
+.admin-customizer-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Tabs */
+.admin-customizer-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(194, 163, 112, 0.2);
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+}
+
+.admin-customizer-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.15rem;
+  background: #18130f;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  border-radius: 8px;
+  color: rgba(247, 239, 230, 0.7);
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.admin-customizer-tab:hover {
+  border-color: #c2a370;
+  color: #fff;
+}
+
+.admin-customizer-tab--active {
+  background: rgba(194, 163, 112, 0.15);
+  border-color: #d4af37;
+  color: #d4af37;
+  font-weight: 600;
+}
+
+/* Content Card */
+.admin-customizer-card {
+  background: #18130f;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.admin-customizer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-customizer-section-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #d4af37;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-customizer-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.admin-customizer-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.admin-customizer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.admin-customizer-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(247, 239, 230, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-customizer-field small {
+  font-size: 0.75rem;
+  color: rgba(247, 239, 230, 0.5);
+}
+
+.admin-customizer-input,
+.admin-customizer-textarea {
+  background: #241c16;
+  border: 1px solid rgba(194, 163, 112, 0.25);
+  border-radius: 8px;
+  color: #fff;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.admin-customizer-input:focus,
+.admin-customizer-textarea:focus {
+  outline: none;
+  border-color: #d4af37;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+.admin-customizer-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Toggle Switch */
+.admin-customizer-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #241c16;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  border-radius: 8px;
+}
+
+.admin-customizer-toggle-info h4 {
+  margin: 0 0 0.25rem 0;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.admin-customizer-toggle-info p {
+  margin: 0;
+  color: rgba(247, 239, 230, 0.6);
+  font-size: 0.8rem;
+}
+
+.admin-customizer-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.admin-customizer-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.admin-customizer-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #382c23;
+  transition: .3s;
+  border-radius: 26px;
+  border: 1px solid rgba(194, 163, 112, 0.3);
+}
+
+.admin-customizer-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .admin-customizer-slider {
+  background-color: #40543B;
+  border-color: #506648;
+}
+
+input:checked + .admin-customizer-slider:before {
+  transform: translateX(22px);
+}
+
+/* Announcement Messages List */
+.admin-customizer-messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-customizer-message-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #241c16;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  border-radius: 8px;
+}
+
+.admin-customizer-emoji-input {
+  width: 65px;
+  text-align: center;
+  font-size: 1.15rem;
+}
+
+.admin-customizer-text-input {
+  flex: 1;
+}
+
+.admin-customizer-item-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  border-radius: 6px;
+  color: rgba(247, 239, 230, 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-customizer-item-btn:hover {
+  border-color: #d4af37;
+  color: #fff;
+  background: rgba(194, 163, 112, 0.1);
+}
+
+.admin-customizer-item-btn--danger:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Image Uploader & Preview Box */
+.admin-customizer-image-box {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding: 1.25rem;
+  background: #241c16;
+  border: 1px solid rgba(194, 163, 112, 0.2);
+  border-radius: 10px;
+}
+
+.admin-customizer-preview-thumb {
+  width: 140px;
+  height: 140px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 2px solid #d4af37;
+  background: #18130f;
+  flex-shrink: 0;
+}
+
+.admin-customizer-upload-controls {
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-customizer-file-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: #c2a370;
+  color: #18130f;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.admin-customizer-file-btn:hover {
+  background: #d4af37;
+}
+
+.admin-customizer-file-btn input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Live Preview Mockup Box */
+.admin-customizer-live-preview {
+  margin-top: 2rem;
+  border-top: 1px dashed rgba(194, 163, 112, 0.3);
+  padding-top: 1.5rem;
+}
+
+.admin-customizer-preview-banner {
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.admin-customizer-preview-hero {
+  background: #F5EDE2;
+  color: #2B211D;
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-customizer-preview-hero-content {
+  flex: 1;
+  min-width: 260px;
+}
+
+.admin-customizer-preview-hero-eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #C6A15B;
+  margin-bottom: 0.5rem;
+}
+
+.admin-customizer-preview-hero-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.85rem;
+  line-height: 1.2;
+  margin: 0 0 0.75rem 0;
+  color: #2B211D;
+}
+
+.admin-customizer-preview-hero-heading em {
+  font-style: italic;
+  color: #C6A15B;
+}
+
+.admin-customizer-preview-hero-desc {
+  font-size: 0.9rem;
+  color: #5C4A3E;
+  margin: 0 0 1.25rem 0;
+  line-height: 1.5;
+}
+
+.admin-customizer-preview-hero-btns {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-customizer-preview-hero-img-wrap {
+  width: 180px;
+  height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(43, 33, 29, 0.12);
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.admin-customizer-preview-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

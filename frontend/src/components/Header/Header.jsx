@@ -105,7 +105,6 @@ export default function Header() {
                     <span className="announcement-bar__msg" style={{ color: announcementBar.text_color || '#F5EDE2' }}>
                       {msg.icon && <span className="announcement-bar__icon">{msg.icon}</span>} {msg.text}
                     </span>
-                    <span className="announcement-bar__bullet" style={{ color: announcementBar.text_color || '#F5EDE2' }}>✦</span>
                   </span>
                 ))}
               </div>
@@ -115,7 +114,6 @@ export default function Header() {
                     <span className="announcement-bar__msg" style={{ color: announcementBar.text_color || '#F5EDE2' }}>
                       {msg.icon && <span className="announcement-bar__icon">{msg.icon}</span>} {msg.text}
                     </span>
-                    <span className="announcement-bar__bullet" style={{ color: announcementBar.text_color || '#F5EDE2' }}>✦</span>
                   </span>
                 ))}
               </div>

@@ -425,3 +425,32 @@ input:checked + .admin-customizer-slider:before {
   height: 100%;
   object-fit: cover;
 }
+
+/* ─── Promo Banner Slides Admin ─── */
+.admin-customizer-promo-slides-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.admin-customizer-promo-slide-card {
+  background: #1e1812;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.25s ease;
+}
+
+.admin-customizer-promo-slide-card:hover {
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.08);
+}
+
+.admin-customizer-promo-slide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(194, 163, 112, 0.15);
+}

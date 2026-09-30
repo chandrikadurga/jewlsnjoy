@@ -11,7 +11,13 @@ import {
   ArrowRight,
   ExternalLink,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Layers,
+  Eye,
+  EyeOff,
+  GripVertical,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
 import { adminApi, customizationApi } from '../../services/api';
 import defaultHeroImg from '../../assets/hero-necklaces.png';
@@ -42,10 +48,48 @@ const DEFAULT_STATE = {
     image_url: '',
     image_alt: "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys",
   },
+  promo_banners: {
+    duration_seconds: 5,
+    slides: [
+      {
+        id: 'promo-1',
+        type: 'overlay',
+        image_url: '/products/1/3.jpeg',
+        eyebrow: 'New Season',
+        heading: 'Festive Collection Is Here',
+        description: 'Explore our latest anti-tarnish pieces — crafted for celebrations that last.',
+        cta_text: 'Shop Festive',
+        cta_link: '/shop',
+        enabled: true,
+      },
+      {
+        id: 'promo-2',
+        type: 'overlay',
+        image_url: '/products/21/1.jpeg',
+        eyebrow: 'Best Seller',
+        heading: 'Layered Necklaces Everyone Loves',
+        description: 'Pre-layered perfection in 18K gold — the #1 choice of our customers.',
+        cta_text: 'View Collection',
+        cta_link: '/shop?category=Necklaces',
+        enabled: true,
+      },
+      {
+        id: 'promo-3',
+        type: 'overlay',
+        image_url: '/products/8/2.jpeg',
+        eyebrow: 'Free Shipping',
+        heading: 'Rings That Sparkle, Prices That Smile',
+        description: 'Free delivery on orders above ₹999. Luxury meets affordability.',
+        cta_text: 'Shop Rings',
+        cta_link: '/shop?category=Rings',
+        enabled: true,
+      },
+    ],
+  },
 };
 
 export default function AdminCustomizer() {
-  const [activeTab, setActiveTab] = useState('hero'); // 'hero' | 'announcements'
+  const [activeTab, setActiveTab] = useState('hero'); // 'hero' | 'announcements' | 'promo_banners'
   const [config, setConfig] = useState(DEFAULT_STATE);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -68,6 +112,11 @@ export default function AdminCustomizer() {
             hero: {
               ...prev.hero,
               ...(data.hero || {}),
+            },
+            promo_banners: {
+              ...prev.promo_banners,
+              ...(data.promo_banners || {}),
+              slides: data.promo_banners?.slides || prev.promo_banners.slides,
             },
           }));
         }
@@ -136,6 +185,78 @@ export default function AdminCustomizer() {
         messages: (prev.announcement_bar.messages || []).filter((msg) => msg.id !== id),
       },
     }));
+  };
+
+  // ─── Promo Banner Handlers ────────────────────────────────
+  const handlePromoDurationChange = (value) => {
+    setConfig((prev) => ({
+      ...prev,
+      promo_banners: {
+        ...prev.promo_banners,
+        duration_seconds: value,
+      },
+    }));
+  };
+
+  const handleAddPromoSlide = () => {
+    const newSlide = {
+      id: Date.now().toString(),
+      type: 'overlay',
+      image_url: '',
+      eyebrow: '',
+      heading: 'New Banner Slide',
+      description: '',
+      cta_text: 'Shop Now',
+      cta_link: '/shop',
+      enabled: true,
+    };
+    setConfig((prev) => ({
+      ...prev,
+      promo_banners: {
+        ...prev.promo_banners,
+        slides: [...(prev.promo_banners.slides || []), newSlide],
+      },
+    }));
+  };
+
+  const handleUpdatePromoSlide = (id, field, value) => {
+    setConfig((prev) => ({
+      ...prev,
+      promo_banners: {
+        ...prev.promo_banners,
+        slides: (prev.promo_banners.slides || []).map((slide) =>
+          slide.id === id ? { ...slide, [field]: value } : slide
+        ),
+      },
+    }));
+  };
+
+  const handleDeletePromoSlide = (id) => {
+    setConfig((prev) => ({
+      ...prev,
+      promo_banners: {
+        ...prev.promo_banners,
+        slides: (prev.promo_banners.slides || []).filter((slide) => slide.id !== id),
+      },
+    }));
+  };
+
+  const handleMovePromoSlide = (id, direction) => {
+    setConfig((prev) => {
+      const slides = [...(prev.promo_banners.slides || [])];
+      const idx = slides.findIndex((s) => s.id === id);
+      if (idx < 0) return prev;
+      const newIdx = idx + direction;
+      if (newIdx < 0 || newIdx >= slides.length) return prev;
+      [slides[idx], slides[newIdx]] = [slides[newIdx], slides[idx]];
+      return {
+        ...prev,
+        promo_banners: {
+          ...prev.promo_banners,
+          slides,
+        },
+      };
+    });
   };
 
   // Image Upload handler
@@ -278,6 +399,15 @@ export default function AdminCustomizer() {
         >
           <Megaphone size={16} />
           <span>Top Announcement Bar</span>
+        </button>
+
+        <button
+          type="button"
+          className={`admin-customizer-tab ${activeTab === 'promo_banners' ? 'admin-customizer-tab--active' : ''}`}
+          onClick={() => setActiveTab('promo_banners')}
+        >
+          <Layers size={16} />
+          <span>Promo Banner Carousel</span>
         </button>
       </div>
 
@@ -678,6 +808,282 @@ export default function AdminCustomizer() {
                   }}
                 >
                   Announcement Bar is currently disabled. Toggle the switch above to display it.
+                </div>
+              )}
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Promo Banner Carousel Tab */}
+      {activeTab === 'promo_banners' && (
+        <div className="admin-customizer-card">
+          <form className="admin-customizer-form" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+            <h3 className="admin-customizer-section-title">
+              <Layers size={18} />
+              Promo Banner Carousel Settings
+            </h3>
+
+            {/* Duration Slider */}
+            <div className="admin-customizer-field">
+              <label>Slide Duration ({config.promo_banners.duration_seconds || 5}s per slide)</label>
+              <input
+                type="range"
+                min="3"
+                max="15"
+                step="1"
+                value={config.promo_banners.duration_seconds || 5}
+                onChange={(e) => handlePromoDurationChange(Number(e.target.value))}
+                style={{ marginTop: '0.5rem', accentColor: '#d4af37' }}
+              />
+              <small>Each banner will display for this many seconds before transitioning to the next</small>
+            </div>
+
+            {/* Slides List Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'rgba(247,239,230,0.85)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Banner Slides ({(config.promo_banners.slides || []).length})
+              </label>
+              <button
+                type="button"
+                className="admin-btn admin-btn--secondary"
+                onClick={handleAddPromoSlide}
+                style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+              >
+                <Plus size={14} />
+                <span>Add Slide</span>
+              </button>
+            </div>
+
+            {/* Slides List */}
+            <div className="admin-customizer-promo-slides-list">
+              {(config.promo_banners.slides || []).map((slide, idx) => (
+                <div
+                  key={slide.id || idx}
+                  className="admin-customizer-promo-slide-card"
+                  style={{
+                    opacity: slide.enabled !== false ? 1 : 0.55,
+                    border: slide.enabled !== false
+                      ? '1px solid rgba(194, 163, 112, 0.3)'
+                      : '1px solid rgba(194, 163, 112, 0.12)',
+                  }}
+                >
+                  {/* Slide header row */}
+                  <div className="admin-customizer-promo-slide-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <GripVertical size={15} style={{ color: 'rgba(247,239,230,0.4)' }} />
+                      <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#d4af37' }}>
+                        Slide {idx + 1}
+                      </span>
+                      {slide.enabled !== false ? (
+                        <span style={{ fontSize: '0.7rem', color: '#a3e635', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <Eye size={11} /> Active
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.7rem', color: 'rgba(247,239,230,0.4)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <EyeOff size={11} /> Hidden
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      {/* Move Up */}
+                      <button
+                        type="button"
+                        className="admin-customizer-item-btn"
+                        onClick={() => handleMovePromoSlide(slide.id, -1)}
+                        title="Move Up"
+                        disabled={idx === 0}
+                        style={{ opacity: idx === 0 ? 0.3 : 1 }}
+                      >
+                        <ChevronUp size={14} />
+                      </button>
+
+                      {/* Move Down */}
+                      <button
+                        type="button"
+                        className="admin-customizer-item-btn"
+                        onClick={() => handleMovePromoSlide(slide.id, 1)}
+                        title="Move Down"
+                        disabled={idx === (config.promo_banners.slides || []).length - 1}
+                        style={{ opacity: idx === (config.promo_banners.slides || []).length - 1 ? 0.3 : 1 }}
+                      >
+                        <ChevronDown size={14} />
+                      </button>
+
+                      {/* Toggle Enable */}
+                      <button
+                        type="button"
+                        className="admin-customizer-item-btn"
+                        onClick={() => handleUpdatePromoSlide(slide.id, 'enabled', !(slide.enabled !== false))}
+                        title={slide.enabled !== false ? 'Disable this slide' : 'Enable this slide'}
+                      >
+                        {slide.enabled !== false ? <Eye size={14} /> : <EyeOff size={14} />}
+                      </button>
+
+                      {/* Delete */}
+                      <button
+                        type="button"
+                        className="admin-customizer-item-btn admin-customizer-item-btn--danger"
+                        onClick={() => handleDeletePromoSlide(slide.id)}
+                        title="Delete slide"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Banner Type */}
+                  <div className="admin-customizer-field">
+                    <label>Banner Type</label>
+                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                      <label
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '0.4rem',
+                          padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer',
+                          fontSize: '0.84rem', fontWeight: 500,
+                          background: slide.type === 'overlay' ? 'rgba(212,175,55,0.15)' : '#241c16',
+                          border: `1px solid ${slide.type === 'overlay' ? '#d4af37' : 'rgba(194,163,112,0.2)'}`,
+                          color: slide.type === 'overlay' ? '#d4af37' : 'rgba(247,239,230,0.7)',
+                          textTransform: 'none',
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name={`type-${slide.id}`}
+                          value="overlay"
+                          checked={slide.type === 'overlay'}
+                          onChange={() => handleUpdatePromoSlide(slide.id, 'type', 'overlay')}
+                          style={{ display: 'none' }}
+                        />
+                        Image + Text Overlay
+                      </label>
+                      <label
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '0.4rem',
+                          padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer',
+                          fontSize: '0.84rem', fontWeight: 500,
+                          background: slide.type === 'image_only' ? 'rgba(212,175,55,0.15)' : '#241c16',
+                          border: `1px solid ${slide.type === 'image_only' ? '#d4af37' : 'rgba(194,163,112,0.2)'}`,
+                          color: slide.type === 'image_only' ? '#d4af37' : 'rgba(247,239,230,0.7)',
+                          textTransform: 'none',
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name={`type-${slide.id}`}
+                          value="image_only"
+                          checked={slide.type === 'image_only'}
+                          onChange={() => handleUpdatePromoSlide(slide.id, 'type', 'image_only')}
+                          style={{ display: 'none' }}
+                        />
+                        Image Only (Full Banner)
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Image URL */}
+                  <div className="admin-customizer-field">
+                    <label>Banner Image URL</label>
+                    <input
+                      type="text"
+                      className="admin-customizer-input"
+                      value={slide.image_url || ''}
+                      onChange={(e) => handleUpdatePromoSlide(slide.id, 'image_url', e.target.value)}
+                      placeholder="e.g. /products/1/3.jpeg or https://..."
+                    />
+                    {slide.image_url && (
+                      <img
+                        src={slide.image_url}
+                        alt="Preview"
+                        style={{
+                          width: '100%', maxWidth: '320px', height: '100px',
+                          objectFit: 'cover', borderRadius: '8px', marginTop: '0.4rem',
+                          border: '1px solid rgba(194,163,112,0.25)',
+                        }}
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    )}
+                  </div>
+
+                  {/* Text fields — only for overlay type */}
+                  {slide.type === 'overlay' && (
+                    <>
+                      <div className="admin-customizer-grid-2">
+                        <div className="admin-customizer-field">
+                          <label>Eyebrow Tag</label>
+                          <input
+                            type="text"
+                            className="admin-customizer-input"
+                            value={slide.eyebrow || ''}
+                            onChange={(e) => handleUpdatePromoSlide(slide.id, 'eyebrow', e.target.value)}
+                            placeholder="e.g. New Season, Sale, Best Seller"
+                          />
+                        </div>
+                        <div className="admin-customizer-field">
+                          <label>Heading</label>
+                          <input
+                            type="text"
+                            className="admin-customizer-input"
+                            value={slide.heading || ''}
+                            onChange={(e) => handleUpdatePromoSlide(slide.id, 'heading', e.target.value)}
+                            placeholder="e.g. Festive Collection Is Here"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="admin-customizer-field">
+                        <label>Description</label>
+                        <textarea
+                          className="admin-customizer-textarea"
+                          rows={2}
+                          value={slide.description || ''}
+                          onChange={(e) => handleUpdatePromoSlide(slide.id, 'description', e.target.value)}
+                          placeholder="Short promotional description..."
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* CTA for both types */}
+                  <div className="admin-customizer-grid-2">
+                    <div className="admin-customizer-field">
+                      <label>CTA Button Text</label>
+                      <input
+                        type="text"
+                        className="admin-customizer-input"
+                        value={slide.cta_text || ''}
+                        onChange={(e) => handleUpdatePromoSlide(slide.id, 'cta_text', e.target.value)}
+                        placeholder="e.g. Shop Now"
+                      />
+                    </div>
+                    <div className="admin-customizer-field">
+                      <label>CTA Link</label>
+                      <input
+                        type="text"
+                        className="admin-customizer-input"
+                        value={slide.cta_link || ''}
+                        onChange={(e) => handleUpdatePromoSlide(slide.id, 'cta_link', e.target.value)}
+                        placeholder="e.g. /shop or /shop?category=Rings"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {(config.promo_banners.slides || []).length === 0 && (
+                <div
+                  style={{
+                    padding: '2rem',
+                    textAlign: 'center',
+                    background: '#241c16',
+                    border: '1px dashed rgba(194, 163, 112, 0.3)',
+                    borderRadius: '8px',
+                    color: 'rgba(247, 239, 230, 0.5)',
+                    fontSize: '0.88rem',
+                  }}
+                >
+                  No banner slides yet. Click "Add Slide" to create your first promotional banner.
                 </div>
               )}
             </div>

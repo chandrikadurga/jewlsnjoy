@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Check, ExternalLink, Play, Pause, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { ArrowRight, Star, Check, ExternalLink, Play, Pause, Volume2, VolumeX, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import FAQSection from '../../components/FAQ/FAQSection';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
@@ -9,6 +9,43 @@ import heroImg from '../../assets/hero-necklaces.png';
 import storyMainImg from '../../assets/products/3/2.jpeg';
 import storyAccentImg from '../../assets/products/4/1.jpeg';
 import './Home.css';
+
+// Default promo banners (fallback when nothing is configured)
+const DEFAULT_PROMO_BANNERS = [
+  {
+    id: 'default-1',
+    type: 'overlay',
+    image_url: '/products/1/3.jpeg',
+    eyebrow: 'New Season',
+    heading: 'Festive Collection Is Here',
+    description: 'Explore our latest anti-tarnish pieces — crafted for celebrations that last.',
+    cta_text: 'Shop Festive',
+    cta_link: '/shop',
+    enabled: true,
+  },
+  {
+    id: 'default-2',
+    type: 'overlay',
+    image_url: '/products/21/1.jpeg',
+    eyebrow: 'Best Seller',
+    heading: 'Layered Necklaces Everyone Loves',
+    description: 'Pre-layered perfection in 18K gold — the #1 choice of our customers.',
+    cta_text: 'View Collection',
+    cta_link: '/shop?category=Necklaces',
+    enabled: true,
+  },
+  {
+    id: 'default-3',
+    type: 'overlay',
+    image_url: '/products/8/2.jpeg',
+    eyebrow: 'Free Shipping',
+    heading: 'Rings That Sparkle, Prices That Smile',
+    description: 'Free delivery on orders above ₹999. Luxury meets affordability.',
+    cta_text: 'Shop Rings',
+    cta_link: '/shop?category=Rings',
+    enabled: true,
+  },
+];
 
 // Hero section
 function Hero() {
@@ -86,6 +123,218 @@ function Hero() {
           </div>
         </div>
       </div>
+    </section>
+  );
+}
+
+// Promo Banner Carousel — auto-rotates every N seconds
+function PromoBannerCarousel() {
+  const [banners, setBanners] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const intervalRef = useRef(null);
+  const progressRef = useRef(null);
+  const durationRef = useRef(5); // default 5 seconds per slide
+
+  // Fetch banners from customization API
+  useEffect(() => {
+    let isMounted = true;
+    customizationApi.getCustomization().then((data) => {
+      if (isMounted && data?.promo_banners?.slides?.length > 0) {
+        const enabledSlides = data.promo_banners.slides.filter((s) => s.enabled !== false);
+        if (enabledSlides.length > 0) {
+          setBanners(enabledSlides);
+        } else {
+          setBanners(DEFAULT_PROMO_BANNERS);
+        }
+        if (data.promo_banners.duration_seconds) {
+          durationRef.current = data.promo_banners.duration_seconds;
+        }
+      } else {
+        setBanners(DEFAULT_PROMO_BANNERS);
+      }
+    }).catch(() => {
+      setBanners(DEFAULT_PROMO_BANNERS);
+    });
+    return () => { isMounted = false; };
+  }, []);
+
+  const goTo = useCallback((idx) => {
+    setActiveIndex(idx);
+    setProgress(0);
+  }, []);
+
+  const goNext = useCallback(() => {
+    if (banners.length === 0) return;
+    setActiveIndex((prev) => (prev + 1) % banners.length);
+    setProgress(0);
+  }, [banners.length]);
+
+  const goPrev = useCallback(() => {
+    if (banners.length === 0) return;
+    setActiveIndex((prev) => (prev - 1 + banners.length) % banners.length);
+    setProgress(0);
+  }, [banners.length]);
+
+  // Auto-advance timer
+  useEffect(() => {
+    if (banners.length <= 1 || isPaused) {
+      clearInterval(intervalRef.current);
+      clearInterval(progressRef.current);
+      return;
+    }
+
+    const duration = durationRef.current * 1000;
+    const tick = 50; // progress update every 50ms
+
+    progressRef.current = setInterval(() => {
+      setProgress((prev) => {
+        const next = prev + (tick / duration) * 100;
+        return next >= 100 ? 100 : next;
+      });
+    }, tick);
+
+    intervalRef.current = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % banners.length);
+      setProgress(0);
+    }, duration);
+
+    return () => {
+      clearInterval(intervalRef.current);
+      clearInterval(progressRef.current);
+    };
+  }, [banners.length, isPaused, activeIndex]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight') goNext();
+    };
+    // Only listen when the carousel is hovered/focused
+    return () => {};
+  }, [goNext, goPrev]);
+
+  if (banners.length === 0) return null;
+
+  return (
+    <section
+      className="promo-carousel"
+      aria-label="Promotional Banners"
+      id="promo-carousel"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div className="promo-carousel__track">
+        {banners.map((banner, idx) => {
+          const isActive = idx === activeIndex;
+          const isOverlay = banner.type === 'overlay';
+
+          return (
+            <div
+              key={banner.id || idx}
+              className={`promo-carousel__slide ${isOverlay ? 'promo-carousel__slide--overlay' : 'promo-carousel__slide--image-only'} ${isActive ? 'promo-carousel__slide--active' : ''}`}
+              aria-hidden={!isActive}
+            >
+              {isOverlay ? (
+                <>
+                  <img
+                    src={banner.image_url}
+                    alt=""
+                    className="promo-carousel__bg"
+                    loading={idx === 0 ? 'eager' : 'lazy'}
+                  />
+                  <div className="promo-carousel__gradient" />
+                  <div className="promo-carousel__overlay-content">
+                    {banner.eyebrow && (
+                      <span className="promo-carousel__overlay-eyebrow">{banner.eyebrow}</span>
+                    )}
+                    <h2 className="promo-carousel__overlay-heading">{banner.heading}</h2>
+                    {banner.description && (
+                      <p className="promo-carousel__overlay-desc">{banner.description}</p>
+                    )}
+                    {banner.cta_text && banner.cta_link && (
+                      <Link to={banner.cta_link} className="promo-carousel__overlay-cta">
+                        {banner.cta_text}
+                        <ArrowRight size={15} strokeWidth={2.5} />
+                      </Link>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  {banner.cta_link ? (
+                    <Link to={banner.cta_link} className="promo-carousel__link">
+                      <img
+                        src={banner.image_url}
+                        alt={banner.heading || 'Promotional Banner'}
+                        className="promo-carousel__bg"
+                        loading={idx === 0 ? 'eager' : 'lazy'}
+                      />
+                    </Link>
+                  ) : (
+                    <img
+                      src={banner.image_url}
+                      alt={banner.heading || 'Promotional Banner'}
+                      className="promo-carousel__bg"
+                      loading={idx === 0 ? 'eager' : 'lazy'}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Prev / Next arrows */}
+      {banners.length > 1 && (
+        <>
+          <button
+            type="button"
+            className="promo-carousel__arrow promo-carousel__arrow--prev"
+            onClick={goPrev}
+            aria-label="Previous banner"
+          >
+            <ChevronLeft size={20} strokeWidth={2.5} />
+          </button>
+          <button
+            type="button"
+            className="promo-carousel__arrow promo-carousel__arrow--next"
+            onClick={goNext}
+            aria-label="Next banner"
+          >
+            <ChevronRight size={20} strokeWidth={2.5} />
+          </button>
+        </>
+      )}
+
+      {/* Dot indicators */}
+      {banners.length > 1 && (
+        <div className="promo-carousel__dots">
+          {banners.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              className={`promo-carousel__dot ${idx === activeIndex ? 'promo-carousel__dot--active' : ''}`}
+              onClick={() => goTo(idx)}
+              aria-label={`Go to banner ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Progress bar */}
+      {banners.length > 1 && (
+        <div
+          className="promo-carousel__progress"
+          style={{
+            width: `${progress}%`,
+            transitionDuration: isPaused ? '0s' : '50ms',
+          }}
+        />
+      )}
     </section>
   );
 }
@@ -496,6 +745,7 @@ export default function Home() {
   return (
     <div className="home-page">
       <Hero />
+      <PromoBannerCarousel />
 
       {/* Featured Collection */}
       <section className="section" aria-labelledby="featured-title">

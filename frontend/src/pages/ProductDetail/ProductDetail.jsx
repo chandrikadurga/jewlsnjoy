@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   Heart,
@@ -15,12 +15,13 @@ import {
   User,
   Sparkles,
 } from 'lucide-react';
-import { useProduct } from '../../hooks/useProducts';
+import { useProduct, useProducts } from '../../hooks/useProducts';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { productApi } from '../../services/api';
 import { Accordion, AccordionItem } from '../../components/Accordion/Accordion';
 import { FALLBACK_PRODUCTS } from '../../data/products';
+import ProductCard from '../../components/ProductCard/ProductCard';
 import './ProductDetail.css';
 
 function StarRating({ rating, count, onReviewsClick }) {
@@ -308,6 +309,64 @@ export default function ProductDetail() {
 
   const currentImage = galleryImages[selectedImage] || galleryImages[0] || `/products/${product.id}/1.jpeg`;
 
+  // Fetch full catalog for "You May Also Like" section
+  const { products: allCatalogProducts } = useProducts();
+
+  const relatedProducts = useMemo(() => {
+    if (!allCatalogProducts || allCatalogProducts.length === 0) return [];
+    const currentId = Number(product?.id);
+    const currentCategory = String(categoryName || '').toLowerCase();
+
+    // Matching category first
+    const sameCategory = allCatalogProducts.filter((p) => {
+      if (Number(p.id) === currentId) return false;
+      const cat = String(p.category || p.category_name || '').toLowerCase();
+      return cat === currentCategory;
+    });
+
+    // Complementary pieces if not enough in same category
+    const otherProducts = allCatalogProducts.filter((p) => {
+      if (Number(p.id) === currentId) return false;
+      const cat = String(p.category || p.category_name || '').toLowerCase();
+      return cat !== currentCategory;
+    });
+
+    return [...sameCategory, ...otherProducts].slice(0, 8);
+  }, [allCatalogProducts, product?.id, categoryName]);
+
+  // Touch swipe support for main gallery image on mobile
+  const touchStartXRef = useRef(null);
+  const touchEndXRef = useRef(null);
+
+  const handleTouchStart = (e) => {
+    touchStartXRef.current = e.targetTouches[0].clientX;
+    touchEndXRef.current = null;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndXRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartXRef.current === null || touchEndXRef.current === null) return;
+    const diff = touchStartXRef.current - touchEndXRef.current;
+    const minSwipeDistance = 40;
+
+    if (diff > minSwipeDistance) {
+      // Swiped left -> next picture
+      if (galleryImages.length > 1) {
+        setSelectedImage((prev) => (prev + 1) % galleryImages.length);
+      }
+    } else if (diff < -minSwipeDistance) {
+      // Swiped right -> prev picture
+      if (galleryImages.length > 1) {
+        setSelectedImage((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+      }
+    }
+    touchStartXRef.current = null;
+    touchEndXRef.current = null;
+  };
+
   const features = product.features || product.details?.features || ['Anti-tarnish', 'Waterproof', 'PVD Plated', '18K Gold Plated'];
   const specifications = product.specifications || product.details?.specifications || {
     'Material': 'Titanium Stainless Steel',
@@ -360,7 +419,12 @@ export default function ProductDetail() {
         <div className="pd-layout">
           {/* Gallery */}
           <div className="pd-gallery">
-            <div className="pd-gallery__main">
+            <div
+              className="pd-gallery__main"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               <img
                 src={currentImage}
                 alt={product.name}
@@ -374,6 +438,12 @@ export default function ProductDetail() {
               />
               {product.is_bestseller && (
                 <span className="badge badge-gold pd-gallery__badge">Bestseller</span>
+              )}
+              {galleryImages.length > 1 && (
+                <div className="pd-gallery__mobile-badge">
+                  <span>{selectedImage + 1} / {galleryImages.length}</span>
+                  <span className="pd-gallery__mobile-swipe-hint">Swipe &larr;&rarr;</span>
+                </div>
               )}
             </div>
             {galleryImages.length > 1 && (
@@ -1057,6 +1127,29 @@ export default function ProductDetail() {
             )}
           </div>
         </section>
+
+        {/* ══════════════════════════════════════════════════════════════════════
+            YOU MAY ALSO LIKE SECTION (Personalized Recommendations)
+            ══════════════════════════════════════════════════════════════════════ */}
+        {relatedProducts.length > 0 && (
+          <section className="pd-related-section" aria-labelledby="related-title">
+            <div className="pd-related-header">
+              <span className="eyebrow">Handpicked Recommendations</span>
+              <h2 className="pd-related-title" id="related-title">You May Also Like</h2>
+              <p className="pd-related-desc">
+                Complementary pieces selected to elevate your everyday sparkle.
+              </p>
+            </div>
+
+            <div className="pd-related-grid">
+              {relatedProducts.map((relProd) => (
+                <div key={relProd.id} className="pd-related-grid__item">
+                  <ProductCard product={relProd} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
       </div>
     </div>

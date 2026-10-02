@@ -109,6 +109,8 @@
   width: 100%;
   overflow: hidden;
   background: var(--color-brown, #2B211D);
+  touch-action: pan-y;
+  user-select: none;
 }
 
 .promo-carousel__track {
@@ -342,7 +344,9 @@
 /* Responsive */
 @media (max-width: 768px) {
   .promo-carousel__track {
-    min-height: 280px;
+    min-height: 240px;
+    height: 60vw;
+    max-height: 380px;
   }
 
   .promo-carousel__overlay-content {

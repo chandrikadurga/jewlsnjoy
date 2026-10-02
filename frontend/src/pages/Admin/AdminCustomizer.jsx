@@ -53,13 +53,13 @@ const DEFAULT_STATE = {
     slides: [
       {
         id: 'promo-1',
-        type: 'overlay',
-        image_url: '/products/1/3.jpeg',
-        eyebrow: 'New Season',
-        heading: 'Festive Collection Is Here',
-        description: 'Explore our latest anti-tarnish pieces — crafted for celebrations that last.',
-        cta_text: 'Shop Festive',
-        cta_link: '/shop',
+        type: 'image_only',
+        image_url: '/banners/promo_gemstones.png',
+        eyebrow: 'New Collection',
+        heading: 'Handcrafted Gemstone Necklaces Collection',
+        description: 'Explore our colorful gemstone pendants crafted in lasting gold tones.',
+        cta_text: 'Shop Collection',
+        cta_link: '/shop?category=Necklaces',
         enabled: true,
       },
       {
@@ -94,6 +94,7 @@ export default function AdminCustomizer() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingSlideId, setUploadingSlideId] = useState(null);
   const [feedback, setFeedback] = useState(null);
 
   // Load customizations
@@ -116,7 +117,8 @@ export default function AdminCustomizer() {
             promo_banners: {
               ...prev.promo_banners,
               ...(data.promo_banners || {}),
-              slides: data.promo_banners?.slides || prev.promo_banners.slides,
+              slides: (data.promo_banners?.slides || prev.promo_banners.slides)
+                .filter((s) => !s.heading?.toLowerCase().includes('festive collection')),
             },
           }));
         }
@@ -284,6 +286,33 @@ export default function AdminCustomizer() {
       setFeedback({ type: 'success', message: 'Image loaded into preview successfully' });
     } finally {
       setUploadingImage(false);
+      setTimeout(() => setFeedback(null), 4000);
+    }
+  };
+
+  // Promo Slide Image Upload handler
+  const handlePromoSlideImageUpload = async (slideId, file) => {
+    if (!file) return;
+
+    try {
+      setUploadingSlideId(slideId);
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await adminApi.uploadImage(formData);
+      if (res?.url) {
+        handleUpdatePromoSlide(slideId, 'image_url', res.url);
+        setFeedback({ type: 'success', message: 'Slide picture uploaded successfully!' });
+      }
+    } catch (err) {
+      console.warn('Server upload fallback to data URL for slide:', err);
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        handleUpdatePromoSlide(slideId, 'image_url', uploadEvent.target.result);
+      };
+      reader.readAsDataURL(file);
+      setFeedback({ type: 'success', message: 'Slide picture loaded into preview successfully' });
+    } finally {
+      setUploadingSlideId(null);
       setTimeout(() => setFeedback(null), 4000);
     }
   };
@@ -982,27 +1011,125 @@ export default function AdminCustomizer() {
                     </div>
                   </div>
 
-                  {/* Image URL */}
+                  {/* Image URL & File Upload */}
                   <div className="admin-customizer-field">
-                    <label>Banner Image URL</label>
-                    <input
-                      type="text"
-                      className="admin-customizer-input"
-                      value={slide.image_url || ''}
-                      onChange={(e) => handleUpdatePromoSlide(slide.id, 'image_url', e.target.value)}
-                      placeholder="e.g. /products/1/3.jpeg or https://..."
-                    />
-                    {slide.image_url && (
-                      <img
-                        src={slide.image_url}
-                        alt="Preview"
-                        style={{
-                          width: '100%', maxWidth: '320px', height: '100px',
-                          objectFit: 'cover', borderRadius: '8px', marginTop: '0.4rem',
-                          border: '1px solid rgba(194,163,112,0.25)',
-                        }}
-                        onError={(e) => { e.target.style.display = 'none'; }}
+                    <label>Banner Picture (Upload from Device or Enter URL)</label>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
+                      <input
+                        type="text"
+                        className="admin-customizer-input"
+                        value={slide.image_url || ''}
+                        onChange={(e) => handleUpdatePromoSlide(slide.id, 'image_url', e.target.value)}
+                        placeholder="e.g. /banners/promo_gemstones.png or paste image URL"
+                        style={{ flex: '1 1 240px' }}
                       />
+                      <label
+                        htmlFor={`slide-upload-${slide.id}`}
+                        className="admin-btn"
+                        style={{
+                          cursor: 'pointer',
+                          padding: '0.55rem 0.9rem',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          whiteSpace: 'nowrap',
+                          background: 'rgba(212, 175, 55, 0.15)',
+                          border: '1px solid rgba(212, 175, 55, 0.4)',
+                          color: 'var(--color-gold, #d4af37)',
+                          borderRadius: '6px',
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          margin: 0,
+                        }}
+                      >
+                        <Upload size={14} />
+                        {uploadingSlideId === slide.id ? 'Uploading Picture...' : 'Upload Photo'}
+                      </label>
+                      <input
+                        id={`slide-upload-${slide.id}`}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={(e) => handlePromoSlideImageUpload(slide.id, e.target.files?.[0])}
+                      />
+                    </div>
+
+                    {/* Quick Presets */}
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'rgba(247, 239, 230, 0.6)' }}>Presets:</span>
+                      <button
+                        type="button"
+                        onClick={() => handleUpdatePromoSlide(slide.id, 'image_url', '/banners/promo_gemstones.png')}
+                        style={{
+                          background: 'rgba(255,255,255,0.06)',
+                          border: '1px solid rgba(212, 175, 55, 0.3)',
+                          color: '#e6ded5',
+                          borderRadius: '4px',
+                          padding: '2px 8px',
+                          fontSize: '0.72rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Gemstones Flatlay
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleUpdatePromoSlide(slide.id, 'image_url', '/products/21/1.jpeg')}
+                        style={{
+                          background: 'rgba(255,255,255,0.06)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          color: '#e6ded5',
+                          borderRadius: '4px',
+                          padding: '2px 8px',
+                          fontSize: '0.72rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Layered Necklaces
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleUpdatePromoSlide(slide.id, 'image_url', '/products/8/2.jpeg')}
+                        style={{
+                          background: 'rgba(255,255,255,0.06)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          color: '#e6ded5',
+                          borderRadius: '4px',
+                          padding: '2px 8px',
+                          fontSize: '0.72rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Crystal Rings
+                      </button>
+                    </div>
+
+                    {slide.image_url && (
+                      <div
+                        style={{
+                          position: 'relative',
+                          width: '100%',
+                          maxWidth: '380px',
+                          height: '130px',
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          border: '1px solid rgba(194,163,112,0.3)',
+                          background: '#1a1410',
+                          marginTop: '0.4rem',
+                        }}
+                      >
+                        <img
+                          src={slide.image_url}
+                          alt="Banner Preview"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            display: 'block',
+                          }}
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      </div>
                     )}
                   </div>
 
@@ -1027,7 +1154,7 @@ export default function AdminCustomizer() {
                             className="admin-customizer-input"
                             value={slide.heading || ''}
                             onChange={(e) => handleUpdatePromoSlide(slide.id, 'heading', e.target.value)}
-                            placeholder="e.g. Festive Collection Is Here"
+                            placeholder="e.g. Handcrafted Gemstone Necklaces"
                           />
                         </div>
                       </div>

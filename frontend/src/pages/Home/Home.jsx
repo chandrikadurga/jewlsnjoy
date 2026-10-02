@@ -14,13 +14,10 @@ import './Home.css';
 const DEFAULT_PROMO_BANNERS = [
   {
     id: 'default-1',
-    type: 'overlay',
-    image_url: '/products/1/3.jpeg',
-    eyebrow: 'New Season',
-    heading: 'Festive Collection Is Here',
-    description: 'Explore our latest anti-tarnish pieces — crafted for celebrations that last.',
-    cta_text: 'Shop Festive',
-    cta_link: '/shop',
+    type: 'image_only',
+    image_url: '/banners/promo_gemstones.png',
+    heading: 'Handcrafted Gemstone Necklaces Collection',
+    cta_link: '/shop?category=Necklaces',
     enabled: true,
   },
   {
@@ -137,12 +134,18 @@ function PromoBannerCarousel() {
   const progressRef = useRef(null);
   const durationRef = useRef(5); // default 5 seconds per slide
 
+  // Touch swipe refs for mobile gestures
+  const touchStartXRef = useRef(null);
+  const touchEndXRef = useRef(null);
+
   // Fetch banners from customization API
   useEffect(() => {
     let isMounted = true;
     customizationApi.getCustomization().then((data) => {
       if (isMounted && data?.promo_banners?.slides?.length > 0) {
-        const enabledSlides = data.promo_banners.slides.filter((s) => s.enabled !== false);
+        // Exclude disabled slides and any stale 'Festive Collection' slide
+        const enabledSlides = data.promo_banners.slides
+          .filter((s) => s.enabled !== false && !s.heading?.toLowerCase().includes('festive collection'));
         if (enabledSlides.length > 0) {
           setBanners(enabledSlides);
         } else {
@@ -176,6 +179,34 @@ function PromoBannerCarousel() {
     setActiveIndex((prev) => (prev - 1 + banners.length) % banners.length);
     setProgress(0);
   }, [banners.length]);
+
+  // Mobile swipe gestures
+  const handleTouchStart = (e) => {
+    setIsPaused(true);
+    touchStartXRef.current = e.touches[0].clientX;
+    touchEndXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    setIsPaused(false);
+    if (touchStartXRef.current === null || touchEndXRef.current === null) return;
+    const diff = touchStartXRef.current - touchEndXRef.current;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        // Swiped left -> next picture
+        goNext();
+      } else {
+        // Swiped right -> previous picture
+        goPrev();
+      }
+    }
+    touchStartXRef.current = null;
+    touchEndXRef.current = null;
+  };
 
   // Auto-advance timer
   useEffect(() => {
@@ -212,7 +243,6 @@ function PromoBannerCarousel() {
       if (e.key === 'ArrowLeft') goPrev();
       if (e.key === 'ArrowRight') goNext();
     };
-    // Only listen when the carousel is hovered/focused
     return () => {};
   }, [goNext, goPrev]);
 
@@ -225,6 +255,9 @@ function PromoBannerCarousel() {
       id="promo-carousel"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="promo-carousel__track">
         {banners.map((banner, idx) => {

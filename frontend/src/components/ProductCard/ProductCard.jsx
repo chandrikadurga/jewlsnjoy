@@ -63,6 +63,28 @@ export default function ProductCard({ product }) {
     return `₹${num.toLocaleString('en-IN')}`;
   };
 
+  const imageSrc =
+    product?.image ||
+    product?.primary_image_url ||
+    product?.thumbnail ||
+    (Array.isArray(product?.images) && product.images.length > 0
+      ? (typeof product.images[0] === 'string' ? product.images[0] : product.images[0]?.image_url)
+      : null) ||
+    (Array.isArray(product?.image_urls) && product.image_urls.length > 0
+      ? product.image_urls[0]
+      : null) ||
+    (product?.id ? `/products/${product.id}/1.jpeg` : '/products/1/1.jpeg');
+
+  const handleImageError = (e) => {
+    const directFallback = product?.id ? `/products/${product.id}/1.jpeg` : '/products/1/1.jpeg';
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    if (e.currentTarget.src !== origin + directFallback && e.currentTarget.src !== directFallback) {
+      e.currentTarget.src = directFallback;
+    } else if (e.currentTarget.src !== origin + '/products/1/1.jpeg' && e.currentTarget.src !== '/products/1/1.jpeg') {
+      e.currentTarget.src = '/products/1/1.jpeg';
+    }
+  };
+
   return (
     <article className={`product-card ${isOutOfStock ? 'product-card--out-of-stock' : ''}`}>
       <Link
@@ -73,10 +95,11 @@ export default function ProductCard({ product }) {
         {/* Image */}
         <div className="product-card__image-wrap">
           <img
-            src={product.image}
+            src={imageSrc}
             alt={product.name}
             className={`product-card__image ${isOutOfStock ? 'product-card__image--out-of-stock' : ''}`}
-            loading="lazy"
+            decoding="async"
+            onError={handleImageError}
           />
           {/* Badges */}
           <div className="product-card__badges">

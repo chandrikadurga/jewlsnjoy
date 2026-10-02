@@ -366,10 +366,16 @@ export default function SearchOverlay({ isOpen, onClose }) {
                       onMouseEnter={() => setSelectedIndex(idx)}
                     >
                       <img
-                        src={product.thumbnail || product.image}
+                        src={product.thumbnail || product.image || product.primary_image_url || (product.id ? `/products/${product.id}/1.jpeg` : '/products/1/1.jpeg')}
                         alt={product.name}
                         className="search-overlay__result-img"
-                        loading="lazy"
+                        decoding="async"
+                        onError={(e) => {
+                          const direct = product?.id ? `/products/${product.id}/1.jpeg` : '/products/1/1.jpeg';
+                          if (e.currentTarget.src !== window.location.origin + direct) {
+                            e.currentTarget.src = direct;
+                          }
+                        }}
                       />
                       <div className="search-overlay__result-info">
                         <div className="search-overlay__result-top">

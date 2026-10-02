@@ -58,9 +58,10 @@ function filterFallbackProducts(params = {}) {
  * Returns { products, loading, error, refetch }
  */
 export function useProducts(params = {}) {
+  const isFiltered = Boolean(params.category || params.style || params.search || params.featured || params.bestseller);
   const [products, setProducts] = useState(() => {
     const cached = getCachedProductsList();
-    if (cached && cached.length > 0) {
+    if (cached && cached.length >= 40 && !isFiltered) {
       return cached;
     }
     return filterFallbackProducts(params);
@@ -73,20 +74,23 @@ export function useProducts(params = {}) {
   const fetch = useCallback(async () => {
     const parsed = JSON.parse(paramsStr);
     const fallback = filterFallbackProducts(parsed);
+    const isFilteredQuery = Boolean(parsed.category || parsed.style || parsed.search || parsed.featured || parsed.bestseller);
     try {
       const data = await productApi.getAll(parsed);
       const rawList = data?.results || (Array.isArray(data) ? data : []);
       if (rawList.length > 0) {
-        const isFullCatalog = !parsed.category && !parsed.style && !parsed.search && !parsed.featured && !parsed.bestseller;
+        const isFullCatalog = !isFilteredQuery;
         cacheProductsList(rawList, isFullCatalog);
         setProducts(rawList);
       } else {
         const cached = getCachedProductsList();
-        setProducts(cached || fallback);
+        const validCached = (cached && cached.length >= 40 && !isFilteredQuery) ? cached : null;
+        setProducts(validCached || fallback);
       }
     } catch (err) {
       const cached = getCachedProductsList();
-      setProducts(cached || fallback);
+      const validCached = (cached && cached.length >= 40 && !isFilteredQuery) ? cached : null;
+      setProducts(validCached || fallback);
       setError(null);
     } finally {
       setLoading(false);

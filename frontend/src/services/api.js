@@ -12,9 +12,10 @@ import axios from 'axios';
 
 // Automatically route to local Django backend when running frontend on localhost
 const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const envApiUrl = import.meta.env.VITE_API_BASE_URL;
 const BASE_URL = isLocalhost
-  ? 'http://localhost:8000'
-  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000');
+  ? (envApiUrl || 'http://localhost:8000')
+  : (envApiUrl && !envApiUrl.includes('localhost') ? envApiUrl : 'https://jewlsnjoy.onrender.com');
 
 // Map products whose angle 1 was a mobile screenshot to their clean 1080x1080 square photo
 const COVER_OVERRIDE = {
@@ -65,7 +66,12 @@ function resolveProductImage(imagePath, isCover = false) {
 
 function resolveProductImages(product) {
   if (!product) return product;
-  const primary = resolveProductImage(product.primary_image_url || product.image, true);
+  const rawPrimary =
+    product.primary_image_url ||
+    product.image ||
+    product.thumbnail ||
+    (product.id ? `/products/${product.id}/1.jpeg` : '/products/1/1.jpeg');
+  const primary = resolveProductImage(rawPrimary, true);
   let resolvedImages = [];
   if (Array.isArray(product.images)) {
     resolvedImages = product.images.map((img) => {
@@ -87,6 +93,12 @@ function resolveProductImages(product) {
   }
   if (primary && !resolvedUrls.includes(primary)) {
     resolvedUrls.unshift(primary);
+  }
+  if (resolvedUrls.length === 0 && primary) {
+    resolvedUrls = [primary];
+  }
+  if (resolvedImages.length === 0 && primary) {
+    resolvedImages = [{ id: 1, image_url: primary, angle_number: 1, is_primary: true }];
   }
 
   return {

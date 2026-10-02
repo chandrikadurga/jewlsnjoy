@@ -4,7 +4,7 @@
  * Version: v3 (auto-invalidates older cached product catalogs)
  */
 
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_KEY = `jewlsnjoy_product_catalog_cache_${CACHE_VERSION}`;
 const SINGLE_CACHE_PREFIX = `jewlsnjoy_prod_${CACHE_VERSION}_`;
 const FEATURED_CACHE_KEY = `jewlsnjoy_featured_products_${CACHE_VERSION}`;
@@ -12,11 +12,16 @@ const BESTSELLERS_CACHE_KEY = `jewlsnjoy_bestsellers_products_${CACHE_VERSION}`;
 
 // Purge obsolete legacy cache keys on load
 try {
-  localStorage.removeItem('jewlsnjoy_product_catalog_cache');
-  localStorage.removeItem('jewlsnjoy_product_catalog_cache_v2');
-  localStorage.removeItem('jewlsnjoy_product_catalog_cache_v3');
-  localStorage.removeItem('jewlsnjoy_featured_products_v3');
-  localStorage.removeItem('jewlsnjoy_bestsellers_products_v3');
+  [
+    'jewlsnjoy_product_catalog_cache',
+    'jewlsnjoy_product_catalog_cache_v2',
+    'jewlsnjoy_product_catalog_cache_v3',
+    'jewlsnjoy_product_catalog_cache_v4',
+    'jewlsnjoy_featured_products_v3',
+    'jewlsnjoy_featured_products_v4',
+    'jewlsnjoy_bestsellers_products_v3',
+    'jewlsnjoy_bestsellers_products_v4',
+  ].forEach((k) => localStorage.removeItem(k));
   Object.keys(localStorage).forEach((k) => {
     if (k.startsWith('jewlsnjoy_prod_') && !k.startsWith(SINGLE_CACHE_PREFIX)) {
       localStorage.removeItem(k);
@@ -164,7 +169,6 @@ export function cacheFeaturedProducts(products) {
   if (!Array.isArray(products) || products.length === 0) return;
   try {
     localStorage.setItem(FEATURED_CACHE_KEY, JSON.stringify(products));
-    cacheProductsList(products);
   } catch {
     // Ignore storage quota errors
   }
@@ -191,7 +195,6 @@ export function cacheBestsellers(products) {
   if (!Array.isArray(products) || products.length === 0) return;
   try {
     localStorage.setItem(BESTSELLERS_CACHE_KEY, JSON.stringify(products));
-    cacheProductsList(products);
   } catch {
     // Ignore storage quota errors
   }

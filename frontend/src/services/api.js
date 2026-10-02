@@ -190,11 +190,12 @@ export const productApi = {
    * Get featured products for homepage
    */
   getFeatured: async (signal) => {
-    const response = await api.get('/api/products/featured/', {
-      signal,
-      params: { _t: Date.now() },
-    });
-    const list = Array.isArray(response.data) ? response.data : (response.data.results || []);
+    const config = { params: { _t: Date.now() } };
+    if (signal && typeof signal === 'object' && 'aborted' in signal) {
+      config.signal = signal;
+    }
+    const response = await api.get('/api/products/featured/', config);
+    const list = Array.isArray(response.data) ? response.data : (response.data?.results || []);
     return {
       results: list.map(resolveProductImages),
     };
@@ -204,11 +205,12 @@ export const productApi = {
    * Get bestseller products
    */
   getBestsellers: async (signal) => {
-    const response = await api.get('/api/products/bestsellers/', {
-      signal,
-      params: { _t: Date.now() },
-    });
-    const list = Array.isArray(response.data) ? response.data : (response.data.results || []);
+    const config = { params: { _t: Date.now() } };
+    if (signal && typeof signal === 'object' && 'aborted' in signal) {
+      config.signal = signal;
+    }
+    const response = await api.get('/api/products/bestsellers/', config);
+    const list = Array.isArray(response.data) ? response.data : (response.data?.results || []);
     return {
       results: list.map(resolveProductImages),
     };

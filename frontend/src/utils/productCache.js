@@ -4,13 +4,19 @@
  * Version: v3 (auto-invalidates older cached product catalogs)
  */
 
-const CACHE_KEY = 'jewlsnjoy_product_catalog_cache_v3';
-const SINGLE_CACHE_PREFIX = 'jewlsnjoy_prod_v3_';
+const CACHE_VERSION = 'v4';
+const CACHE_KEY = `jewlsnjoy_product_catalog_cache_${CACHE_VERSION}`;
+const SINGLE_CACHE_PREFIX = `jewlsnjoy_prod_${CACHE_VERSION}_`;
+const FEATURED_CACHE_KEY = `jewlsnjoy_featured_products_${CACHE_VERSION}`;
+const BESTSELLERS_CACHE_KEY = `jewlsnjoy_bestsellers_products_${CACHE_VERSION}`;
 
 // Purge obsolete legacy cache keys on load
 try {
   localStorage.removeItem('jewlsnjoy_product_catalog_cache');
   localStorage.removeItem('jewlsnjoy_product_catalog_cache_v2');
+  localStorage.removeItem('jewlsnjoy_product_catalog_cache_v3');
+  localStorage.removeItem('jewlsnjoy_featured_products_v3');
+  localStorage.removeItem('jewlsnjoy_bestsellers_products_v3');
   Object.keys(localStorage).forEach((k) => {
     if (k.startsWith('jewlsnjoy_prod_') && !k.startsWith(SINGLE_CACHE_PREFIX)) {
       localStorage.removeItem(k);
@@ -125,13 +131,69 @@ export function removeProductsFromCache(ids = []) {
 export function clearProductCache() {
   try {
     localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem(FEATURED_CACHE_KEY);
+    localStorage.removeItem(BESTSELLERS_CACHE_KEY);
     Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith(SINGLE_CACHE_PREFIX) || key.startsWith('jewlsnjoy_prod_')) {
+      if (key.startsWith('jewlsnjoy_')) {
         localStorage.removeItem(key);
       }
     });
   } catch (e) {
     // Ignore error
+  }
+}
+
+/**
+ * Get cached featured products if available.
+ */
+export function getCachedFeaturedProducts() {
+  try {
+    const raw = localStorage.getItem(FEATURED_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Save featured products to cache.
+ */
+export function cacheFeaturedProducts(products) {
+  if (!Array.isArray(products) || products.length === 0) return;
+  try {
+    localStorage.setItem(FEATURED_CACHE_KEY, JSON.stringify(products));
+    cacheProductsList(products);
+  } catch {
+    // Ignore storage quota errors
+  }
+}
+
+/**
+ * Get cached bestsellers if available.
+ */
+export function getCachedBestsellers() {
+  try {
+    const raw = localStorage.getItem(BESTSELLERS_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Save bestsellers to cache.
+ */
+export function cacheBestsellers(products) {
+  if (!Array.isArray(products) || products.length === 0) return;
+  try {
+    localStorage.setItem(BESTSELLERS_CACHE_KEY, JSON.stringify(products));
+    cacheProductsList(products);
+  } catch {
+    // Ignore storage quota errors
   }
 }
 

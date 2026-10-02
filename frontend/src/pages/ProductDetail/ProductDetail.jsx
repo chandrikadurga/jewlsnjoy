@@ -315,17 +315,27 @@ export default function ProductDetail() {
     'Plating': 'Long-lasting PVD Plated',
     'Features': 'Anti-tarnish, Waterproof, Quality Guarantee'
   };
+  const storePolicies = (() => {
+    try {
+      const stored = localStorage.getItem('jewels_store_policies');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  })();
+
   const shippingInfo = product.shipping || product.details?.shipping || {
-    standard: '6 to 8 days',
-    express: '3 to 4 days',
-    free_threshold: 999
+    standard: storePolicies?.shipping?.standard_delivery || '6 to 8 days',
+    express: storePolicies?.shipping?.express_delivery || '3 to 4 days',
+    free_threshold: storePolicies?.shipping?.free_shipping_threshold || 999,
+    dispatch: storePolicies?.shipping?.dispatch_days || 'Dispatch within 1–3 working days (Mon–Fri)'
   };
   const careInstructions = product.care_instructions || product.details?.care_instructions || [
     'Avoid direct contact with harsh perfumes and chemicals.',
     'Store in the provided jewellery pouch when not in use.',
     'Clean gently with a soft dry cloth.'
   ];
-  const returnPolicyText = product.return_policy || product.details?.return_policy || "Jewels 'n' Joys follows a strict no refund, return, or exchange policy once an order is placed.";
+  const returnPolicyText = product.return_policy || product.details?.return_policy || storePolicies?.return?.highlight_notice || "Jewels 'n' Joys follows a strict no refund, return, or exchange policy once an order is placed.";
   const dispatchTimelineText = product.dispatch_timeline || product.details?.dispatch_timeline || shippingInfo?.dispatch || "Dispatch within 1–3 working days (Mon–Fri).";
 
   return (
@@ -706,8 +716,16 @@ export default function ProductDetail() {
                     <path d="M25 41h8" />
                   </svg>
                 </div>
-                <span className="pd-trust-item__title">EASY RETURN</span>
-                <span className="pd-trust-item__sub">& EXCHANGE</span>
+                <span className="pd-trust-item__title">
+                  {returnPolicyText.toLowerCase().includes('strict') || returnPolicyText.toLowerCase().includes('no return') || returnPolicyText.toLowerCase().includes('no refund')
+                    ? '24H REPLACEMENT'
+                    : 'EASY RETURN'}
+                </span>
+                <span className="pd-trust-item__sub">
+                  {returnPolicyText.toLowerCase().includes('strict') || returnPolicyText.toLowerCase().includes('no return') || returnPolicyText.toLowerCase().includes('no refund')
+                    ? 'FOR TRANSIT DAMAGE'
+                    : '& EXCHANGE'}
+                </span>
               </div>
 
               <div className="pd-trust-item">
@@ -723,7 +741,7 @@ export default function ProductDetail() {
                   </svg>
                 </div>
                 <span className="pd-trust-item__title">FREE SHIPPING</span>
-                <span className="pd-trust-item__sub">ON ORDERS ABOVE ₹999/-</span>
+                <span className="pd-trust-item__sub">ON ORDERS ABOVE ₹{shippingInfo.free_threshold || 999}/-</span>
               </div>
 
               <div className="pd-trust-item">

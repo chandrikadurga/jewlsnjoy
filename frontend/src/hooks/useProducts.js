@@ -7,6 +7,10 @@ import {
   cacheProduct,
   cacheProductsList,
   getCachedProductsList,
+  getCachedFeaturedProducts,
+  cacheFeaturedProducts,
+  getCachedBestsellers,
+  cacheBestsellers,
 } from '../utils/productCache';
 
 function getInitialProduct(idOrSlug) {
@@ -164,79 +168,124 @@ export function useProduct(idOrSlug) {
 
 /**
  * Hook for fetching featured products.
+ * Guarantees stable deterministic ordering, race condition guards, and no flash/swap.
  */
 export function useFeaturedProducts() {
   const [products, setProducts] = useState(() => {
-    const cached = getCachedProductsList();
-    if (cached && cached.length > 0) {
-      const feat = cached.filter((p) => p.is_featured);
-      if (feat.length > 0) return feat.slice(0, 8);
-    }
-    return FALLBACK_PRODUCTS.filter((p) => p.is_featured).slice(0, 8);
+    const cached = getCachedFeaturedProducts();
+    return cached && cached.length > 0 ? cached : [];
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(() => {
+    const cached = getCachedFeaturedProducts();
+    return !(cached && cached.length > 0);
+  });
   const [error, setError] = useState(null);
 
-  const fetchFeatured = useCallback(() => {
-    productApi.getFeatured()
-      .then((data) => {
-        const list = Array.isArray(data) ? data : (data?.results || []);
-        if (list.length > 0) {
-          cacheProductsList(list);
-          setProducts(list.slice(0, 8));
-        }
-      })
-      .catch(() => {
-        // Fallback is already loaded
-      })
-      .finally(() => setLoading(false));
+  const fetchFeatured = useCallback(async (signal) => {
+    try {
+      const data = await productApi.getFeatured(signal);
+      if (signal?.aborted) return;
+      const list = Array.isArray(data) ? data : (data?.results || []);
+      if (list.length > 0) {
+        // Deterministic sort by stable ID
+        const sortedList = [...list].sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+        cacheFeaturedProducts(sortedList);
+        setProducts(sortedList.slice(0, 8));
+      }
+      setError(null);
+    } catch (err) {
+      if (signal?.aborted) return;
+      // If error and no products currently loaded, fallback stably
+      setProducts((prev) => {
+        if (prev.length > 0) return prev;
+        return FALLBACK_PRODUCTS
+          .filter((p) => p.is_featured)
+          .sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0))
+          .slice(0, 8);
+      });
+      setError(err);
+    } finally {
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
+    }
   }, []);
 
   useEffect(() => {
-    fetchFeatured();
-    const unsubscribe = subscribeToCatalogUpdates(fetchFeatured);
-    return unsubscribe;
+    const controller = new AbortController();
+    fetchFeatured(controller.signal);
+
+    const unsubscribe = subscribeToCatalogUpdates(() => {
+      fetchFeatured(controller.signal);
+    });
+
+    return () => {
+      controller.abort();
+      unsubscribe();
+    };
   }, [fetchFeatured]);
 
-  return { products, loading, error, refetch: fetchFeatured };
+  return { products, loading, error, refetch: () => fetchFeatured() };
 }
 
 /**
  * Hook for fetching bestsellers.
+ * Guarantees stable deterministic ordering, race condition guards, and no flash/swap.
  */
 export function useBestsellers() {
   const [products, setProducts] = useState(() => {
-    const cached = getCachedProductsList();
-    if (cached && cached.length > 0) {
-      const best = cached.filter((p) => p.is_bestseller);
-      if (best.length > 0) return best.slice(0, 8);
-    }
-    return FALLBACK_PRODUCTS.filter((p) => p.is_bestseller).slice(0, 8);
+    const cached = getCachedBestsellers();
+    return cached && cached.length > 0 ? cached : [];
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(() => {
+    const cached = getCachedBestsellers();
+    return !(cached && cached.length > 0);
+  });
   const [error, setError] = useState(null);
 
-  const fetchBestsellers = useCallback(() => {
-    productApi.getBestsellers()
-      .then((data) => {
-        const list = Array.isArray(data) ? data : (data?.results || []);
-        if (list.length > 0) {
-          cacheProductsList(list);
-          setProducts(list.slice(0, 8));
-        }
-      })
-      .catch(() => {
-        // Fallback is already loaded
-      })
-      .finally(() => setLoading(false));
+  const fetchBestsellers = useCallback(async (signal) => {
+    try {
+      const data = await productApi.getBestsellers(signal);
+      if (signal?.aborted) return;
+      const list = Array.isArray(data) ? data : (data?.results || []);
+      if (list.length > 0) {
+        // Deterministic sort by stable ID
+        const sortedList = [...list].sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+        cacheBestsellers(sortedList);
+        setProducts(sortedList.slice(0, 8));
+      }
+      setError(null);
+    } catch (err) {
+      if (signal?.aborted) return;
+      setProducts((prev) => {
+        if (prev.length > 0) return prev;
+        return FALLBACK_PRODUCTS
+          .filter((p) => p.is_bestseller)
+          .sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0))
+          .slice(0, 8);
+      });
+      setError(err);
+    } finally {
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
+    }
   }, []);
 
   useEffect(() => {
-    fetchBestsellers();
-    const unsubscribe = subscribeToCatalogUpdates(fetchBestsellers);
-    return unsubscribe;
+    const controller = new AbortController();
+    fetchBestsellers(controller.signal);
+
+    const unsubscribe = subscribeToCatalogUpdates(() => {
+      fetchBestsellers(controller.signal);
+    });
+
+    return () => {
+      controller.abort();
+      unsubscribe();
+    };
   }, [fetchBestsellers]);
 
-  return { products, loading, error, refetch: fetchBestsellers };
+  return { products, loading, error, refetch: () => fetchBestsellers() };
 }
 

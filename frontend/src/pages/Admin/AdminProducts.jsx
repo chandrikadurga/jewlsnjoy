@@ -217,8 +217,8 @@ export default function AdminProducts() {
       is_featured: false,
       is_bestseller: false,
       style_tags: 'Waterproof, Anti-tarnish, 18K Gold Plated',
-      primary_image_url: '/products/1/1.jpeg',
-      images: ['/products/1/1.jpeg'],
+      primary_image_url: '',
+      images: [],
 
       // Policy & Delivery
       return_policy: DEFAULT_RETURN_POLICY,
@@ -243,9 +243,9 @@ export default function AdminProducts() {
     setUploadError('');
     setActiveTab('details');
 
-    const allImages = extractProductImageUrls(prod);
-    const primary = prod.primary_image_url || prod.image || allImages[0] || '/products/1/1.jpeg';
-    if (!allImages.includes(primary)) {
+    const allImages = extractProductImageUrls(prod).filter((u) => u && !u.includes('placeholder'));
+    const primary = prod.primary_image_url || prod.image || allImages[0] || '';
+    if (primary && !allImages.includes(primary)) {
       allImages.unshift(primary);
     }
 
@@ -377,12 +377,15 @@ export default function AdminProducts() {
     const trimmed = newImageUrl.trim();
     if (!trimmed) return;
     setFormData((prev) => {
-      const currentList = prev.images || [];
+      const currentList = (prev.images || []).filter((img) => img !== '/products/1/1.jpeg');
       const updated = currentList.includes(trimmed) ? currentList : [...currentList, trimmed];
+      const nextPrimary = (!prev.primary_image_url || prev.primary_image_url === '/products/1/1.jpeg')
+        ? trimmed
+        : prev.primary_image_url;
       return {
         ...prev,
         images: updated,
-        primary_image_url: prev.primary_image_url || trimmed,
+        primary_image_url: nextPrimary,
       };
     });
     setNewImageUrl('');
@@ -403,37 +406,43 @@ export default function AdminProducts() {
           continue;
         }
 
-        // Client read for instant preview
-        const dataUrl = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-
-        let finalUrl = dataUrl;
-
-        // Try server upload to backend media storage
+        let finalUrl = '';
+        // Try server upload to backend media storage first
         try {
           const res = await adminApi.uploadProductImage(file);
           if (res && res.url) {
             finalUrl = res.url;
           }
         } catch (uploadErr) {
-          console.warn('Server upload not reachable, using local preview:', uploadErr);
+          console.warn('Server upload not reachable, falling back to local preview:', uploadErr);
         }
 
-        addedUrls.push(finalUrl);
+        // If server upload failed, read as DataURL for instant client-side preview
+        if (!finalUrl) {
+          finalUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        }
+
+        if (finalUrl) {
+          addedUrls.push(finalUrl);
+        }
       }
 
       if (addedUrls.length > 0) {
         setFormData((prev) => {
-          const currentList = prev.images || [];
+          const currentList = (prev.images || []).filter((img) => img !== '/products/1/1.jpeg');
           const combined = [...currentList, ...addedUrls];
+          const nextPrimary = (!prev.primary_image_url || prev.primary_image_url === '/products/1/1.jpeg')
+            ? addedUrls[0]
+            : prev.primary_image_url;
           return {
             ...prev,
             images: combined,
-            primary_image_url: prev.primary_image_url || addedUrls[0],
+            primary_image_url: nextPrimary,
           };
         });
         showFeedback(`${addedUrls.length} picture${addedUrls.length > 1 ? 's' : ''} added!`);
@@ -511,7 +520,7 @@ export default function AdminProducts() {
       const rawImages =
         formData.images && formData.images.length > 0
           ? formData.images
-          : [formData.primary_image_url || '/products/1/1.jpeg'];
+          : (formData.primary_image_url ? [formData.primary_image_url] : ['/products/1/1.jpeg']);
       const primaryImg = formData.primary_image_url || rawImages[0] || '/products/1/1.jpeg';
 
       const careList = formData.care_instructions
@@ -594,7 +603,7 @@ export default function AdminProducts() {
       const rawImages =
         formData.images && formData.images.length > 0
           ? formData.images
-          : [formData.primary_image_url || '/products/1/1.jpeg'];
+          : (formData.primary_image_url ? [formData.primary_image_url] : ['/products/1/1.jpeg']);
       const primaryImg = formData.primary_image_url || rawImages[0] || '/products/1/1.jpeg';
 
       const careList = formData.care_instructions
@@ -1461,6 +1470,95 @@ export default function AdminProducts() {
                       <span>Mark as Bestseller</span>
                     </label>
                   </div>
+
+                  {/* Photography Quick Card on Tab 1 */}
+                  <div className="admin-tab1-photo-section">
+                    <div className="admin-tab1-photo-header">
+                      <div>
+                        <h4 className="admin-tab1-photo-title">Product Photography</h4>
+                        <span className="admin-tab1-photo-sub">
+                          {formData.images?.length
+                            ? `${formData.images.length} photo angle${formData.images.length > 1 ? 's' : ''} added`
+                            : 'No photos uploaded yet'}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn--ghost admin-btn--sm"
+                        onClick={() => setActiveTab('photos')}
+                      >
+                        <ImageIcon size={14} />
+                        <span>Manage All Angles ({formData.images?.length || 0}) &rarr;</span>
+                      </button>
+                    </div>
+
+                    <div className="admin-tab1-photo-body">
+                      <div className="admin-tab1-photo-preview">
+                        {formData.primary_image_url ? (
+                          <img
+                            src={formData.primary_image_url}
+                            alt="Cover preview"
+                            className="admin-tab1-preview-img"
+                            onError={(e) => {
+                              e.currentTarget.src = '/products/1/1.jpeg';
+                            }}
+                          />
+                        ) : (
+                          <div className="admin-tab1-no-img">
+                            <ImageIcon size={24} />
+                            <span>No Cover</span>
+                          </div>
+                        )}
+                        <span className="admin-tab1-cover-badge">
+                          <Star size={10} fill="currentColor" /> Cover
+                        </span>
+                      </div>
+
+                      <div className="admin-tab1-photo-controls">
+                        <div className="admin-tab1-upload-row">
+                          <input
+                            type="file"
+                            id="admin-tab1-file-input"
+                            className="admin-hidden-file-input"
+                            multiple
+                            accept="image/*"
+                            onChange={(e) => {
+                              handleFilesUpload(e.target.files);
+                              e.target.value = '';
+                            }}
+                          />
+                          <label htmlFor="admin-tab1-file-input" className="admin-btn admin-btn--primary admin-tab1-upload-btn">
+                            <UploadCloud size={15} />
+                            <span>Upload Photos from Device</span>
+                          </label>
+                        </div>
+
+                        <div className="admin-tab1-url-row">
+                          <input
+                            type="text"
+                            placeholder="Or paste image URL (/products/85/1.jpeg or https://...)"
+                            value={newImageUrl}
+                            onChange={(e) => setNewImageUrl(e.target.value)}
+                            className="admin-add-url-input admin-add-url-input--sm"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleAddImageUrl(e);
+                              }
+                            }}
+                          />
+                          <button
+                            type="button"
+                            className="admin-btn admin-btn--secondary admin-btn--sm"
+                            onClick={handleAddImageUrl}
+                            disabled={!newImageUrl.trim()}
+                          >
+                            <Plus size={14} /> Add
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -1605,6 +1703,7 @@ export default function AdminProducts() {
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
+                      onClick={() => document.getElementById('admin-product-file-input')?.click()}
                     >
                       <input
                         type="file"
@@ -1612,16 +1711,20 @@ export default function AdminProducts() {
                         className="admin-hidden-file-input"
                         multiple
                         accept="image/*"
-                        onChange={(e) => handleFilesUpload(e.target.files)}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => {
+                          handleFilesUpload(e.target.files);
+                          e.target.value = '';
+                        }}
                       />
-                      <label htmlFor="admin-product-file-input" className="admin-dropzone-label">
+                      <label htmlFor="admin-product-file-input" className="admin-dropzone-label" onClick={(e) => e.stopPropagation()}>
                         <UploadCloud size={26} className="admin-upload-icon" />
                         <div className="admin-dropzone-text">
                           <span className="admin-dropzone-main">
                             {isUploading ? 'Uploading & saving pictures...' : 'Upload Photos from Computer or Mobile'}
                           </span>
                           <span className="admin-dropzone-sub">
-                            Click to select files or drag &amp; drop (JPG, PNG, WEBP — select multiple angle shots together)
+                            Click anywhere in this box or drag &amp; drop (JPG, PNG, WEBP — select multiple angle shots together)
                           </span>
                         </div>
                       </label>

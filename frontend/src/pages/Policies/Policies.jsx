@@ -39,15 +39,40 @@ export default function Policies() {
     }
   });
 
-  useEffect(() => {
+  const loadPolicies = () => {
     policyApi
       .getPolicies()
       .then((res) => {
         if (res && typeof res === 'object') {
           setStorePolicies(res);
+          try {
+            localStorage.setItem('jewels_store_policies', JSON.stringify(res));
+          } catch {}
         }
       })
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    loadPolicies();
+
+    const handleUpdate = (e) => {
+      if (e?.detail && typeof e.detail === 'object') {
+        setStorePolicies(e.detail);
+      } else {
+        try {
+          const stored = localStorage.getItem('jewels_store_policies');
+          if (stored) setStorePolicies(JSON.parse(stored));
+        } catch {}
+      }
+    };
+
+    window.addEventListener('store-policies-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('store-policies-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, []);
 
   useEffect(() => {
@@ -55,13 +80,33 @@ export default function Policies() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
 
+  const returnRules = storePolicies?.return?.rules && Array.isArray(storePolicies.return.rules) && storePolicies.return.rules.length > 0
+    ? storePolicies.return.rules
+    : [
+        {
+          title: '24-Hour Reporting Window',
+          text: `If you receive a damaged or incorrect product, you must report the issue within ${storePolicies?.return?.reporting_hours || 24} hours of delivery.`,
+        },
+        {
+          title: 'Mandatory 360° Unboxing Video',
+          text: storePolicies?.return?.unboxing_requirement || 'A full 360-degree unboxing video with no cuts or edits is mandatory to process any complaints. Without this video, we will not be able to assist you.',
+        },
+        {
+          title: 'Approval & Replacement',
+          text: 'If your complaint is verified and approved, we may provide a replacement for the damaged product.',
+        },
+      ];
+
+  const returnPhoneClean = (storePolicies?.return?.support_phone || '917251070150').replace(/[^0-9]/g, '');
+  const shippingPhoneClean = (storePolicies?.shipping?.support_phone || storePolicies?.return?.support_phone || '917251070150').replace(/[^0-9]/g, '');
+  const privacyPhoneClean = (storePolicies?.privacy?.support_phone || storePolicies?.return?.support_phone || '917251070150').replace(/[^0-9]/g, '');
 
   return (
     <div className="policies-page">
       {/* Luxury Hero */}
       <section className="policies-hero">
         <div className="container">
-          <span className="eyebrow" style={{ color: 'var(--color-gold)' }}>Transparency & Trust</span>
+          <span className="eyebrow" style={{ color: 'var(--color-gold)' }}>Transparency &amp; Trust</span>
           <h1 className="policies-hero__title">Store Policies</h1>
           <p className="policies-hero__desc">
             Please review our official Return &amp; Refund, Privacy, and Shipping terms before placing your order.
@@ -141,24 +186,15 @@ export default function Policies() {
                 Complaint &amp; Replacement Process
               </h3>
               <ul className="policy-checklist">
-                <li>
-                  <div className="policy-checklist__dot" />
-                  <div>
-                    <strong>24-Hour Reporting Window:</strong> If you receive a damaged or incorrect product, you must report the issue <strong>within {storePolicies?.return?.reporting_hours || 24} hours of delivery</strong>.
-                  </div>
-                </li>
-                <li>
-                  <div className="policy-checklist__dot" />
-                  <div>
-                    <strong>Mandatory 360° Unboxing Video:</strong> {storePolicies?.return?.unboxing_requirement || 'A full 360-degree unboxing video with no cuts or edits is mandatory to process any complaints. Without this video, we will not be able to assist you.'}
-                  </div>
-                </li>
-                <li>
-                  <div className="policy-checklist__dot" />
-                  <div>
-                    <strong>Approval &amp; Replacement:</strong> If your complaint is verified and approved, we may provide a <strong>replacement for the damaged product</strong>.
-                  </div>
-                </li>
+                {returnRules.map((rule, idx) => (
+                  <li key={idx}>
+                    <div className="policy-checklist__dot" />
+                    <div>
+                      {rule.title && <strong>{rule.title}: </strong>}
+                      <span>{rule.text}</span>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </section>
 
@@ -176,7 +212,7 @@ export default function Policies() {
                   </div>
                 </a>
                 <a
-                  href={`https://wa.me/${(storePolicies?.return?.support_phone || '917251070150').replace(/[^0-9]/g, '')}`}
+                  href={`https://wa.me/${returnPhoneClean}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="policy-contact-card"
@@ -209,18 +245,31 @@ export default function Policies() {
           <article className="policy-card glass-panel" aria-labelledby="privacy-policy-title">
             <header className="policy-card__header">
               <div className="policy-card__meta">
-                <span className="policy-pill policy-pill--secure">Data Protected</span>
+                <span className="policy-pill policy-pill--secure">
+                  {storePolicies?.privacy?.badge_label || 'Data Protected'}
+                </span>
                 <span className="policy-date">
-                  <Calendar size={13} /> Last Updated: 04-09-2026
+                  <Calendar size={13} /> Last Updated: {storePolicies?.privacy?.last_updated || '04-09-2026'}
                 </span>
               </div>
               <h2 id="privacy-policy-title" className="policy-card__title">
-                Privacy Policy
+                {storePolicies?.privacy?.title || 'Privacy Policy'}
               </h2>
               <p className="policy-card__intro">
-                At <strong>Jewels &apos;n&apos; Joys</strong>, we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you visit our website and make purchases.
+                {storePolicies?.privacy?.intro ||
+                  "At Jewels 'n' Joys, we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you visit our website and make purchases."}
               </p>
             </header>
+
+            {storePolicies?.privacy?.summary && (
+              <div className="policy-callout policy-callout--info" style={{ marginBottom: '1.75rem' }}>
+                <ShieldCheck size={22} className="policy-callout__icon" />
+                <div>
+                  <h3 className="policy-callout__title">Privacy Commitment</h3>
+                  <p className="policy-callout__text">{storePolicies.privacy.summary}</p>
+                </div>
+              </div>
+            )}
 
             <section className="policy-section">
               <h3 className="policy-section__heading">1. Information We Collect</h3>
@@ -279,7 +328,10 @@ export default function Policies() {
             <section className="policy-section">
               <h3 className="policy-section__heading">6. Your Rights</h3>
               <p>
-                You hold the full right to access, update, or request the deletion of your personal records. To submit any data privacy request, please contact us directly at <a href="mailto:jewelsnjoy25@gmail.com" className="policy-link">jewelsnjoy25@gmail.com</a>.
+                You hold the full right to access, update, or request the deletion of your personal records. To submit any data privacy request, please contact us directly at{' '}
+                <a href={`mailto:${storePolicies?.privacy?.support_email || 'jewelsnjoy25@gmail.com'}`} className="policy-link">
+                  {storePolicies?.privacy?.support_email || 'jewelsnjoy25@gmail.com'}
+                </a>.
               </p>
             </section>
 
@@ -293,11 +345,11 @@ export default function Policies() {
                   For any privacy-related questions or requests, reach out to us at:
                 </p>
                 <div className="policy-contact-inline">
-                  <a href="mailto:jewelsnjoy25@gmail.com" className="policy-inline-link">
-                    <Mail size={14} /> jewelsnjoy25@gmail.com
+                  <a href={`mailto:${storePolicies?.privacy?.support_email || 'jewelsnjoy25@gmail.com'}`} className="policy-inline-link">
+                    <Mail size={14} /> {storePolicies?.privacy?.support_email || 'jewelsnjoy25@gmail.com'}
                   </a>
-                  <a href="tel:7251070150" className="policy-inline-link">
-                    <Phone size={14} /> 7251070150
+                  <a href={`tel:${privacyPhoneClean}`} className="policy-inline-link">
+                    <Phone size={14} /> {storePolicies?.privacy?.support_phone || storePolicies?.return?.support_phone || '+91 7251070150'}
                   </a>
                 </div>
               </div>
@@ -318,16 +370,19 @@ export default function Policies() {
           <article className="policy-card glass-panel" aria-labelledby="shipping-policy-title">
             <header className="policy-card__header">
               <div className="policy-card__meta">
-                <span className="policy-pill policy-pill--delivery">All-India Delivery</span>
+                <span className="policy-pill policy-pill--delivery">
+                  {storePolicies?.shipping?.badge_label || 'All-India Delivery'}
+                </span>
                 <span className="policy-date">
-                  <Calendar size={13} /> Last Updated: 04-09-2026
+                  <Calendar size={13} /> Last Updated: {storePolicies?.shipping?.last_updated || '04-09-2026'}
                 </span>
               </div>
               <h2 id="shipping-policy-title" className="policy-card__title">
-                Shipping Policy
+                {storePolicies?.shipping?.title || 'Shipping & Delivery Policy'}
               </h2>
               <p className="policy-card__intro">
-                We take extreme care in packaging and dispatching your fine anti-tarnish jewelry safely to your doorstep.
+                {storePolicies?.shipping?.intro ||
+                  'We deliver our luxury jewellery pieces safely across all serviceable pin codes in India.'}
               </p>
             </header>
 
@@ -336,25 +391,34 @@ export default function Policies() {
               <div className="policy-timeline-grid">
                 <div className="policy-timeline-card">
                   <Clock size={20} color="var(--color-gold)" />
-                  <h4>1–3 Working Days</h4>
+                  <h4>{storePolicies?.shipping?.dispatch_days || '1–3 Working Days'}</h4>
                   <p>Order processing &amp; dispatch from our warehouse.</p>
                 </div>
                 <div className="policy-timeline-card">
                   <Calendar size={20} color="var(--color-gold)" />
-                  <h4>Monday – Friday</h4>
-                  <p>Warehouse operates excluding public holidays.</p>
+                  <h4>Standard Delivery</h4>
+                  <p>{storePolicies?.shipping?.standard_delivery || '6 to 8 business days'} transit time once dispatched.</p>
                 </div>
                 <div className="policy-timeline-card">
                   <Truck size={20} color="var(--color-gold)" />
-                  <h4>5–7 Working Days</h4>
-                  <p>Estimated transit time once shipped, based on location.</p>
+                  <h4>Express Delivery</h4>
+                  <p>{storePolicies?.shipping?.express_delivery || '3 to 4 business days'} for priority serviceable routes.</p>
                 </div>
               </div>
 
               <ul className="policy-list" style={{ marginTop: '1.5rem' }}>
-                <li>Orders are typically shipped within <strong>1–3 working days</strong> after placement.</li>
-                <li>Our warehouse processes and dispatches orders from <strong>Monday to Friday</strong>, excluding public holidays.</li>
-                <li>Once shipped, delivery takes approximately <strong>5–7 working days</strong>, depending on your delivery address and city.</li>
+                <li>Orders are typically dispatched within <strong>{storePolicies?.shipping?.dispatch_days || '1–3 working days'}</strong> after placement.</li>
+                <li>Standard doorstep delivery takes approximately <strong>{storePolicies?.shipping?.standard_delivery || '6 to 8 business days'}</strong> depending on your city pin code.</li>
+                <li>
+                  {storePolicies?.shipping?.free_shipping_threshold ? (
+                    <>Complimentary <strong>Free Shipping on all orders above ₹{storePolicies.shipping.free_shipping_threshold}/-</strong>.</>
+                  ) : (
+                    <>Complimentary <strong>Free Shipping on eligible orders</strong> across India.</>
+                  )}
+                </li>
+                {storePolicies?.shipping?.partner_note && (
+                  <li>{storePolicies.shipping.partner_note}</li>
+                )}
               </ul>
             </section>
 
@@ -364,7 +428,7 @@ export default function Policies() {
                 During peak festive seasons, national holidays, or unforeseen events (e.g., weather disruptions, regional courier transit bottlenecks), slight delivery delays may occur on the courier partner’s end.
               </p>
               <p style={{ marginTop: '0.5rem' }}>
-                We sincerely apologize for any inconvenience caused and work closely with our courier logistics to ensure your jewelry arrives safely and as swiftly as possible.
+                We sincerely apologize for any inconvenience caused and work closely with our premier courier partners to ensure your jewelry arrives safely and as swiftly as possible.
               </p>
             </section>
 
@@ -381,18 +445,23 @@ export default function Policies() {
                 For tracking assistance or address updates before dispatch, contact our concierge:
               </p>
               <div className="policy-contact-grid">
-                <a href="mailto:jewelsnjoy25@gmail.com" className="policy-contact-card">
+                <a href={`mailto:${storePolicies?.shipping?.support_email || 'jewelsnjoy25@gmail.com'}`} className="policy-contact-card">
                   <Mail size={18} color="var(--color-gold)" />
                   <div>
                     <span className="policy-contact-card__label">Email</span>
-                    <span className="policy-contact-card__val">jewelsnjoy25@gmail.com</span>
+                    <span className="policy-contact-card__val">{storePolicies?.shipping?.support_email || 'jewelsnjoy25@gmail.com'}</span>
                   </div>
                 </a>
-                <a href="https://wa.me/917251070150" target="_blank" rel="noopener noreferrer" className="policy-contact-card">
+                <a
+                  href={`https://wa.me/${shippingPhoneClean}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="policy-contact-card"
+                >
                   <Phone size={18} color="var(--color-gold)" />
                   <div>
                     <span className="policy-contact-card__label">WhatsApp</span>
-                    <span className="policy-contact-card__val">7251070150</span>
+                    <span className="policy-contact-card__val">{storePolicies?.shipping?.support_phone || '+91 7251070150'}</span>
                   </div>
                 </a>
               </div>

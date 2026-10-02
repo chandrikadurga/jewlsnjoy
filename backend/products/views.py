@@ -367,7 +367,7 @@ class FeaturedProductsView(APIView):
     GET /api/products/featured/
     """
     def get(self, request):
-        products = Product.objects.filter(is_featured=True)[:8]
+        products = Product.objects.filter(is_featured=True).order_by('id')[:8]
         response = Response(ProductListSerializer(products, many=True).data)
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         response['Pragma'] = 'no-cache'
@@ -379,7 +379,7 @@ class BestsellerProductsView(APIView):
     GET /api/products/bestsellers/
     """
     def get(self, request):
-        products = Product.objects.filter(is_bestseller=True)[:8]
+        products = Product.objects.filter(is_bestseller=True).order_by('id')[:8]
         response = Response(ProductListSerializer(products, many=True).data)
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         response['Pragma'] = 'no-cache'
@@ -647,6 +647,40 @@ class AdminStatsView(APIView):
         return response
 
 
+def save_base64_image_if_needed(image_str):
+    """
+    If image_str is a base64 data URI (data:image/...), decodes and writes it
+    to a permanent file in MEDIA_ROOT/products/ and returns the web-accessible URL.
+    Otherwise returns image_str unchanged.
+    """
+    if not image_str or not isinstance(image_str, str):
+        return image_str
+    if image_str.startswith('data:image'):
+        try:
+            import base64
+            header, encoded = image_str.split('base64,', 1)
+            ext = '.jpg'
+            if 'png' in header:
+                ext = '.png'
+            elif 'webp' in header:
+                ext = '.webp'
+            elif 'jpeg' in header:
+                ext = '.jpeg'
+            elif 'gif' in header:
+                ext = '.gif'
+            filename = f"prod_{uuid.uuid4().hex[:10]}{ext}"
+            save_dir = Path(settings.MEDIA_ROOT) / 'products'
+            save_dir.mkdir(parents=True, exist_ok=True)
+            dest_path = save_dir / filename
+            with open(dest_path, 'wb') as f:
+                f.write(base64.b64decode(encoded))
+            return f"/media/products/{filename}"
+        except Exception as e:
+            logger.error(f"Error decoding base64 image: {e}")
+            return image_str
+    return image_str
+
+
 class AdminProductListView(APIView):
     """
     GET /api/admin/products/
@@ -671,6 +705,11 @@ class AdminProductListView(APIView):
         if images_data is None:
             images_data = data.pop('image_urls', None)
         primary_url = data.get('primary_image_url') or data.get('image')
+
+        # Convert base64 image if passed
+        if primary_url:
+            primary_url = save_base64_image_if_needed(primary_url)
+            data['primary_image_url'] = primary_url
 
         # Synchronize stock
         data = AdminProductDetailView()._sync_stock_data(None, data)
@@ -736,16 +775,20 @@ def sync_product_images(product, images_data, primary_url=None):
     """
     Synchronizes ProductImage records and primary_image_url for a product.
     Supports list of string URLs or dicts {image_url: '...'}.
+    Also converts base64 image strings into media files automatically.
     """
     url_list = []
     if images_data is not None and isinstance(images_data, list):
         for item in images_data:
             if isinstance(item, str) and item.strip():
-                url_list.append(item.strip())
+                url_list.append(save_base64_image_if_needed(item.strip()))
             elif isinstance(item, dict) and item.get('image_url'):
-                url_list.append(item['image_url'].strip())
+                url_list.append(save_base64_image_if_needed(item['image_url'].strip()))
 
     target_primary = primary_url or product.primary_image_url
+    if target_primary:
+        target_primary = save_base64_image_if_needed(target_primary)
+
     if not target_primary and url_list:
         target_primary = url_list[0]
 
@@ -836,6 +879,9 @@ class AdminProductDetailView(APIView):
         if images_data is None:
             images_data = data.pop('image_urls', None)
         primary_url = data.get('primary_image_url') or data.get('image')
+        if primary_url:
+            primary_url = save_base64_image_if_needed(primary_url)
+            data['primary_image_url'] = primary_url
 
         serializer = AdminProductWriteSerializer(product, data=data, partial=True)
         if serializer.is_valid():
@@ -860,6 +906,9 @@ class AdminProductDetailView(APIView):
         if images_data is None:
             images_data = data.pop('image_urls', None)
         primary_url = data.get('primary_image_url') or data.get('image')
+        if primary_url:
+            primary_url = save_base64_image_if_needed(primary_url)
+            data['primary_image_url'] = primary_url
 
         serializer = AdminProductWriteSerializer(product, data=data)
         if serializer.is_valid():
@@ -891,6 +940,9 @@ class AdminImageUploadView(APIView):
 
     def post(self, request):
         file_obj = request.FILES.get('image') or request.FILES.get('file')
+        if not file_obj and request.FILES:
+            file_obj = list(request.FILES.values())[0]
+
         if not file_obj:
             base64_data = request.data.get('image_data') or request.data.get('image')
             if base64_data and isinstance(base64_data, str) and 'base64,' in base64_data:
@@ -901,6 +953,10 @@ class AdminImageUploadView(APIView):
                     ext = '.png'
                 elif 'webp' in header:
                     ext = '.webp'
+                elif 'jpeg' in header:
+                    ext = '.jpeg'
+                elif 'gif' in header:
+                    ext = '.gif'
                 filename = f"prod_{uuid.uuid4().hex[:10]}{ext}"
                 save_dir = Path(settings.MEDIA_ROOT) / 'products'
                 save_dir.mkdir(parents=True, exist_ok=True)
@@ -912,7 +968,7 @@ class AdminImageUploadView(APIView):
 
         filename = getattr(file_obj, 'name', 'product.jpg')
         ext = os.path.splitext(filename)[1].lower()
-        if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
+        if ext not in ['.jpg', '.jpeg', '.png', '.webp', '.jfif', '.avif', '.gif', '.heic']:
             ext = '.jpg'
 
         safe_name = f"prod_{uuid.uuid4().hex[:10]}{ext}"
@@ -1126,7 +1182,14 @@ class StorePolicyView(APIView):
         for key, default_data in DEFAULT_POLICIES.items():
             db_pol = StorePolicy.objects.filter(key=key).first()
             if db_pol and db_pol.data:
-                policies[key] = {**default_data, **db_pol.data, 'last_updated': db_pol.last_updated or default_data['last_updated']}
+                merged = {**default_data, **db_pol.data}
+                if db_pol.last_updated and not merged.get('last_updated'):
+                    merged['last_updated'] = db_pol.last_updated
+                if db_pol.title and not merged.get('title'):
+                    merged['title'] = db_pol.title
+                if db_pol.badge_label and not merged.get('badge_label'):
+                    merged['badge_label'] = db_pol.badge_label
+                policies[key] = merged
             else:
                 policies[key] = default_data
         response = Response(policies)
@@ -1145,7 +1208,14 @@ class AdminStorePolicyView(APIView):
         for key, default_data in DEFAULT_POLICIES.items():
             db_pol = StorePolicy.objects.filter(key=key).first()
             if db_pol and db_pol.data:
-                policies[key] = {**default_data, **db_pol.data, 'last_updated': db_pol.last_updated or default_data['last_updated']}
+                merged = {**default_data, **db_pol.data}
+                if db_pol.last_updated and not merged.get('last_updated'):
+                    merged['last_updated'] = db_pol.last_updated
+                if db_pol.title and not merged.get('title'):
+                    merged['title'] = db_pol.title
+                if db_pol.badge_label and not merged.get('badge_label'):
+                    merged['badge_label'] = db_pol.badge_label
+                policies[key] = merged
             else:
                 policies[key] = default_data
         response = Response(policies)
@@ -1160,9 +1230,9 @@ class AdminStorePolicyView(APIView):
             key = payload['key']
             data = payload['data']
             sp, _ = StorePolicy.objects.get_or_create(key=key)
-            sp.title = payload.get('title', sp.title or DEFAULT_POLICIES.get(key, {}).get('title', ''))
-            sp.badge_label = payload.get('badge_label', sp.badge_label or DEFAULT_POLICIES.get(key, {}).get('badge_label', ''))
-            sp.last_updated = payload.get('last_updated', sp.last_updated or 'Today')
+            sp.title = payload.get('title') or sp.title or DEFAULT_POLICIES.get(key, {}).get('title', '')
+            sp.badge_label = payload.get('badge_label') or sp.badge_label or DEFAULT_POLICIES.get(key, {}).get('badge_label', '')
+            sp.last_updated = payload.get('last_updated') or sp.last_updated or 'Today'
             sp.data = data
             sp.save()
             updated_policies[key] = {**DEFAULT_POLICIES.get(key, {}), **sp.data}
@@ -1170,9 +1240,9 @@ class AdminStorePolicyView(APIView):
             for k, val in payload.items():
                 if isinstance(val, dict):
                     sp, _ = StorePolicy.objects.get_or_create(key=k)
-                    sp.title = val.get('title', sp.title or DEFAULT_POLICIES.get(k, {}).get('title', ''))
-                    sp.badge_label = val.get('badge_label', sp.badge_label or DEFAULT_POLICIES.get(k, {}).get('badge_label', ''))
-                    sp.last_updated = val.get('last_updated', sp.last_updated or 'Today')
+                    sp.title = val.get('title') or sp.title or DEFAULT_POLICIES.get(k, {}).get('title', '')
+                    sp.badge_label = val.get('badge_label') or sp.badge_label or DEFAULT_POLICIES.get(k, {}).get('badge_label', '')
+                    sp.last_updated = val.get('last_updated') or sp.last_updated or 'Today'
                     sp.data = val
                     sp.save()
                     updated_policies[k] = {**DEFAULT_POLICIES.get(k, {}), **val}
@@ -1180,6 +1250,12 @@ class AdminStorePolicyView(APIView):
         response = Response({'message': 'Policies updated successfully', 'policies': updated_policies})
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         return response
+
+    def put(self, request):
+        return self.post(request)
+
+    def patch(self, request):
+        return self.post(request)
 
 
 # ─── Store Customization Views (Hero & Announcement Bar) ─────────────────────

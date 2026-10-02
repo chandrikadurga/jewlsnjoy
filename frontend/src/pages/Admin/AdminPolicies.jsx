@@ -197,10 +197,12 @@ export default function AdminPolicies() {
     setSaving(true);
     try {
       localStorage.setItem('jewels_store_policies', JSON.stringify(policies));
+      window.dispatchEvent(new CustomEvent('store-policies-updated', { detail: policies }));
       await adminApi.updateStorePolicies(policies);
       showFeedback('Store policies published & updated successfully!');
     } catch (err) {
       console.warn('Saved policies locally:', err);
+      window.dispatchEvent(new CustomEvent('store-policies-updated', { detail: policies }));
       showFeedback('Policies saved locally.');
     } finally {
       setSaving(false);

@@ -49,7 +49,7 @@ class Product(models.Model):
     is_bestseller = models.BooleanField(default=False)
     
     # Primary image shortcut
-    primary_image_url = models.CharField(max_length=500, blank=True, default='')
+    primary_image_url = models.CharField(max_length=1000, blank=True, default='')
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -91,7 +91,7 @@ class ProductImage(models.Model):
         related_name='images',
         on_delete=models.CASCADE
     )
-    image_url = models.CharField(max_length=500)
+    image_url = models.CharField(max_length=1000)
     angle_number = models.PositiveSmallIntegerField(default=1)
     is_primary = models.BooleanField(default=False)
     alt_text = models.CharField(max_length=255, blank=True, default='')

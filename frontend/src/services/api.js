@@ -189,8 +189,11 @@ export const productApi = {
   /**
    * Get featured products for homepage
    */
-  getFeatured: async () => {
-    const response = await api.get('/api/products/featured/', { params: { _t: Date.now() } });
+  getFeatured: async (signal) => {
+    const response = await api.get('/api/products/featured/', {
+      signal,
+      params: { _t: Date.now() },
+    });
     const list = Array.isArray(response.data) ? response.data : (response.data.results || []);
     return {
       results: list.map(resolveProductImages),
@@ -200,8 +203,11 @@ export const productApi = {
   /**
    * Get bestseller products
    */
-  getBestsellers: async () => {
-    const response = await api.get('/api/products/bestsellers/', { params: { _t: Date.now() } });
+  getBestsellers: async (signal) => {
+    const response = await api.get('/api/products/bestsellers/', {
+      signal,
+      params: { _t: Date.now() },
+    });
     const list = Array.isArray(response.data) ? response.data : (response.data.results || []);
     return {
       results: list.map(resolveProductImages),
@@ -344,11 +350,7 @@ export const adminApi = {
   uploadProductImage: async (file) => {
     const formData = new FormData();
     formData.append('image', file);
-    const response = await api.post('/api/admin/upload-image/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post('/api/admin/upload-image/', formData);
     return response.data;
   },
   getOrders: async (params = {}) => {
@@ -512,9 +514,7 @@ export const adminApi = {
     return response.data;
   },
   uploadImage: async (formData) => {
-    const response = await api.post('/api/admin/upload-image/', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const response = await api.post('/api/admin/upload-image/', formData);
     return response.data;
   },
 };

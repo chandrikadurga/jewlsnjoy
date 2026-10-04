@@ -532,6 +532,8 @@ export const shippingApi = {
   },
 };
 
+export { bannerApi } from './bannerApi';
+
 export default api;
 
 

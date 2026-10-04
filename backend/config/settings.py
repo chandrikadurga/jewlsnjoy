@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'products',
     'payments',
     'shipping',
+    'banners',
 ]
 
 MIDDLEWARE = [
@@ -87,11 +88,19 @@ ASGI_APPLICATION = 'config.asgi.application'
 
 # Database — PostgreSQL in production (Supabase) when DATABASE_URL is configured, else SQLite locally.
 # The database is the single source of truth for all Products, Categories, Orders, and Reviews.
+import sys
 import dj_database_url
 
-# Database — Supabase PostgreSQL when DATABASE_URL is set, else SQLite fallback
+TESTING = 'test' in sys.argv
 DATABASE_URL = os.getenv('DATABASE_URL')
-if DATABASE_URL:
+if TESTING:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+elif DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
@@ -196,6 +205,7 @@ import base64
 _DEFAULT_SB_SEC = base64.b64decode("c2Jfc2VjcmV0X1NCOG1hWmJQcF9BSEpvQzZ3a2k2Sndfd0c5ZDRJNjc=").decode('ascii')
 SUPABASE_SECRET_KEY = os.getenv('SUPABASE_SECRET_KEY', os.getenv('SUPABASE_SERVICE_ROLE_KEY', _DEFAULT_SB_SEC)).strip()
 SUPABASE_STORAGE_BUCKET = os.getenv('SUPABASE_STORAGE_BUCKET', 'payment-proofs').strip()
+PROMOTIONAL_BANNERS_BUCKET = os.getenv('PROMOTIONAL_BANNERS_BUCKET', 'promotional-banners').strip()
 
 # Delhivery One Shipping & Logistics Configuration
 DELHIVERY_ENABLED = os.getenv('DELHIVERY_ENABLED', 'True').lower() in ('true', '1', 't')

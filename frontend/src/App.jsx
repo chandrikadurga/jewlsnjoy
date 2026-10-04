@@ -27,6 +27,7 @@ import OrderDetail from './pages/Orders/OrderDetail';
 
 // Admin pages
 import AdminDashboard from './pages/Admin/AdminDashboard';
+import AdminBanners from './pages/Admin/AdminBanners';
 import AdminProducts from './pages/Admin/AdminProducts';
 import AdminOrders from './pages/Admin/AdminOrders';
 import AdminPolicies from './pages/Admin/AdminPolicies';
@@ -71,6 +72,7 @@ function App() {
           {/* Luxury Admin Suite Routes */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="banners" element={<AdminBanners />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="policies" element={<AdminPolicies />} />

@@ -10,7 +10,8 @@ import {
   X,
   Bell,
   ShieldCheck,
-  LogOut
+  LogOut,
+  Megaphone,
 } from 'lucide-react';
 import AdminLogin from '../pages/Admin/AdminLogin';
 import { adminApi } from '../services/api';
@@ -53,6 +54,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { to: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true },
+    { to: '/admin/banners', label: 'Promotional Banners', icon: Megaphone },
     { to: '/admin/products', label: 'Product Catalog', icon: Package },
     { to: '/admin/orders', label: 'Orders & Sales', icon: ShoppingBag },
     { to: '/admin/policies', label: 'Store Policies', icon: ShieldCheck },
@@ -159,9 +161,11 @@ export default function AdminLayout() {
             <div className="admin-header__title-wrap">
               <h1 className="admin-header__title">
                 {location.pathname === '/admin' && 'Executive Overview'}
+                {location.pathname === '/admin/banners' && 'Promotional Banners & Marketing'}
                 {location.pathname === '/admin/products' && 'Product Catalog'}
                 {location.pathname === '/admin/orders' && 'Customer Orders'}
                 {location.pathname === '/admin/policies' && 'Store Policies & Compliance'}
+                {location.pathname === '/admin/customizer' && 'Store Customizer'}
               </h1>
 
               <span className="admin-header__subtitle">Jewels &apos;n&apos; Joys Administration</span>

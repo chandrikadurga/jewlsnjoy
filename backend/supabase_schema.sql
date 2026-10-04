@@ -108,3 +108,44 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- 4. Promotional Banners: RLS and Realtime Configuration
+ALTER TABLE IF EXISTS public.promotional_banners ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.promotional_banner_assets ENABLE ROW LEVEL SECURITY;
+
+DO $$ 
+BEGIN
+    -- Public read policy for published banners
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'promotional_banners' AND policyname = 'Public can view published promotional banners'
+    ) THEN
+        CREATE POLICY "Public can view published promotional banners" 
+        ON public.promotional_banners FOR SELECT 
+        USING (status = 'published' AND is_active = true);
+    END IF;
+
+    -- Public read policy for assets of published banners
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'promotional_banner_assets' AND policyname = 'Public can view visible promotional banner assets'
+    ) THEN
+        CREATE POLICY "Public can view visible promotional banner assets" 
+        ON public.promotional_banner_assets FOR SELECT 
+        USING (is_visible = true);
+    END IF;
+END $$;
+
+-- Enable Supabase Realtime publication on promotional_banners
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime'
+    ) THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE promotional_banners;
+    END IF;
+EXCEPTION
+    WHEN duplicate_object THEN
+        NULL;
+    WHEN undefined_object THEN
+        NULL;
+END $$;
+

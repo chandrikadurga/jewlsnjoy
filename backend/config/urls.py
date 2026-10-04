@@ -34,6 +34,8 @@ def api_root(request):
             'django_admin': '/admin/',
             'shipping_serviceability': '/api/shipping/serviceability/',
             'shipping_order_track': '/api/shipping/orders/<order_number>/',
+            'promotional_banners_active': '/api/promotional-banners/active/',
+            'admin_promotional_banners': '/api/admin/promotional-banners/',
         }
     })
 
@@ -53,6 +55,8 @@ urlpatterns = [
     path('api/shipping/', include('shipping.urls')),
     path('api/policies/', StorePolicyView.as_view(), name='store-policies'),
     path('api/customization/', StoreCustomizationView.as_view(), name='store-customization'),
+    path('api/promotional-banners/', include('banners.urls')),
+    path('api/admin/promotional-banners/', include('banners.admin_urls')),
     path('api/admin/', include('products.admin_urls')),
 ]
 

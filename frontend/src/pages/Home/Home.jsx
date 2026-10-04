@@ -11,7 +11,6 @@ import heroImg from '../../assets/hero-necklaces.png';
 import mysteryBoxImg from '../../assets/mystery-box-banner.jpg';
 import storyMainImg from '../../assets/products/3/2.jpeg';
 import storyAccentImg from '../../assets/products/4/1.jpeg';
-import PromotionalBanner from '../../components/PromotionalBanner/PromotionalBanner';
 import './Home.css';
 
 
@@ -683,7 +682,6 @@ export default function Home() {
 
   return (
     <div className="home-page">
-      <PromotionalBanner />
       <Hero />
 
       {/* Featured Collection */}

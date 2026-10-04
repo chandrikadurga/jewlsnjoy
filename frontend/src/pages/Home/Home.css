@@ -79,7 +79,7 @@
   transition: transform var(--transition-slow);
 }
 
-.hero__image-wrap:hover .hero__image {
+.hero__image-wrap:hover .hero__image:not(.hero__image--contain) {
   transform: scale(1.03);
 }
 
@@ -140,6 +140,8 @@
 .hero__image--contain {
   object-fit: contain !important;
   background: #faf6f0;
+  padding: 10px 8px;
+  box-sizing: border-box;
 }
 
 /* Luxury Navigation Arrows */
@@ -218,6 +220,9 @@
 }
 
 @media (max-width: 640px) {
+  .hero__image--contain {
+    padding: 14px 10px;
+  }
   .hero__carousel-arrow {
     width: 32px;
     height: 32px;

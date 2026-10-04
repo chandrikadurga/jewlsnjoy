@@ -19,9 +19,15 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductImage
         fields = ['id', 'image_url', 'angle_number', 'is_primary', 'alt_text']
+
+    def get_image_url(self, obj):
+        from .storage import get_product_image_public_url
+        return get_product_image_public_url(obj.image_url) or obj.image_url
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -29,8 +35,9 @@ class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     discount_percent = serializers.IntegerField(read_only=True)
-    image = serializers.CharField(source='primary_image_url', read_only=True)
-    thumbnail = serializers.CharField(source='primary_image_url', read_only=True)
+    primary_image_url = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    thumbnail = serializers.SerializerMethodField()
     style = serializers.JSONField(source='style_tags', read_only=True)
     features = serializers.SerializerMethodField()
     specifications = serializers.SerializerMethodField()
@@ -55,6 +62,19 @@ class ProductSerializer(serializers.ModelSerializer):
             'primary_image_url', 'image', 'thumbnail', 'images', 'image_urls',
             'created_at', 'updated_at',
         ]
+
+    def get_primary_image_url(self, obj):
+        from .storage import get_product_image_public_url
+        resolved = get_product_image_public_url(obj.primary_image_url)
+        if resolved:
+            return resolved
+        return obj.primary_image_url or (f"/products/{obj.id}/1.jpeg" if obj.id else "")
+
+    def get_image(self, obj):
+        return self.get_primary_image_url(obj)
+
+    def get_thumbnail(self, obj):
+        return self.get_primary_image_url(obj)
 
     def get_rating(self, obj):
         if isinstance(obj.details, dict) and obj.details.get('rating'):
@@ -122,9 +142,11 @@ class ProductSerializer(serializers.ModelSerializer):
         return "Dispatch within 1–3 working days (Mon–Fri)"
 
     def get_image_urls(self, obj):
-        urls = [img.image_url for img in obj.images.all()]
+        from .storage import get_product_image_public_url
+        urls = [get_product_image_public_url(img.image_url) or img.image_url for img in obj.images.all()]
         if not urls:
-            urls = [obj.primary_image_url or f"/products/{obj.id}/1.jpeg"]
+            primary = self.get_primary_image_url(obj)
+            urls = [primary] if primary else []
         return urls
 
 
@@ -132,8 +154,9 @@ class ProductListSerializer(serializers.ModelSerializer):
     category = serializers.CharField(source='category.name', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     discount_percent = serializers.IntegerField(read_only=True)
-    image = serializers.CharField(source='primary_image_url', read_only=True)
-    thumbnail = serializers.CharField(source='primary_image_url', read_only=True)
+    primary_image_url = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    thumbnail = serializers.SerializerMethodField()
     images = ProductImageSerializer(many=True, read_only=True)
     style = serializers.JSONField(source='style_tags', read_only=True)
 
@@ -146,6 +169,19 @@ class ProductListSerializer(serializers.ModelSerializer):
             'in_stock', 'stock_quantity', 'is_featured', 'is_bestseller',
             'primary_image_url', 'image', 'thumbnail', 'images', 'style_tags', 'style',
         ]
+
+    def get_primary_image_url(self, obj):
+        from .storage import get_product_image_public_url
+        resolved = get_product_image_public_url(obj.primary_image_url)
+        if resolved:
+            return resolved
+        return obj.primary_image_url or (f"/products/{obj.id}/1.jpeg" if obj.id else "")
+
+    def get_image(self, obj):
+        return self.get_primary_image_url(obj)
+
+    def get_thumbnail(self, obj):
+        return self.get_primary_image_url(obj)
 
 
 class AdminProductWriteSerializer(serializers.ModelSerializer):

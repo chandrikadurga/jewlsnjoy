@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Package, ArrowRight, Clock, Search, Truck, ShieldCheck, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { orderApi } from '../../services/api';
+import { resolveStoragePath, PRODUCT_IMAGE_PLACEHOLDER } from '../../utils/imageUtils';
 import './Orders.css';
 
 export default function Orders() {
@@ -170,11 +171,13 @@ export default function Orders() {
                       {order.items && order.items.map((item) => (
                         <div key={item.id} className="order-item-row">
                           <img
-                            src={item.image_url || '/products/1/1.jpeg'}
+                            src={resolveStoragePath(item.image_url) || PRODUCT_IMAGE_PLACEHOLDER}
                             alt={item.product_name}
                             className="order-item-thumb"
                             onError={(e) => {
-                              e.target.src = '/products/1/1.jpeg';
+                              if (e.target.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+                                e.target.src = PRODUCT_IMAGE_PLACEHOLDER;
+                              }
                             }}
                           />
                           <div className="order-item-details">

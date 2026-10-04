@@ -29,6 +29,13 @@ import { adminApi, categoryApi } from '../../services/api';
 import { FALLBACK_PRODUCTS } from '../../data/products';
 import { broadcastCatalogUpdate } from '../../utils/catalogEvents';
 import {
+  getProductImageUrl,
+  getProductImageUrls,
+  resolveStoragePath,
+  isTemporaryUrl,
+  PRODUCT_IMAGE_PLACEHOLDER,
+} from '../../utils/imageUtils';
+import {
   cacheProduct,
   cacheProductsList,
   getCachedProductsList,
@@ -41,29 +48,8 @@ import './AdminProducts.css';
  * Extracts a normalized, deduplicated list of image URLs from any product object.
  */
 function extractProductImageUrls(prod) {
-  if (!prod) return [];
-  const urls = [];
-  if (Array.isArray(prod.images)) {
-    prod.images.forEach((img) => {
-      if (typeof img === 'string' && img.trim()) {
-        urls.push(img.trim());
-      } else if (img && typeof img === 'object' && img.image_url) {
-        urls.push(img.image_url.trim());
-      }
-    });
-  }
-  if (Array.isArray(prod.image_urls)) {
-    prod.image_urls.forEach((u) => {
-      if (typeof u === 'string' && u.trim() && !urls.includes(u.trim())) {
-        urls.push(u.trim());
-      }
-    });
-  }
-  const primary = prod.primary_image_url || prod.image;
-  if (primary && typeof primary === 'string' && primary.trim() && !urls.includes(primary.trim())) {
-    urls.unshift(primary.trim());
-  }
-  return urls.length > 0 ? urls : [primary || '/products/1/1.jpeg'];
+  if (!prod) return [PRODUCT_IMAGE_PLACEHOLDER];
+  return getProductImageUrls(prod);
 }
 
 const DEFAULT_RETURN_POLICY =
@@ -397,65 +383,105 @@ export default function AdminProducts() {
     setIsUploading(true);
     setUploadError('');
 
-    try {
-      const fileList = Array.from(files);
-      const addedUrls = [];
+    const fileList = Array.from(files).filter((f) => f.type.startsWith('image/'));
+    if (fileList.length === 0) {
+      setUploadError('Please choose valid image files (JPG, PNG, WEBP, GIF).');
+      setIsUploading(false);
+      return;
+    }
 
-      for (const file of fileList) {
-        if (!file.type.startsWith('image/')) {
+    const addedUrls = [];
+    const errors = [];
+
+    for (const file of fileList) {
+      // Validate file size client-side before sending (10 MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+        errors.push(`"${file.name}" exceeds the 10 MB size limit.`);
+        continue;
+      }
+
+      try {
+        // STEP 1: Upload to Supabase Storage via Django backend.
+        // The backend validates, uploads to Supabase, and returns a globally accessible URL.
+        // The product_id helps generate an organized versioned storage path.
+        const productId = editingProduct?.id || 'tmp';
+        const formPayload = new FormData();
+        formPayload.append('image', file);
+        formPayload.append('product_id', productId);
+        formPayload.append('image_type', 'primary');
+
+        const res = await adminApi.uploadProductImage(formPayload);
+
+        if (!res || !res.url) {
+          errors.push(`Upload failed for "${file.name}": No URL returned from server.`);
           continue;
         }
 
-        let finalUrl = '';
-        // Try server upload to backend media storage first
-        try {
-          const res = await adminApi.uploadProductImage(file);
-          if (res && res.url) {
-            finalUrl = res.url;
-          }
-        } catch (uploadErr) {
-          console.warn('Server upload not reachable, falling back to local preview:', uploadErr);
+        // STEP 2: Verify the URL is a cloud URL (not a local path or blob)
+        if (
+          res.url.startsWith('blob:') ||
+          res.url.startsWith('data:') ||
+          res.url.startsWith('/media/') ||
+          res.url.includes('localhost')
+        ) {
+          console.error(
+            '[AdminProducts] Upload endpoint returned a non-cloud URL. ' +
+            'This image will NOT be globally accessible:',
+            res.url
+          );
+          errors.push(
+            `"${file.name}" could not be stored in cloud. Please check server configuration.`
+          );
+          continue;
         }
 
-        // If server upload failed, read as DataURL for instant client-side preview
-        if (!finalUrl) {
-          finalUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-        }
-
-        if (finalUrl) {
-          addedUrls.push(finalUrl);
-        }
+        // STEP 3: URL is valid cloud URL — add to list
+        addedUrls.push(res.url);
+      } catch (uploadErr) {
+        console.error('Image upload failed for', file.name, uploadErr);
+        const errMsg =
+          uploadErr?.response?.data?.error ||
+          uploadErr?.message ||
+          'Upload failed';
+        errors.push(`"${file.name}": ${errMsg}`);
       }
+    }
 
-      if (addedUrls.length > 0) {
-        setFormData((prev) => {
-          const currentList = (prev.images || []).filter((img) => img !== '/products/1/1.jpeg');
-          const combined = [...currentList, ...addedUrls];
-          const nextPrimary = (!prev.primary_image_url || prev.primary_image_url === '/products/1/1.jpeg')
+    if (addedUrls.length > 0) {
+      // STEP 4: Only update form state after confirmed cloud upload
+      setFormData((prev) => {
+        const currentList = (prev.images || []).filter(
+          (img) => img && img !== '/products/1/1.jpeg' && !img.startsWith('blob:')
+        );
+        const combined = [...currentList, ...addedUrls];
+        const nextPrimary =
+          !prev.primary_image_url ||
+          prev.primary_image_url === '/products/1/1.jpeg' ||
+          prev.primary_image_url.startsWith('blob:')
             ? addedUrls[0]
             : prev.primary_image_url;
-          return {
-            ...prev,
-            images: combined,
-            primary_image_url: nextPrimary,
-          };
-        });
-        showFeedback(`${addedUrls.length} picture${addedUrls.length > 1 ? 's' : ''} added!`);
-      } else {
-        setUploadError('Please choose valid image files (JPG, PNG, WEBP).');
-      }
-    } catch (err) {
-      console.error('Failed to process image files:', err);
-      setUploadError('Error uploading image. Please try again.');
-    } finally {
-      setIsUploading(false);
-      setDragActive(false);
+        return {
+          ...prev,
+          images: combined,
+          primary_image_url: nextPrimary,
+        };
+      });
+      showFeedback(
+        `${addedUrls.length} image${addedUrls.length > 1 ? 's' : ''} uploaded to cloud storage!`
+      );
     }
+
+    if (errors.length > 0) {
+      setUploadError(
+        errors.join(' ') +
+        (addedUrls.length === 0
+          ? ' Your existing image has not been changed.'
+          : '')
+      );
+    }
+
+    setIsUploading(false);
+    setDragActive(false);
   };
 
   const handleDragOver = (e) => {
@@ -522,6 +548,14 @@ export default function AdminProducts() {
           ? formData.images
           : (formData.primary_image_url ? [formData.primary_image_url] : ['/products/1/1.jpeg']);
       const primaryImg = formData.primary_image_url || rawImages[0] || '/products/1/1.jpeg';
+
+      // Enforce: temporary blob: or data: URLs can NEVER be saved to the database
+      if (isTemporaryUrl(primaryImg) || rawImages.some(isTemporaryUrl)) {
+        setUploadError('Cannot save temporary preview image. Please upload a real image file to cloud storage first.');
+        setActiveTab('images');
+        setSaveLoading(false);
+        return;
+      }
 
       const careList = formData.care_instructions
         ? formData.care_instructions.split('\n').map((s) => s.trim()).filter(Boolean)
@@ -968,9 +1002,11 @@ export default function AdminProducts() {
                           <div className="admin-prod-cell">
                             <div className="admin-prod-thumb-wrap">
                               <img
-                                src={prod.primary_image_url || prod.image || `/products/${prod.id}/1.jpeg`}
+                                src={getProductImageUrl(prod)}
                                 onError={(e) => {
-                                  e.currentTarget.src = `/products/${(prod.id % 7) + 1}/1.jpeg`;
+                                  if (e.currentTarget.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+                                    e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER;
+                                  }
                                 }}
                                 alt={prod.name}
                                 className="admin-prod-thumb"
@@ -1098,9 +1134,11 @@ export default function AdminProducts() {
                       />
                       <div className="admin-prod-thumb-wrap">
                         <img
-                          src={prod.primary_image_url || prod.image || `/products/${prod.id}/1.jpeg`}
+                          src={getProductImageUrl(prod)}
                           onError={(e) => {
-                            e.currentTarget.src = `/products/${(prod.id % 7) + 1}/1.jpeg`;
+                            if (e.currentTarget.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+                              e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER;
+                            }
                           }}
                           alt={prod.name}
                           className="admin-prod-thumb"

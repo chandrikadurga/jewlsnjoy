@@ -17,5 +17,7 @@ urlpatterns = [
     path('orders/<str:identifier>/delete/', views.AdminOrderDetailView.as_view(), name='admin-order-delete-str'),
     path('policies/', views.AdminStorePolicyView.as_view(), name='admin-policies'),
     path('customization/', views.AdminStoreCustomizationView.as_view(), name='admin-customization'),
+    # Image health check — detects broken/legacy image references across all products
+    path('system/image-health/', views.AdminImageHealthView.as_view(), name='admin-image-health'),
 ]
 

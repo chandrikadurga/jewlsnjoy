@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, X, ArrowRight, Sparkles, TrendingUp, Tag } from 'lucide-react';
 import { FALLBACK_PRODUCTS } from '../../data/products';
 import { productApi } from '../../services/api';
+import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from '../../utils/imageUtils';
 import './SearchOverlay.css';
 
 const TRENDING_SEARCHES = [
@@ -366,14 +367,13 @@ export default function SearchOverlay({ isOpen, onClose }) {
                       onMouseEnter={() => setSelectedIndex(idx)}
                     >
                       <img
-                        src={product.thumbnail || product.image || product.primary_image_url || (product.id ? `/products/${product.id}/1.jpeg` : '/products/1/1.jpeg')}
+                        src={getProductImageUrl(product)}
                         alt={product.name}
                         className="search-overlay__result-img"
                         decoding="async"
                         onError={(e) => {
-                          const direct = product?.id ? `/products/${product.id}/1.jpeg` : '/products/1/1.jpeg';
-                          if (e.currentTarget.src !== window.location.origin + direct) {
-                            e.currentTarget.src = direct;
+                          if (e.currentTarget.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+                            e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER;
                           }
                         }}
                       />
@@ -485,9 +485,14 @@ export default function SearchOverlay({ isOpen, onClose }) {
                         onClick={() => handleSelect(product)}
                       >
                         <img
-                          src={product.thumbnail || product.image}
+                          src={getProductImageUrl(product)}
                           alt={product.name}
                           className="search-overlay__mini-img"
+                          onError={(e) => {
+                            if (e.currentTarget.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+                              e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER;
+                            }
+                          }}
                         />
                         <div className="search-overlay__mini-info">
                           <span className="search-overlay__mini-name">{product.name}</span>

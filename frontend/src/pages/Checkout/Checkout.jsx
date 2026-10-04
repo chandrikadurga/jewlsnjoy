@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { orderApi, shippingApi } from '../../services/api';
 import paymentService from '../../services/paymentService';
+import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from '../../utils/imageUtils';
 import { UpiCardIcon, VisaCardIcon, MastercardIcon, PlusMoreIcon } from '../../components/PaymentStrip/PaymentStrip';
 import './Checkout.css';
 
@@ -408,7 +409,7 @@ export default function Checkout() {
         name: item.product.name,
         price: item.product.price,
         quantity: item.quantity,
-        image_url: item.product.primary_image_url || item.product.image || `/products/${item.product.id}/1.jpeg`,
+        image_url: getProductImageUrl(item.product),
       })),
     };
 
@@ -737,7 +738,15 @@ export default function Checkout() {
                 {items.map((item) => (
                   <li key={item.key} className="checkout-summary__item">
                     <div className="checkout-summary__img-wrap">
-                      <img src={item.product.image} alt={item.product.name} />
+                      <img
+                        src={getProductImageUrl(item.product)}
+                        alt={item.product.name}
+                        onError={(e) => {
+                          if (e.currentTarget.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+                            e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER;
+                          }
+                        }}
+                      />
                       <span className="checkout-summary__qty">{item.quantity}</span>
                     </div>
                     <div className="checkout-summary__item-info">
@@ -1279,7 +1288,15 @@ export default function Checkout() {
               {items.map((item) => (
                 <li key={item.key} className="checkout-summary__item">
                   <div className="checkout-summary__img-wrap">
-                    <img src={item.product.image} alt={item.product.name} />
+                    <img
+                      src={getProductImageUrl(item.product)}
+                      alt={item.product.name}
+                      onError={(e) => {
+                        if (e.currentTarget.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+                          e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER;
+                        }
+                      }}
+                    />
                     <span className="checkout-summary__qty">{item.quantity}</span>
                   </div>
                   <div className="checkout-summary__item-info">

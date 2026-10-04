@@ -1,6 +1,7 @@
 import { X, ShoppingBag, Minus, Plus, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from '../../utils/imageUtils';
 import './CartDrawer.css';
 
 function CartItem({ item }) {
@@ -10,9 +11,14 @@ function CartItem({ item }) {
     <div className="cart-item">
       <div className="cart-item__image-wrap">
         <img
-          src={item.product.image}
+          src={getProductImageUrl(item.product)}
           alt={item.product.name}
           className="cart-item__image"
+          onError={(e) => {
+            if (e.currentTarget.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+              e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER;
+            }
+          }}
         />
       </div>
       <div className="cart-item__info">

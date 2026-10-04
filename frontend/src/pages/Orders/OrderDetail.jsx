@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { orderApi } from '../../services/api';
+import { resolveStoragePath, PRODUCT_IMAGE_PLACEHOLDER } from '../../utils/imageUtils';
 import './OrderDetail.css';
 
 const TRACKING_STEPS = [
@@ -251,10 +252,12 @@ export default function OrderDetail() {
                     <td>
                       <div className="order-detail-table-item">
                         <img
-                          src={item.image_url || '/products/1/1.jpeg'}
+                          src={resolveStoragePath(item.image_url) || PRODUCT_IMAGE_PLACEHOLDER}
                           alt={item.product_name}
                           onError={(e) => {
-                            e.target.src = '/products/1/1.jpeg';
+                            if (e.target.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+                              e.target.src = PRODUCT_IMAGE_PLACEHOLDER;
+                            }
                           }}
                         />
                         <div>

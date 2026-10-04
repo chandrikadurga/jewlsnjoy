@@ -3,6 +3,7 @@ import { Heart, ShoppingBag, Star } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { FALLBACK_PRODUCTS } from '../../data/products';
+import { getProductImageUrl, PRODUCT_IMAGE_PLACEHOLDER } from '../../utils/imageUtils';
 import './ProductCard.css';
 
 function StarRating({ rating, count, productId }) {
@@ -63,25 +64,16 @@ export default function ProductCard({ product }) {
     return `₹${num.toLocaleString('en-IN')}`;
   };
 
-  const imageSrc =
-    product?.image ||
-    product?.primary_image_url ||
-    product?.thumbnail ||
-    (Array.isArray(product?.images) && product.images.length > 0
-      ? (typeof product.images[0] === 'string' ? product.images[0] : product.images[0]?.image_url)
-      : null) ||
-    (Array.isArray(product?.image_urls) && product.image_urls.length > 0
-      ? product.image_urls[0]
-      : null) ||
-    (product?.id ? `/products/${product.id}/1.jpeg` : '/products/1/1.jpeg');
+  const imageSrc = getProductImageUrl(product);
 
   const handleImageError = (e) => {
-    const directFallback = product?.id ? `/products/${product.id}/1.jpeg` : '/products/1/1.jpeg';
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    if (e.currentTarget.src !== origin + directFallback && e.currentTarget.src !== directFallback) {
-      e.currentTarget.src = directFallback;
-    } else if (e.currentTarget.src !== origin + '/products/1/1.jpeg' && e.currentTarget.src !== '/products/1/1.jpeg') {
-      e.currentTarget.src = '/products/1/1.jpeg';
+    if (e.currentTarget.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+      const directFallback = product?.id ? `/products/${product.id}/1.jpeg` : PRODUCT_IMAGE_PLACEHOLDER;
+      if (e.currentTarget.src.endsWith(directFallback)) {
+        e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER;
+      } else {
+        e.currentTarget.src = directFallback;
+      }
     }
   };
 

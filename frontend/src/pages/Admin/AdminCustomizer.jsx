@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { adminApi, customizationApi } from '../../services/api';
 import defaultHeroImg from '../../assets/hero-necklaces.png';
+import { resolveStoragePath, isTemporaryUrl } from '../../utils/imageUtils';
+import { broadcastCatalogUpdate } from '../../utils/catalogEvents';
 import './AdminCustomizer.css';
 
 const DEFAULT_STATE = {
@@ -261,73 +263,114 @@ export default function AdminCustomizer() {
     });
   };
 
-  // Image Upload handler
+  // Image Upload handler (Cloud storage only - no local blob/FileReader fallback)
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setFeedback({ type: 'error', message: 'Please select a valid image file (JPG, PNG, WEBP, GIF).' });
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setFeedback({ type: 'error', message: 'Hero image exceeds the maximum 10MB limit.' });
+      return;
+    }
 
     try {
       setUploadingImage(true);
       const formData = new FormData();
       formData.append('image', file);
+      formData.append('product_id', 'banner');
+      formData.append('image_type', 'hero');
       const res = await adminApi.uploadImage(formData);
       if (res?.url) {
         handleHeroChange('image_url', res.url);
-        setFeedback({ type: 'success', message: 'Hero image uploaded successfully!' });
+        setFeedback({ type: 'success', message: 'Hero image uploaded to persistent cloud storage successfully!' });
+      } else {
+        throw new Error('No URL returned from server upload.');
       }
     } catch (err) {
-      console.error('Failed to upload image:', err);
-      // Fallback: local FileReader object URL
-      const reader = new FileReader();
-      reader.onload = (uploadEvent) => {
-        handleHeroChange('image_url', uploadEvent.target.result);
-      };
-      reader.readAsDataURL(file);
-      setFeedback({ type: 'success', message: 'Image loaded into preview successfully' });
+      console.error('Failed to upload hero image:', err);
+      const errMsg = err.response?.data?.error || err.message || 'Hero image upload failed.';
+      setFeedback({
+        type: 'error',
+        message: `${errMsg} Your existing hero image has not been changed.`,
+      });
     } finally {
       setUploadingImage(false);
-      setTimeout(() => setFeedback(null), 4000);
+      setTimeout(() => setFeedback(null), 5000);
     }
   };
 
-  // Promo Slide Image Upload handler
+  // Promo Slide Image Upload handler (Cloud storage only)
   const handlePromoSlideImageUpload = async (slideId, file) => {
     if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setFeedback({ type: 'error', message: 'Please select a valid image file (JPG, PNG, WEBP, GIF).' });
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setFeedback({ type: 'error', message: 'Slide image exceeds the maximum 10MB limit.' });
+      return;
+    }
 
     try {
       setUploadingSlideId(slideId);
       const formData = new FormData();
       formData.append('image', file);
+      formData.append('product_id', `promo-${slideId}`);
+      formData.append('image_type', 'slide');
       const res = await adminApi.uploadImage(formData);
       if (res?.url) {
         handleUpdatePromoSlide(slideId, 'image_url', res.url);
-        setFeedback({ type: 'success', message: 'Slide picture uploaded successfully!' });
+        setFeedback({ type: 'success', message: 'Slide image uploaded to persistent cloud storage successfully!' });
+      } else {
+        throw new Error('No URL returned from server upload.');
       }
     } catch (err) {
-      console.warn('Server upload fallback to data URL for slide:', err);
-      const reader = new FileReader();
-      reader.onload = (uploadEvent) => {
-        handleUpdatePromoSlide(slideId, 'image_url', uploadEvent.target.result);
-      };
-      reader.readAsDataURL(file);
-      setFeedback({ type: 'success', message: 'Slide picture loaded into preview successfully' });
+      console.error('Server upload failed for slide:', err);
+      const errMsg = err.response?.data?.error || err.message || 'Slide image upload failed.';
+      setFeedback({
+        type: 'error',
+        message: `${errMsg} Existing slide image preserved.`,
+      });
     } finally {
       setUploadingSlideId(null);
-      setTimeout(() => setFeedback(null), 4000);
+      setTimeout(() => setFeedback(null), 5000);
     }
   };
 
   // Save changes
   const handleSave = async () => {
+    // Validate that no temporary blob/data URLs are being saved
+    if (config.hero?.image_url && isTemporaryUrl(config.hero.image_url)) {
+      setFeedback({
+        type: 'error',
+        message: 'Cannot save temporary preview as hero image. Please upload the image file to cloud storage.',
+      });
+      return;
+    }
+    if (Array.isArray(config.promo_banners?.slides)) {
+      const hasTemp = config.promo_banners.slides.some((s) => isTemporaryUrl(s.image_url));
+      if (hasTemp) {
+        setFeedback({
+          type: 'error',
+          message: 'A promotional slide contains a temporary preview image. Please upload the file first.',
+        });
+        return;
+      }
+    }
+
     try {
       setSaving(true);
       await customizationApi.updateCustomization(config);
+      broadcastCatalogUpdate({ type: 'customization_updated' });
       setFeedback({ type: 'success', message: 'Store customizations published live to frontend & backend!' });
     } catch (err) {
       console.error('Error saving customizations:', err);
-      // Save to localStorage fallback
-      localStorage.setItem('jewels_store_customization', JSON.stringify(config));
-      setFeedback({ type: 'success', message: 'Customizations updated locally & cached!' });
+      setFeedback({ type: 'error', message: 'Failed to publish customizations to server. Please try again.' });
     } finally {
       setSaving(false);
       setTimeout(() => setFeedback(null), 4000);

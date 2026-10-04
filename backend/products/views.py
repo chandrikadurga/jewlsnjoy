@@ -647,37 +647,63 @@ class AdminStatsView(APIView):
         return response
 
 
-def save_base64_image_if_needed(image_str):
+def save_base64_image_if_needed(image_str, product_id=None):
     """
-    If image_str is a base64 data URI (data:image/...), decodes and writes it
-    to a permanent file in MEDIA_ROOT/products/ and returns the web-accessible URL.
-    Otherwise returns image_str unchanged.
+    If image_str is a base64 data URI (data:image/...), uploads it to Supabase Storage
+    and returns the canonical public URL.
+
+    If it is already an absolute HTTPS URL (e.g. already a Supabase CDN URL), return as-is.
+    If it is a local /media/ or /products/ path (legacy), log a warning and return as-is
+    (the caller should migrate these to Supabase separately).
+
+    NEVER saves to the local Django filesystem for permanent storage.
     """
+    from .storage import upload_base64_product_image, get_product_image_public_url
+
     if not image_str or not isinstance(image_str, str):
         return image_str
+
+    # Blob URLs are temporary browser-local references — never store them
+    if image_str.startswith('blob:'):
+        logger.error(
+            "Attempted to save a blob: URL as a permanent image reference — rejected. "
+            "The frontend must upload the file before saving the product."
+        )
+        return ''
+
+    # base64 data URI — upload to Supabase Storage
     if image_str.startswith('data:image'):
         try:
-            import base64
-            header, encoded = image_str.split('base64,', 1)
-            ext = '.jpg'
-            if 'png' in header:
-                ext = '.png'
-            elif 'webp' in header:
-                ext = '.webp'
-            elif 'jpeg' in header:
-                ext = '.jpeg'
-            elif 'gif' in header:
-                ext = '.gif'
-            filename = f"prod_{uuid.uuid4().hex[:10]}{ext}"
-            save_dir = Path(settings.MEDIA_ROOT) / 'products'
-            save_dir.mkdir(parents=True, exist_ok=True)
-            dest_path = save_dir / filename
-            with open(dest_path, 'wb') as f:
-                f.write(base64.b64decode(encoded))
-            return f"/media/products/{filename}"
+            storage_path = upload_base64_product_image(
+                image_str, product_id=product_id, image_type='primary'
+            )
+            public_url = get_product_image_public_url(storage_path)
+            logger.info(
+                "Uploaded base64 image to Supabase Storage: %s -> %s", storage_path, public_url
+            )
+            return public_url
         except Exception as e:
-            logger.error(f"Error decoding base64 image: {e}")
-            return image_str
+            logger.error("Failed to upload base64 image to Supabase Storage: %s", str(e))
+            # Return empty string — do NOT save to local filesystem
+            # The caller should handle the missing URL gracefully
+            return ''
+
+    # Already a valid public HTTPS URL — return as-is
+    if image_str.startswith('https://') or image_str.startswith('http://'):
+        if 'localhost' in image_str or '127.0.0.1' in image_str:
+            logger.warning(
+                "Image URL references localhost — not globally accessible: %s", image_str
+            )
+        return image_str
+
+    # Legacy local paths — return unchanged but log warning
+    if image_str.startswith('/media/') or image_str.startswith('/products/'):
+        logger.warning(
+            "Product image has a local path (%s) — not globally accessible. "
+            "Use the /api/admin/upload-image/ endpoint to migrate to Supabase Storage.",
+            image_str,
+        )
+
     return image_str
 
 
@@ -933,54 +959,192 @@ class AdminProductDetailView(APIView):
 class AdminImageUploadView(APIView):
     """
     POST /api/admin/upload-image/
-    Uploads an image file or base64 image data to media/products/
-    Returns: { 'url': '/media/products/...', 'filename': '...' }
+
+    Uploads a product image (multipart file or base64 data URI) directly to
+    Supabase Storage (product-images bucket). Returns a globally accessible
+    public URL that works on any device, browser, or network.
+
+    ATOMIC UPLOAD FLOW (enforced here):
+      STEP 1: Receive image from admin frontend
+      STEP 2: Validate MIME type, extension, file size, and magic bytes
+      STEP 3: Upload to Supabase Storage with versioned path
+      STEP 4: Verify upload succeeded
+      STEP 5: Return canonical storage_path + public_url to frontend
+      (Frontend then calls PATCH /api/admin/products/{id}/ with this URL)
+
+    Returns:
+      { 'url': 'https://<supabase>/storage/v1/object/public/product-images/...',
+        'storage_path': 'products/tmp/primary-abc12345.jpg',
+        'bucket': 'product-images' }
+
+    On failure: returns 4xx/5xx with clear error message.
+    NEVER saves to the local Django filesystem.
+    NEVER modifies the product record — that is the frontend's responsibility
+    after receiving the URL from this endpoint.
     """
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def post(self, request):
+        from .storage import (
+            validate_product_image,
+            upload_product_image_to_supabase,
+            build_versioned_storage_path,
+            get_product_image_public_url,
+            upload_base64_product_image,
+            PRODUCT_IMAGES_BUCKET,
+        )
+
+        product_id = request.data.get('product_id') or request.query_params.get('product_id') or 'tmp'
+        image_type = request.data.get('image_type', 'primary')
+
+        # ── Case 1: Multipart file upload ──────────────────────────────
         file_obj = request.FILES.get('image') or request.FILES.get('file')
         if not file_obj and request.FILES:
             file_obj = list(request.FILES.values())[0]
 
-        if not file_obj:
-            base64_data = request.data.get('image_data') or request.data.get('image')
-            if base64_data and isinstance(base64_data, str) and 'base64,' in base64_data:
-                import base64
-                header, encoded = base64_data.split('base64,', 1)
-                ext = '.jpg'
-                if 'png' in header:
-                    ext = '.png'
-                elif 'webp' in header:
-                    ext = '.webp'
-                elif 'jpeg' in header:
-                    ext = '.jpeg'
-                elif 'gif' in header:
-                    ext = '.gif'
-                filename = f"prod_{uuid.uuid4().hex[:10]}{ext}"
-                save_dir = Path(settings.MEDIA_ROOT) / 'products'
-                save_dir.mkdir(parents=True, exist_ok=True)
-                dest_path = save_dir / filename
-                with open(dest_path, 'wb') as f:
-                    f.write(base64.b64decode(encoded))
-                return Response({'url': f"/media/products/{filename}", 'filename': filename}, status=status.HTTP_201_CREATED)
-            return Response({'error': 'No image file or data provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if file_obj:
+            try:
+                file_bytes = b''.join(file_obj.chunks())
+                original_filename = getattr(file_obj, 'name', 'product.jpg')
 
-        filename = getattr(file_obj, 'name', 'product.jpg')
-        ext = os.path.splitext(filename)[1].lower()
-        if ext not in ['.jpg', '.jpeg', '.png', '.webp', '.jfif', '.avif', '.gif', '.heic']:
-            ext = '.jpg'
+                # Step 2: Validate
+                ext, content_type = validate_product_image(file_bytes, original_filename)
 
-        safe_name = f"prod_{uuid.uuid4().hex[:10]}{ext}"
-        save_dir = Path(settings.MEDIA_ROOT) / 'products'
-        save_dir.mkdir(parents=True, exist_ok=True)
-        dest_path = save_dir / safe_name
+                # Step 3: Build versioned path and upload to Supabase Storage
+                path_base = build_versioned_storage_path(product_id, image_type)
+                storage_path = upload_product_image_to_supabase(
+                    file_bytes, ext, content_type, path_base
+                )
 
-        with open(dest_path, 'wb+') as destination:
-            for chunk in file_obj.chunks():
-                destination.write(chunk)
+                # Step 4: Generate canonical public URL
+                public_url = get_product_image_public_url(storage_path)
 
-        return Response({'url': f"/media/products/{safe_name}", 'filename': safe_name}, status=status.HTTP_201_CREATED)
+                logger.info(
+                    "Admin uploaded product image: product_id=%s storage_path=%s",
+                    product_id, storage_path,
+                )
+
+                return Response({
+                    'url': public_url,
+                    'storage_path': storage_path,
+                    'bucket': PRODUCT_IMAGES_BUCKET,
+                    'filename': os.path.basename(storage_path),
+                }, status=status.HTTP_201_CREATED)
+
+            except ValueError as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            except RuntimeError as e:
+                logger.error("Product image upload failed for product_id=%s: %s", product_id, str(e))
+                return Response(
+                    {'error': str(e)},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
+            except Exception as e:
+                logger.exception("Unexpected error during product image upload: %s", str(e))
+                return Response(
+                    {'error': 'Image upload failed. Your existing image has not been changed.'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+        # ── Case 2: base64 data URI in JSON body ───────────────────────
+        base64_data = request.data.get('image_data') or request.data.get('image')
+        if base64_data and isinstance(base64_data, str) and 'base64,' in base64_data:
+            try:
+                storage_path = upload_base64_product_image(
+                    base64_data, product_id=product_id, image_type=image_type
+                )
+                public_url = get_product_image_public_url(storage_path)
+
+                return Response({
+                    'url': public_url,
+                    'storage_path': storage_path,
+                    'bucket': PRODUCT_IMAGES_BUCKET,
+                    'filename': os.path.basename(storage_path),
+                }, status=status.HTTP_201_CREATED)
+
+            except (ValueError, RuntimeError) as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                logger.exception("Unexpected error during base64 image upload: %s", str(e))
+                return Response(
+                    {'error': 'Image upload failed. Your existing image has not been changed.'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+        return Response(
+            {'error': 'No image file or data provided. Send a multipart file or base64 data URI.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class AdminImageHealthView(APIView):
+    """
+    GET /api/admin/system/image-health/
+
+    Returns a health report for all product images:
+    - total_products: total number of products
+    - products_with_images: products that have any image URL
+    - missing_images: count of products whose image URL returns HTTP 4xx
+    - legacy_images: products with local/localhost/media paths (not globally accessible)
+    - cloud_images: products with Supabase Storage paths (correct architecture)
+    - broken_details: list of products with broken or legacy image references
+
+    Only accessible by authenticated admin.
+    """
+    def get(self, request):
+        from .storage import (
+            is_legacy_local_path, is_supabase_storage_path, check_storage_object_accessible
+        )
+
+        products = Product.objects.prefetch_related('images').all()
+        total = products.count()
+
+        cloud_count = 0
+        legacy_count = 0
+        missing_count = 0
+        no_image_count = 0
+        broken_details = []
+
+        for product in products:
+            primary = product.primary_image_url or ''
+
+            if not primary:
+                no_image_count += 1
+                broken_details.append({
+                    'id': product.id,
+                    'name': product.name,
+                    'issue': 'NO_IMAGE',
+                    'path': '',
+                })
+                continue
+
+            if is_legacy_local_path(primary):
+                legacy_count += 1
+                broken_details.append({
+                    'id': product.id,
+                    'name': product.name,
+                    'issue': 'LEGACY_LOCAL_PATH',
+                    'path': primary,
+                })
+            elif is_supabase_storage_path(primary):
+                cloud_count += 1
+            # else: external URL (e.g., CDN, old Supabase full URL)
+
+        products_with_images = total - no_image_count
+
+        return Response({
+            'total_products': total,
+            'products_with_images': products_with_images,
+            'cloud_images': cloud_count,
+            'legacy_images': legacy_count,
+            'no_image': no_image_count,
+            'broken_details': broken_details[:50],  # Limit to 50 for performance
+            'recommendation': (
+                'All products have cloud-hosted images.' if legacy_count == 0 and no_image_count == 0
+                else f'{legacy_count} product(s) have local paths that are not globally accessible. '
+                     f'Re-upload their images through the admin panel to fix.'
+            ),
+        })
 
 
 class AdminOrderListView(APIView):

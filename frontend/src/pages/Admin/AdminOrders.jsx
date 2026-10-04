@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { adminApi } from '../../services/api';
 import { broadcastOrderUpdate, subscribeToOrderUpdates } from '../../utils/catalogEvents';
+import { resolveStoragePath, PRODUCT_IMAGE_PLACEHOLDER } from '../../utils/imageUtils';
 import './AdminOrders.css';
 
 export default function AdminOrders() {
@@ -1680,10 +1681,10 @@ export default function AdminOrders() {
                   {selectedOrder.items?.map((item, idx) => (
                     <div key={idx} className="admin-order-item-row">
                       <img
-                        src={item.image_url || '/products/1/1.jpeg'}
+                        src={resolveStoragePath(item.image_url, PRODUCT_IMAGE_PLACEHOLDER)}
                         alt={item.product_name}
                         className="admin-order-item-img"
-                        onError={(e) => { e.currentTarget.src = '/products/1/1.jpeg'; }}
+                        onError={(e) => { e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER; }}
                       />
                       <div className="admin-order-item-info">
                         <span className="admin-order-item-name">{item.product_name}</span>

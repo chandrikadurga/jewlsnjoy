@@ -5,6 +5,8 @@ import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import FAQSection from '../../components/FAQ/FAQSection';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
 import { customizationApi } from '../../services/api';
+import { resolveStoragePath } from '../../utils/imageUtils';
+import { subscribeToCatalogUpdates } from '../../utils/catalogEvents';
 import heroImg from '../../assets/hero-necklaces.png';
 import storyMainImg from '../../assets/products/3/2.jpeg';
 import storyAccentImg from '../../assets/products/4/1.jpeg';
@@ -71,15 +73,22 @@ function Hero() {
 
   useEffect(() => {
     let isMounted = true;
-    customizationApi.getCustomization().then((data) => {
-      if (isMounted && data?.hero) {
-        setHeroData(data.hero);
-      }
-    }).catch(() => {});
-    return () => { isMounted = false; };
+    const loadHero = () => {
+      customizationApi.getCustomization().then((data) => {
+        if (isMounted && data?.hero) {
+          setHeroData(data.hero);
+        }
+      }).catch(() => {});
+    };
+    loadHero();
+    const unsub = subscribeToCatalogUpdates(() => loadHero());
+    return () => {
+      isMounted = false;
+      unsub();
+    };
   }, []);
 
-  const imageSrc = heroData.image_url || heroImg;
+  const imageSrc = resolveStoragePath(heroData.image_url) || heroImg;
 
   return (
     <section className="hero" aria-label="Hero">
@@ -138,29 +147,36 @@ function PromoBannerCarousel() {
   const touchStartXRef = useRef(null);
   const touchEndXRef = useRef(null);
 
-  // Fetch banners from customization API
+  // Fetch banners from customization API & listen for realtime updates
   useEffect(() => {
     let isMounted = true;
-    customizationApi.getCustomization().then((data) => {
-      if (isMounted && data?.promo_banners?.slides?.length > 0) {
-        // Exclude disabled slides and any stale 'Festive Collection' slide
-        const enabledSlides = data.promo_banners.slides
-          .filter((s) => s.enabled !== false && !s.heading?.toLowerCase().includes('festive collection'));
-        if (enabledSlides.length > 0) {
-          setBanners(enabledSlides);
+    const loadBanners = () => {
+      customizationApi.getCustomization().then((data) => {
+        if (!isMounted) return;
+        if (data?.promo_banners?.slides?.length > 0) {
+          const enabledSlides = data.promo_banners.slides
+            .filter((s) => s.enabled !== false && !s.heading?.toLowerCase().includes('festive collection'));
+          if (enabledSlides.length > 0) {
+            setBanners(enabledSlides);
+          } else {
+            setBanners(DEFAULT_PROMO_BANNERS);
+          }
+          if (data.promo_banners.duration_seconds) {
+            durationRef.current = data.promo_banners.duration_seconds;
+          }
         } else {
           setBanners(DEFAULT_PROMO_BANNERS);
         }
-        if (data.promo_banners.duration_seconds) {
-          durationRef.current = data.promo_banners.duration_seconds;
-        }
-      } else {
-        setBanners(DEFAULT_PROMO_BANNERS);
-      }
-    }).catch(() => {
-      setBanners(DEFAULT_PROMO_BANNERS);
-    });
-    return () => { isMounted = false; };
+      }).catch(() => {
+        if (isMounted) setBanners(DEFAULT_PROMO_BANNERS);
+      });
+    };
+    loadBanners();
+    const unsub = subscribeToCatalogUpdates(() => loadBanners());
+    return () => {
+      isMounted = false;
+      unsub();
+    };
   }, []);
 
   const goTo = useCallback((idx) => {
@@ -273,7 +289,7 @@ function PromoBannerCarousel() {
               {isOverlay ? (
                 <>
                   <img
-                    src={banner.image_url}
+                    src={resolveStoragePath(banner.image_url) || banner.image_url}
                     alt=""
                     className="promo-carousel__bg"
                     loading={idx === 0 ? 'eager' : 'lazy'}
@@ -300,7 +316,7 @@ function PromoBannerCarousel() {
                   {banner.cta_link ? (
                     <Link to={banner.cta_link} className="promo-carousel__link">
                       <img
-                        src={banner.image_url}
+                        src={resolveStoragePath(banner.image_url) || banner.image_url}
                         alt={banner.heading || 'Promotional Banner'}
                         className="promo-carousel__bg"
                         loading={idx === 0 ? 'eager' : 'lazy'}
@@ -308,7 +324,7 @@ function PromoBannerCarousel() {
                     </Link>
                   ) : (
                     <img
-                      src={banner.image_url}
+                      src={resolveStoragePath(banner.image_url) || banner.image_url}
                       alt={banner.heading || 'Promotional Banner'}
                       className="promo-carousel__bg"
                       loading={idx === 0 ? 'eager' : 'lazy'}

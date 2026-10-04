@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, Gem, Layers, Sparkles } from 'lucide-react';
+import { resolveStoragePath, PRODUCT_IMAGE_PLACEHOLDER } from '../../utils/imageUtils';
 import './Collections.css';
 
 const SIGNATURE_COLLECTIONS = [
@@ -156,10 +157,15 @@ export default function Collections() {
               <Link key={col.id} to={col.link} className="collections-cat-card">
                 <div className="collections-cat-card__media">
                   <img
-                    src={col.image}
+                    src={resolveStoragePath(col.image) || col.image}
                     alt={col.name}
                     className="collections-cat-card__img"
                     loading="lazy"
+                    onError={(e) => {
+                      if (e.currentTarget.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+                        e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER;
+                      }
+                    }}
                   />
                   <span className="collections-cat-card__badge">{col.featuredTag}</span>
                   <span className="collections-cat-card__count">{col.count}</span>
@@ -237,7 +243,16 @@ export default function Collections() {
             {displayedLooks.map((item) => (
               <Link key={item.id} to={item.link} className="collections-look-card">
                 <div className="collections-look-card__media">
-                  <img src={item.image} alt={item.title} className="collections-look-card__img" />
+                  <img
+                    src={resolveStoragePath(item.image) || item.image}
+                    alt={item.title}
+                    className="collections-look-card__img"
+                    onError={(e) => {
+                      if (e.currentTarget.src !== PRODUCT_IMAGE_PLACEHOLDER) {
+                        e.currentTarget.src = PRODUCT_IMAGE_PLACEHOLDER;
+                      }
+                    }}
+                  />
                   <span className="collections-look-card__badge">{item.badge}</span>
                 </div>
                 <div className="collections-look-card__meta">

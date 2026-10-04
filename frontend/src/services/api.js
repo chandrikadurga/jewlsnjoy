@@ -1,14 +1,16 @@
 /**
  * Axios API service for Jewels 'n' Joys
- * 
+ *
  * All API calls go through this service.
  * Base URL is read from VITE_API_BASE_URL env variable.
- * 
+ *
  * Architecture:
  *   React Frontend → Axios → Django REST API → Live Database (PostgreSQL / SQLite)
+ *   Images: Admin → Django → Supabase Storage → CDN URL in DB → Any device/browser
  */
 
 import axios from 'axios';
+import { enrichProductImages } from '../utils/imageUtils';
 
 // Automatically route to local Django backend when running frontend on localhost
 const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -16,100 +18,6 @@ const envApiUrl = import.meta.env.VITE_API_BASE_URL;
 const BASE_URL = isLocalhost
   ? (envApiUrl || 'http://localhost:8000')
   : (envApiUrl && !envApiUrl.includes('localhost') ? envApiUrl : 'https://jewlsnjoy.onrender.com');
-
-// Map products whose angle 1 was a mobile screenshot to their clean 1080x1080 square photo
-const COVER_OVERRIDE = {
-  1: '3', // Emerald Luxe Tennis Necklace in luxury presentation box
-  2: '2',
-  3: '2',
-  5: '2',
-  6: '2',
-  7: '2',
-  8: '2',
-  10: '2',
-  12: '2',
-  16: '2',
-  17: '2',
-  23: '2',
-  26: '2',
-  28: '2',
-};
-
-function resolveProductImage(imagePath, isCover = false) {
-  if (!imagePath) return imagePath;
-
-  const match = String(imagePath).match(/\/api\/placeholder\/product_(\d+)(?:\/(\d+))?/);
-  if (match) {
-    const id = Number(match[1]);
-    let angle = match[2];
-    if (isCover && (!angle || angle === '1') && COVER_OVERRIDE[id]) {
-      angle = COVER_OVERRIDE[id];
-    } else if (!angle) {
-      angle = '1';
-    }
-    return `/products/${id}/${angle}.jpeg`;
-  }
-
-  // Handle direct file paths like /products/1/1.jpeg
-  if (isCover) {
-    const directMatch = String(imagePath).match(/^\/?products\/(\d+)\/1\.jpeg$/);
-    if (directMatch) {
-      const id = Number(directMatch[1]);
-      if (COVER_OVERRIDE[id]) {
-        return `/products/${id}/${COVER_OVERRIDE[id]}.jpeg`;
-      }
-    }
-  }
-
-  return imagePath;
-}
-
-function resolveProductImages(product) {
-  if (!product) return product;
-  const rawPrimary =
-    product.primary_image_url ||
-    product.image ||
-    product.thumbnail ||
-    (product.id ? `/products/${product.id}/1.jpeg` : '/products/1/1.jpeg');
-  const primary = resolveProductImage(rawPrimary, true);
-  let resolvedImages = [];
-  if (Array.isArray(product.images)) {
-    resolvedImages = product.images.map((img) => {
-      if (typeof img === 'string') return resolveProductImage(img, false);
-      if (img && typeof img === 'object') {
-        return {
-          ...img,
-          image_url: resolveProductImage(img.image_url, false),
-        };
-      }
-      return img;
-    });
-  }
-  let resolvedUrls = [];
-  if (Array.isArray(product.image_urls)) {
-    resolvedUrls = product.image_urls.map((u) => resolveProductImage(u, false));
-  } else if (resolvedImages.length > 0) {
-    resolvedUrls = resolvedImages.map((img) => (typeof img === 'string' ? img : img.image_url)).filter(Boolean);
-  }
-  if (primary && !resolvedUrls.includes(primary)) {
-    resolvedUrls.unshift(primary);
-  }
-  if (resolvedUrls.length === 0 && primary) {
-    resolvedUrls = [primary];
-  }
-  if (resolvedImages.length === 0 && primary) {
-    resolvedImages = [{ id: 1, image_url: primary, angle_number: 1, is_primary: true }];
-  }
-
-  return {
-    ...product,
-    image: primary,
-    thumbnail: primary,
-    primary_image_url: primary,
-    images: resolvedImages.length > 0 ? resolvedImages : resolvedUrls,
-    image_urls: resolvedUrls,
-  };
-}
 
 import { supabase } from './supabase';
 
@@ -178,7 +86,7 @@ export const productApi = {
     return {
       ...response.data,
       count: response.data?.count ?? list.length,
-      results: list.map(resolveProductImages),
+      results: list.map(enrichProductImages),
     };
   },
 
@@ -195,7 +103,7 @@ export const productApi = {
    */
   getBySlug: async (slug) => {
     const response = await api.get(`/api/products/slug/${slug}/`, { params: { _t: Date.now() } });
-    return resolveProductImages(response.data);
+    return enrichProductImages(response.data);
   },
 
   /**
@@ -209,7 +117,7 @@ export const productApi = {
     const response = await api.get('/api/products/featured/', config);
     const list = Array.isArray(response.data) ? response.data : (response.data?.results || []);
     return {
-      results: list.map(resolveProductImages),
+      results: list.map(enrichProductImages),
     };
   },
 
@@ -319,19 +227,19 @@ export const adminApi = {
   },
   getProducts: async (params = {}) => {
     const response = await api.get('/api/admin/products/', { params: { ...params, _t: Date.now() } });
-    return Array.isArray(response.data) ? response.data.map(resolveProductImages) : [];
+    return Array.isArray(response.data) ? response.data.map(enrichProductImages) : [];
   },
   getProduct: async (id) => {
     const response = await api.get(`/api/admin/products/${id}/`, { params: { _t: Date.now() } });
-    return resolveProductImages(response.data);
+    return enrichProductImages(response.data);
   },
   createProduct: async (productData) => {
     const response = await api.post('/api/admin/products/', productData);
-    return resolveProductImages(response.data);
+    return enrichProductImages(response.data);
   },
   updateProduct: async (id, productData) => {
     const response = await api.patch(`/api/admin/products/${id}/`, productData);
-    return resolveProductImages(response.data);
+    return enrichProductImages(response.data);
   },
   deleteProduct: async (id) => {
     try {
@@ -361,10 +269,29 @@ export const adminApi = {
     }
   },
 
-  uploadProductImage: async (file) => {
-    const formData = new FormData();
-    formData.append('image', file);
-    const response = await api.post('/api/admin/upload-image/', formData);
+  /**
+   * Upload a product image to Supabase Storage via the Django backend.
+   * Accepts a pre-built FormData containing:
+   *   - 'image': the File object
+   *   - 'product_id': the product ID (or 'tmp' for new products)
+   *   - 'image_type': 'primary' or 'gallery'
+   *
+   * Returns: { url: 'https://...supabase.../...', storage_path: '...', bucket: '...' }
+   * The URL is guaranteed to be a globally accessible cloud URL.
+   */
+  uploadProductImage: async (formDataOrFile) => {
+    // Accept either a pre-built FormData or a raw File (backwards compat)
+    let formData;
+    if (formDataOrFile instanceof FormData) {
+      formData = formDataOrFile;
+    } else {
+      formData = new FormData();
+      formData.append('image', formDataOrFile);
+    }
+    const response = await api.post('/api/admin/upload-image/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000, // 60 seconds for large images
+    });
     return response.data;
   },
   getOrders: async (params = {}) => {
@@ -528,7 +455,14 @@ export const adminApi = {
     return response.data;
   },
   uploadImage: async (formData) => {
-    const response = await api.post('/api/admin/upload-image/', formData);
+    const response = await api.post('/api/admin/upload-image/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000,
+    });
+    return response.data;
+  },
+  getImageHealth: async () => {
+    const response = await api.get('/api/admin/system/image-health/', { params: { _t: Date.now() } });
     return response.data;
   },
 };

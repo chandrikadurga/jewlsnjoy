@@ -22,6 +22,7 @@ import { productApi } from '../../services/api';
 import { Accordion, AccordionItem } from '../../components/Accordion/Accordion';
 import { FALLBACK_PRODUCTS } from '../../data/products';
 import ProductCard from '../../components/ProductCard/ProductCard';
+import { getProductImageUrl, getProductImageUrls, PRODUCT_IMAGE_PLACEHOLDER } from '../../utils/imageUtils';
 import './ProductDetail.css';
 
 function StarRating({ rating, count, onReviewsClick }) {
@@ -289,25 +290,9 @@ export default function ProductDetail() {
     ? product.category
     : (product.category_name || (product.category && typeof product.category === 'object' && product.category.name) || 'Necklaces');
 
-  // Extract clean image URLs array (handling objects from Django or strings from fallback)
-  const galleryImages = (() => {
-    let list = [];
-    if (Array.isArray(product.image_urls) && product.image_urls.length > 0) {
-      list = product.image_urls;
-    } else if (Array.isArray(product.images) && product.images.length > 0) {
-      list = product.images.map((item) => {
-        if (typeof item === 'string') return item;
-        return item?.image_url || item?.url || item?.src || '';
-      }).filter(Boolean);
-    }
-    if (list.length === 0) {
-      const single = product.primary_image_url || product.image || product.thumbnail || `/products/${product.id}/1.jpeg`;
-      list = [single];
-    }
-    return list;
-  })();
-
-  const currentImage = galleryImages[selectedImage] || galleryImages[0] || `/products/${product.id}/1.jpeg`;
+  // Unified canonical multi-angle gallery images via imageUtils
+  const galleryImages = getProductImageUrls(product);
+  const currentImage = galleryImages[selectedImage] || galleryImages[0] || PRODUCT_IMAGE_PLACEHOLDER;
 
   // Fetch full catalog for "You May Also Like" section
   const { products: allCatalogProducts } = useProducts();

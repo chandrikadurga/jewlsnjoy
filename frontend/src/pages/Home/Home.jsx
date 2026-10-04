@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Check, ExternalLink, Play, Pause, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { ArrowRight, Star, Check, ExternalLink, Play, Pause, Volume2, VolumeX, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductGrid from '../../components/ProductGrid/ProductGrid';
 import FAQSection from '../../components/FAQ/FAQSection';
 import { useFeaturedProducts, useBestsellers } from '../../hooks/useProducts';
@@ -8,13 +8,14 @@ import { customizationApi } from '../../services/api';
 import { resolveStoragePath } from '../../utils/imageUtils';
 import { subscribeToCatalogUpdates } from '../../utils/catalogEvents';
 import heroImg from '../../assets/hero-necklaces.png';
+import mysteryBoxImg from '../../assets/mystery-box-banner.jpg';
 import storyMainImg from '../../assets/products/3/2.jpeg';
 import storyAccentImg from '../../assets/products/4/1.jpeg';
 import PromotionalBanner from '../../components/PromotionalBanner/PromotionalBanner';
 import './Home.css';
 
 
-// Hero section
+// Hero section with swipeable image carousel
 function Hero() {
   const [heroData, setHeroData] = useState(() => {
     try {
@@ -36,8 +37,17 @@ function Hero() {
       secondary_cta_link: '/shop?category=Necklaces',
       image_url: '',
       image_alt: "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys",
+      secondary_image_url: '',
+      secondary_image_alt: "Mystery Jewellery Box - Mini, Classic & Premium Boxes",
     };
   });
+
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const touchStartXRef = useRef(null);
+  const touchEndXRef = useRef(null);
+  const mouseStartXRef = useRef(null);
+  const isDraggingRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -56,7 +66,102 @@ function Hero() {
     };
   }, []);
 
-  const imageSrc = resolveStoragePath(heroData.image_url) || heroImg;
+  const primaryImg = resolveStoragePath(heroData.image_url) || heroImg;
+  const secondaryImg = resolveStoragePath(heroData.secondary_image_url) || mysteryBoxImg;
+
+  // Build slides from heroData.images if provided, or default to the two hero pictures
+  const slides = (heroData.images && Array.isArray(heroData.images) && heroData.images.length > 0)
+    ? heroData.images.map((item, idx) => ({
+        id: item.id || `slide-${idx}`,
+        src: resolveStoragePath(item.image_url || item.src) || (idx === 0 ? primaryImg : secondaryImg),
+        alt: item.alt || (idx === 0 ? (heroData.image_alt || "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys") : "Mystery Jewellery Box - Jewels 'n' Joys"),
+        fit: item.fit || (idx === 1 ? 'contain' : 'cover'),
+        link: item.link || (idx === 1 ? '/shop' : heroData.primary_cta_link || '/shop'),
+      }))
+    : [
+        {
+          id: 'slide-1',
+          src: primaryImg,
+          alt: heroData.image_alt || "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys",
+          fit: 'cover',
+          link: heroData.primary_cta_link || '/shop',
+        },
+        {
+          id: 'slide-2',
+          src: secondaryImg,
+          alt: heroData.secondary_image_alt || "Mystery Jewellery Box - Mini, Classic & Premium Boxes",
+          fit: 'contain',
+          link: '/shop',
+        },
+      ];
+
+  const goNext = useCallback(() => {
+    setActiveSlide((prev) => (prev + 1) % slides.length);
+  }, [slides.length]);
+
+  const goPrev = useCallback(() => {
+    setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  }, [slides.length]);
+
+  // Touch swipe support for mobile
+  const handleTouchStart = (e) => {
+    setIsPaused(true);
+    touchStartXRef.current = e.touches[0].clientX;
+    touchEndXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    setIsPaused(false);
+    if (touchStartXRef.current === null || touchEndXRef.current === null) return;
+    const diff = touchStartXRef.current - touchEndXRef.current;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        goNext();
+      } else {
+        goPrev();
+      }
+    }
+    touchStartXRef.current = null;
+    touchEndXRef.current = null;
+  };
+
+  // Mouse drag support for desktop swipe
+  const handleMouseDown = (e) => {
+    mouseStartXRef.current = e.clientX;
+    isDraggingRef.current = true;
+    setIsPaused(true);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDraggingRef.current) return;
+  };
+
+  const handleMouseUp = (e) => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    setIsPaused(false);
+    if (mouseStartXRef.current !== null) {
+      const diff = mouseStartXRef.current - e.clientX;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0) goNext();
+        else goPrev();
+      }
+    }
+    mouseStartXRef.current = null;
+  };
+
+  // Auto-advance every 5 seconds
+  useEffect(() => {
+    if (slides.length <= 1 || isPaused) return;
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [slides.length, isPaused]);
 
   return (
     <section className="hero" aria-label="Hero">
@@ -83,17 +188,88 @@ function Hero() {
             </div>
           </div>
 
-          <div className="hero__image-wrap">
-            <img
-              src={imageSrc}
-              alt={heroData.image_alt || "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys"}
-              className="hero__image"
-              onError={(e) => {
-                if (e.target.src !== heroImg) {
-                  e.target.src = heroImg;
-                }
-              }}
-            />
+          <div
+            className="hero__image-wrap hero__carousel-wrap"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+          >
+            <div
+              className="hero__carousel-track"
+              style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+            >
+              {slides.map((slide, idx) => (
+                <div key={slide.id || idx} className="hero__carousel-slide">
+                  {slide.link ? (
+                    <Link to={slide.link} className="hero__carousel-link" tabIndex={idx === activeSlide ? 0 : -1}>
+                      <img
+                        src={slide.src}
+                        alt={slide.alt || 'Jewels n Joys'}
+                        className={`hero__image ${slide.fit === 'contain' ? 'hero__image--contain' : ''}`}
+                        loading={idx === 0 ? 'eager' : 'lazy'}
+                        onError={(e) => {
+                          if (idx === 0 && e.target.src !== heroImg) e.target.src = heroImg;
+                          if (idx === 1 && e.target.src !== mysteryBoxImg) e.target.src = mysteryBoxImg;
+                        }}
+                      />
+                    </Link>
+                  ) : (
+                    <img
+                      src={slide.src}
+                      alt={slide.alt || 'Jewels n Joys'}
+                      className={`hero__image ${slide.fit === 'contain' ? 'hero__image--contain' : ''}`}
+                      loading={idx === 0 ? 'eager' : 'lazy'}
+                      onError={(e) => {
+                        if (idx === 0 && e.target.src !== heroImg) e.target.src = heroImg;
+                        if (idx === 1 && e.target.src !== mysteryBoxImg) e.target.src = mysteryBoxImg;
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Navigation Arrows */}
+            {slides.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="hero__carousel-arrow hero__carousel-arrow--prev"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); goPrev(); }}
+                  aria-label="Previous slide"
+                >
+                  <ChevronLeft size={20} strokeWidth={2.5} />
+                </button>
+                <button
+                  type="button"
+                  className="hero__carousel-arrow hero__carousel-arrow--next"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); goNext(); }}
+                  aria-label="Next slide"
+                >
+                  <ChevronRight size={20} strokeWidth={2.5} />
+                </button>
+              </>
+            )}
+
+            {/* Indicator Dots */}
+            {slides.length > 1 && (
+              <div className="hero__carousel-dots">
+                {slides.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`hero__carousel-dot ${idx === activeSlide ? 'hero__carousel-dot--active' : ''}`}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveSlide(idx); }}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

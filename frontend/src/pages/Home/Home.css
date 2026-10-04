@@ -103,302 +103,135 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* ─── Promo Banner Carousel ──────────────────────────────── */
-.promo-carousel {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  background: var(--color-brown, #2B211D);
-  touch-action: pan-y;
+/* ─── Hero Swipeable Carousel ────────────────────────────── */
+.hero__carousel-wrap {
+  cursor: grab;
   user-select: none;
+  touch-action: pan-y;
 }
 
-.promo-carousel__track {
-  position: relative;
-  width: 100%;
-  min-height: 340px;
+.hero__carousel-wrap:active {
+  cursor: grabbing;
 }
 
-/* Each slide */
-.promo-carousel__slide {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: opacity;
-}
-
-.promo-carousel__slide--active {
-  opacity: 1;
-  pointer-events: auto;
-  z-index: 2;
-}
-
-/* Full-width image-only banner */
-.promo-carousel__slide--image-only {
-  display: block;
-}
-
-.promo-carousel__slide--image-only .promo-carousel__bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.promo-carousel__slide--image-only .promo-carousel__link {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-/* Image + text overlay banner */
-.promo-carousel__slide--overlay {
+.hero__carousel-track {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.promo-carousel__slide--overlay .promo-carousel__bg {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  z-index: 0;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
 
-.promo-carousel__slide--overlay .promo-carousel__gradient {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(
-    105deg,
-    rgba(24, 19, 15, 0.92) 0%,
-    rgba(24, 19, 15, 0.75) 35%,
-    rgba(24, 19, 15, 0.35) 65%,
-    transparent 100%
-  );
-}
-
-.promo-carousel__overlay-content {
+.hero__carousel-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
   position: relative;
-  z-index: 3;
-  max-width: 560px;
-  padding: 3rem 3.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  overflow: hidden;
+  background: var(--color-warm-white, #fdfbf7);
 }
 
-.promo-carousel__overlay-eyebrow {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-gold, #d4af37);
-  padding: 0.3rem 0.85rem;
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  border-radius: 999px;
-  width: fit-content;
-  backdrop-filter: blur(4px);
-  background: rgba(212, 175, 55, 0.08);
+.hero__carousel-link {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-.promo-carousel__overlay-heading {
-  font-family: var(--font-serif, 'Playfair Display', serif);
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
-  font-weight: 600;
-  line-height: 1.18;
-  color: #fff;
-  margin: 0;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+.hero__image--contain {
+  object-fit: contain !important;
+  background: #faf6f0;
 }
 
-.promo-carousel__overlay-desc {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: rgba(245, 237, 226, 0.82);
-  margin: 0;
-  max-width: 420px;
-}
-
-.promo-carousel__overlay-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  padding: 0.7rem 1.6rem;
-  background: var(--color-gold, #d4af37);
-  color: #18130f;
-  font-weight: 700;
-  font-size: 0.88rem;
-  text-decoration: none;
-  border-radius: 999px;
-  width: fit-content;
-  letter-spacing: 0.02em;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
-}
-
-.promo-carousel__overlay-cta:hover {
-  background: #e8c44a;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 22px rgba(212, 175, 55, 0.45);
-}
-
-/* Navigation arrows */
-.promo-carousel__arrow {
+/* Luxury Navigation Arrows */
+.hero__carousel-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 10;
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  background: rgba(24, 19, 15, 0.55);
+  background: rgba(253, 251, 247, 0.88);
   backdrop-filter: blur(8px);
-  color: #fff;
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--color-brown, #2C2420);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.25s ease;
-  opacity: 0;
-}
-
-.promo-carousel:hover .promo-carousel__arrow {
-  opacity: 1;
-}
-
-.promo-carousel__arrow:hover {
-  background: rgba(212, 175, 55, 0.85);
-  border-color: #d4af37;
-  color: #18130f;
-  transform: translateY(-50%) scale(1.08);
-}
-
-.promo-carousel__arrow--prev {
-  left: 1rem;
-}
-
-.promo-carousel__arrow--next {
-  right: 1rem;
-}
-
-/* Dots / indicators */
-.promo-carousel__dots {
-  position: absolute;
-  bottom: 1.25rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.35rem 0.75rem;
-  border-radius: 999px;
-  background: rgba(24, 19, 15, 0.45);
-  backdrop-filter: blur(8px);
-}
-
-.promo-carousel__dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  z-index: 4;
+  transition: all 0.22s ease;
+  box-shadow: 0 4px 14px rgba(44, 36, 32, 0.12);
+  opacity: 0.88;
   padding: 0;
 }
 
-.promo-carousel__dot--active {
-  background: var(--color-gold, #d4af37);
-  border-color: var(--color-gold, #d4af37);
-  transform: scale(1.2);
-  box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+.hero__carousel-arrow:hover {
+  background: #ffffff;
+  color: #c6934b;
+  border-color: #c6934b;
+  transform: translateY(-50%) scale(1.08);
+  opacity: 1;
 }
 
-.promo-carousel__dot:hover:not(.promo-carousel__dot--active) {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.3);
+.hero__carousel-arrow--prev {
+  left: 12px;
 }
 
-/* Progress bar */
-.promo-carousel__progress {
+.hero__carousel-arrow--next {
+  right: 12px;
+}
+
+/* Luxury Capsule / Pill Indicators */
+.hero__carousel-dots {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-gold, #d4af37), #e8c44a);
-  z-index: 10;
-  transition: width linear;
-  border-radius: 0 2px 2px 0;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  z-index: 4;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(44, 36, 32, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .promo-carousel__track {
-    min-height: 240px;
-    height: 60vw;
-    max-height: 380px;
-  }
-
-  .promo-carousel__overlay-content {
-    padding: 2rem 1.5rem;
-    gap: 0.5rem;
-  }
-
-  .promo-carousel__overlay-heading {
-    font-size: clamp(1.35rem, 5vw, 1.85rem);
-  }
-
-  .promo-carousel__overlay-desc {
-    font-size: 0.88rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .promo-carousel__arrow {
-    width: 34px;
-    height: 34px;
-    opacity: 0.7;
-  }
-
-  .promo-carousel__slide--overlay .promo-carousel__gradient {
-    background: linear-gradient(
-      180deg,
-      rgba(24, 19, 15, 0.7) 0%,
-      rgba(24, 19, 15, 0.5) 50%,
-      rgba(24, 19, 15, 0.3) 100%
-    );
-  }
+.hero__carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@media (max-width: 480px) {
-  .promo-carousel__track {
-    min-height: 220px;
-  }
+.hero__carousel-dot--active {
+  width: 22px;
+  border-radius: 10px;
+  background: #d4af37;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.7);
+}
 
-  .promo-carousel__overlay-content {
-    padding: 1.5rem 1.25rem;
+@media (max-width: 640px) {
+  .hero__carousel-arrow {
+    width: 32px;
+    height: 32px;
   }
-
-  .promo-carousel__overlay-eyebrow {
-    font-size: 0.65rem;
-    padding: 0.2rem 0.6rem;
+  .hero__carousel-arrow--prev {
+    left: 8px;
   }
-
-  .promo-carousel__overlay-cta {
-    padding: 0.55rem 1.2rem;
-    font-size: 0.82rem;
+  .hero__carousel-arrow--next {
+    right: 8px;
+  }
+  .hero__carousel-dots {
+    bottom: 10px;
+    padding: 4px 10px;
+    gap: 6px;
   }
 }
 

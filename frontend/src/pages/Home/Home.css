@@ -58,14 +58,22 @@
   align-items: center;
 }
 
+.hero__gallery-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-left: auto;
+}
+
 .hero__image-wrap {
   position: relative;
   border-radius: var(--radius-xl);
   overflow: hidden;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: var(--hero-aspect-ratio, 1 / 1);
   max-width: 520px;
   width: 100%;
-  margin-left: auto;
   box-shadow: 0 20px 45px rgba(44, 36, 32, 0.12);
   border: 1px solid rgba(212, 175, 55, 0.28);
   background: var(--color-warm-white, #fdfbf7);
@@ -73,20 +81,20 @@
 }
 
 .hero__carousel-wrap--portrait {
-  aspect-ratio: 819 / 1114;
-  max-width: 440px;
+  aspect-ratio: var(--hero-aspect-ratio, 1047 / 1280);
 }
 
 .hero__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+  background: transparent;
   transition: transform var(--transition-slow);
 }
 
 .hero__image-wrap:hover .hero__image:not(.hero__image--contain):not(.hero__carousel-slide--portrait .hero__image) {
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
 .hero__image-badge {
@@ -134,7 +142,7 @@
   height: 100%;
   position: relative;
   overflow: hidden;
-  background: var(--color-warm-white, #fdfbf7);
+  background: transparent;
 }
 
 .hero__carousel-link {
@@ -158,7 +166,7 @@
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: rgba(253, 251, 247, 0.88);
+  background: rgba(253, 251, 247, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(212, 175, 55, 0.4);
@@ -168,10 +176,17 @@
   justify-content: center;
   cursor: pointer;
   z-index: 4;
-  transition: all 0.22s ease;
+  transition: opacity 0.25s ease, transform 0.22s ease, background 0.2s ease;
   box-shadow: 0 4px 14px rgba(44, 36, 32, 0.12);
-  opacity: 0.88;
+  opacity: 0;
+  pointer-events: none;
   padding: 0;
+}
+
+.hero__carousel-wrap:hover .hero__carousel-arrow,
+.hero__carousel-wrap:focus-within .hero__carousel-arrow {
+  opacity: 0.92;
+  pointer-events: auto;
 }
 
 .hero__carousel-arrow:hover {
@@ -183,28 +198,27 @@
 }
 
 .hero__carousel-arrow--prev {
-  left: 12px;
+  left: 10px;
 }
 
 .hero__carousel-arrow--next {
-  right: 12px;
+  right: 10px;
 }
 
-/* Luxury Capsule / Pill Indicators */
+/* Luxury Capsule / Pill Indicators placed cleanly below the image card */
 .hero__carousel-dots {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   gap: 8px;
   align-items: center;
-  z-index: 4;
-  padding: 5px 12px;
+  justify-content: center;
+  margin-top: 14px;
+  padding: 5px 14px;
   border-radius: 20px;
-  background: rgba(44, 36, 32, 0.45);
+  background: rgba(44, 36, 32, 0.08);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(198, 161, 91, 0.22);
+  z-index: 2;
 }
 
 .hero__carousel-dot {
@@ -212,7 +226,7 @@
   height: 8px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(44, 36, 32, 0.28);
   cursor: pointer;
   padding: 0;
   transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
@@ -221,8 +235,23 @@
 .hero__carousel-dot--active {
   width: 22px;
   border-radius: 10px;
-  background: #d4af37;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.7);
+  background: #c6934b;
+  box-shadow: 0 2px 8px rgba(198, 147, 75, 0.4);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .hero__carousel-arrow {
+    opacity: 0.65;
+    pointer-events: auto;
+    width: 30px;
+    height: 30px;
+  }
+  .hero__carousel-arrow--prev {
+    left: 6px;
+  }
+  .hero__carousel-arrow--next {
+    right: 6px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -230,19 +259,19 @@
     padding: 0;
   }
   .hero__carousel-arrow {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
   .hero__carousel-arrow--prev {
-    left: 8px;
+    left: 6px;
   }
   .hero__carousel-arrow--next {
-    right: 8px;
+    right: 6px;
   }
   .hero__carousel-dots {
-    bottom: 8px;
-    padding: 3px 8px;
-    gap: 5px;
+    margin-top: 10px;
+    padding: 4px 10px;
+    gap: 6px;
   }
   .hero__carousel-dot {
     width: 6px;
@@ -524,14 +553,19 @@
     max-width: 100%;
     order: 2;
   }
-  .hero__image-wrap {
+  .hero__gallery-col {
     order: 1;
     max-width: 440px;
     margin: 0 auto;
-    aspect-ratio: 1 / 1;
+    width: 100%;
+  }
+  .hero__image-wrap {
+    max-width: 440px;
+    margin: 0 auto;
+    aspect-ratio: var(--hero-aspect-ratio, 1 / 1);
   }
   .hero__image-wrap.hero__carousel-wrap--portrait {
-    aspect-ratio: 819 / 1114;
+    aspect-ratio: var(--hero-aspect-ratio, 1047 / 1280);
     max-width: 400px;
   }
   .hero__desc {
@@ -561,12 +595,15 @@
     font-size: 2rem;
   }
   .hero__br { display: none; }
+  .hero__gallery-col {
+    max-width: 380px;
+  }
   .hero__image-wrap {
-    aspect-ratio: 1 / 1;
-    max-width: 360px;
+    aspect-ratio: var(--hero-aspect-ratio, 1 / 1);
+    max-width: 380px;
   }
   .hero__image-wrap.hero__carousel-wrap--portrait {
-    aspect-ratio: 819 / 1114;
+    aspect-ratio: var(--hero-aspect-ratio, 1047 / 1280);
     max-width: 380px;
     width: 100%;
   }
@@ -582,12 +619,16 @@
   .hero__heading {
     font-size: 1.875rem;
   }
+  .hero__gallery-col {
+    max-width: 340px;
+  }
   .hero__image-wrap {
-    max-width: 330px;
+    max-width: 340px;
+    aspect-ratio: var(--hero-aspect-ratio, 1 / 1);
   }
   .hero__image-wrap.hero__carousel-wrap--portrait {
-    aspect-ratio: 819 / 1114;
-    max-width: 360px;
+    aspect-ratio: var(--hero-aspect-ratio, 1047 / 1280);
+    max-width: 340px;
     width: 100%;
   }
 }

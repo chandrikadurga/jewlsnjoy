@@ -97,6 +97,25 @@ function Hero() {
         },
       ];
 
+  const [slideRatios, setSlideRatios] = useState({
+    0: 1,
+    1: 1047 / 1280,
+  });
+
+  const handleImageLoad = (idx, e) => {
+    const nw = e.target?.naturalWidth;
+    const nh = e.target?.naturalHeight;
+    if (nw && nh && nh > 0) {
+      const ratio = nw / nh;
+      setSlideRatios((prev) => {
+        if (Math.abs((prev[idx] || 0) - ratio) < 0.001) return prev;
+        return { ...prev, [idx]: ratio };
+      });
+    }
+  };
+
+  const activeRatio = slideRatios[activeSlide] ?? (slides[activeSlide]?.isPortrait ? (1047 / 1280) : 1);
+
   const goNext = useCallback(() => {
     setActiveSlide((prev) => (prev + 1) % slides.length);
   }, [slides.length]);
@@ -190,75 +209,84 @@ function Hero() {
             </div>
           </div>
 
-          <div
-            className={`hero__image-wrap hero__carousel-wrap ${slides[activeSlide]?.isPortrait ? 'hero__carousel-wrap--portrait' : ''}`}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-          >
+          <div className="hero__gallery-col">
             <div
-              className="hero__carousel-track"
-              style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+              className={`hero__image-wrap hero__carousel-wrap ${slides[activeSlide]?.isPortrait ? 'hero__carousel-wrap--portrait' : ''}`}
+              style={{
+                '--hero-aspect-ratio': `${activeRatio}`,
+                aspectRatio: `${activeRatio}`,
+                maxWidth: activeRatio < 0.95 ? `${Math.round(520 * Math.max(activeRatio, 0.72))}px` : '520px',
+              }}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
             >
-              {slides.map((slide, idx) => (
-                <div key={slide.id || idx} className={`hero__carousel-slide ${slide.isPortrait ? 'hero__carousel-slide--portrait' : ''}`}>
-                  {slide.link ? (
-                    <Link to={slide.link} className="hero__carousel-link" tabIndex={idx === activeSlide ? 0 : -1}>
+              <div
+                className="hero__carousel-track"
+                style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+              >
+                {slides.map((slide, idx) => (
+                  <div key={slide.id || idx} className={`hero__carousel-slide ${slide.isPortrait ? 'hero__carousel-slide--portrait' : ''}`}>
+                    {slide.link ? (
+                      <Link to={slide.link} className="hero__carousel-link" tabIndex={idx === activeSlide ? 0 : -1}>
+                        <img
+                          src={slide.src}
+                          alt={slide.alt || 'Jewels n Joys'}
+                          className="hero__image"
+                          loading={idx === 0 ? 'eager' : 'lazy'}
+                          onLoad={(e) => handleImageLoad(idx, e)}
+                          onError={(e) => {
+                            if (idx === 0 && e.target.src !== heroImg) e.target.src = heroImg;
+                            if (idx === 1 && e.target.src !== mysteryBoxImg) e.target.src = mysteryBoxImg;
+                          }}
+                        />
+                      </Link>
+                    ) : (
                       <img
                         src={slide.src}
                         alt={slide.alt || 'Jewels n Joys'}
-                        className={`hero__image ${slide.fit === 'contain' ? 'hero__image--contain' : ''}`}
+                        className="hero__image"
                         loading={idx === 0 ? 'eager' : 'lazy'}
+                        onLoad={(e) => handleImageLoad(idx, e)}
                         onError={(e) => {
                           if (idx === 0 && e.target.src !== heroImg) e.target.src = heroImg;
                           if (idx === 1 && e.target.src !== mysteryBoxImg) e.target.src = mysteryBoxImg;
                         }}
                       />
-                    </Link>
-                  ) : (
-                    <img
-                      src={slide.src}
-                      alt={slide.alt || 'Jewels n Joys'}
-                      className={`hero__image ${slide.fit === 'contain' ? 'hero__image--contain' : ''}`}
-                      loading={idx === 0 ? 'eager' : 'lazy'}
-                      onError={(e) => {
-                        if (idx === 0 && e.target.src !== heroImg) e.target.src = heroImg;
-                        if (idx === 1 && e.target.src !== mysteryBoxImg) e.target.src = mysteryBoxImg;
-                      }}
-                    />
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Navigation Arrows */}
+              {slides.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className="hero__carousel-arrow hero__carousel-arrow--prev"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); goPrev(); }}
+                    aria-label="Previous slide"
+                  >
+                    <ChevronLeft size={20} strokeWidth={2.5} />
+                  </button>
+                  <button
+                    type="button"
+                    className="hero__carousel-arrow hero__carousel-arrow--next"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); goNext(); }}
+                    aria-label="Next slide"
+                  >
+                    <ChevronRight size={20} strokeWidth={2.5} />
+                  </button>
+                </>
+              )}
             </div>
 
-            {/* Navigation Arrows */}
-            {slides.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  className="hero__carousel-arrow hero__carousel-arrow--prev"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); goPrev(); }}
-                  aria-label="Previous slide"
-                >
-                  <ChevronLeft size={20} strokeWidth={2.5} />
-                </button>
-                <button
-                  type="button"
-                  className="hero__carousel-arrow hero__carousel-arrow--next"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); goNext(); }}
-                  aria-label="Next slide"
-                >
-                  <ChevronRight size={20} strokeWidth={2.5} />
-                </button>
-              </>
-            )}
-
-            {/* Indicator Dots */}
+            {/* Indicator Dots: placed cleanly below the card so no words or badges are ever blocked */}
             {slides.length > 1 && (
               <div className="hero__carousel-dots">
                 {slides.map((_, idx) => (

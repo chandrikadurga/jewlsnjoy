@@ -423,13 +423,13 @@ input:checked + .admin-customizer-slider:before {
 
 .admin-customizer-preview-hero-img-wrap.is-portrait {
   width: 180px;
-  height: 245px;
+  height: 220px;
 }
 
 .admin-customizer-preview-hero-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* ─── Promo Banner Slides Admin ─── */

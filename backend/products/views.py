@@ -1077,6 +1077,93 @@ class AdminImageUploadView(APIView):
         )
 
 
+class AdminVideoUploadView(APIView):
+    """
+    POST /api/admin/upload-video/
+
+    Uploads a video reel (MP4, WebM, QuickTime MOV, M4V, OGG) up to 60MB directly to
+    Supabase Storage (product-images bucket, under videos/). Returns a globally accessible
+    public CDN URL that works across all devices, browsers, and operating systems.
+    """
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        from .storage import _get_supabase_url, _get_service_role_headers, PRODUCT_IMAGES_BUCKET
+
+        file_obj = request.FILES.get('video') or request.FILES.get('file') or request.FILES.get('image')
+        if not file_obj and request.FILES:
+            file_obj = list(request.FILES.values())[0]
+
+        if not file_obj:
+            return Response({'error': 'No video file provided. Please select a video file.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Size check (up to 60MB)
+        max_size = 60 * 1024 * 1024
+        file_size = getattr(file_obj, 'size', 0)
+        if file_size > max_size:
+            return Response({
+                'error': f'Video size ({round(file_size / (1024 * 1024), 1)} MB) exceeds the 60 MB limit.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Extension check
+        original_name = getattr(file_obj, 'name', 'reel.mp4')
+        ext = os.path.splitext(original_name)[1].lower() if original_name else '.mp4'
+        allowed_video_exts = {'.mp4', '.webm', '.mov', '.m4v', '.ogg'}
+        if ext not in allowed_video_exts:
+            return Response({
+                'error': 'Unsupported video format. Please upload MP4, WebM, or MOV format.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        content_type_map = {
+            '.mp4': 'video/mp4',
+            '.webm': 'video/webm',
+            '.mov': 'video/quicktime',
+            '.m4v': 'video/mp4',
+            '.ogg': 'video/ogg',
+        }
+        content_type = getattr(file_obj, 'content_type', '') or content_type_map.get(ext, 'video/mp4')
+        if content_type not in content_type_map.values():
+            content_type = content_type_map.get(ext, 'video/mp4')
+
+        try:
+            file_bytes = b''.join(file_obj.chunks())
+            supabase_url = _get_supabase_url()
+            headers = _get_service_role_headers()
+
+            if not supabase_url or not headers:
+                raise RuntimeError("Supabase Storage credentials are not configured on the server.")
+
+            unique_id = uuid.uuid4().hex[:12]
+            storage_path = f"videos/reel-{unique_id}{ext}"
+            upload_url = f"{supabase_url}/storage/v1/object/{PRODUCT_IMAGES_BUCKET}/{storage_path}"
+
+            req_headers = dict(list(headers.items()) + [
+                ('Content-Type', content_type),
+                ('x-upsert', 'true'),
+                ('Cache-Control', 'max-age=31536000'),
+            ])
+
+            res = requests.post(upload_url, data=file_bytes, headers=req_headers, timeout=120)
+            if res.status_code in (200, 201):
+                public_url = f"{supabase_url}/storage/v1/object/public/{PRODUCT_IMAGES_BUCKET}/{storage_path}"
+                logger.info("Admin uploaded video reel: storage_path=%s", storage_path)
+                return Response({
+                    'url': public_url,
+                    'storage_path': storage_path,
+                    'bucket': PRODUCT_IMAGES_BUCKET,
+                    'filename': os.path.basename(storage_path),
+                }, status=status.HTTP_201_CREATED)
+            else:
+                logger.error("Supabase Storage video upload failed (%s): %s", res.status_code, res.text)
+                return Response({
+                    'error': f'Supabase Storage rejected video upload: {res.text}'
+                }, status=status.HTTP_502_BAD_GATEWAY)
+
+        except Exception as e:
+            logger.exception("Unexpected error uploading video reel: %s", str(e))
+            return Response({'error': f'Video upload failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class AdminImageHealthView(APIView):
     """
     GET /api/admin/system/image-health/
@@ -1450,6 +1537,49 @@ DEFAULT_CUSTOMIZATIONS = {
         'image_alt': "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys",
         'secondary_image_url': '/banners/mystery-box-banner.jpg',
         'secondary_image_alt': "Mystery Jewellery Box - Mini, Classic & Premium Boxes",
+    },
+    'video_reels': {
+        'enabled': True,
+        'eyebrow': 'Jewellery in Motion',
+        'heading': "See Jewels 'n' Joys in Real Life",
+        'description': "Witness the mirror-like polish, waterproof resistance, and subtle movement of our handcrafted pieces.",
+        'videos': [
+            {
+                'id': 'reel-1',
+                'src': '/videos/1.mp4',
+                'title': 'Signature Radiance',
+                'tag': '18K Gold Plated',
+                'desc': 'Crafted with premium PVD coating for everlasting warmth and brilliance.',
+            },
+            {
+                'id': 'reel-2',
+                'src': '/videos/2.mp4',
+                'title': 'Waterproof Perfection',
+                'tag': 'Anti-Tarnish',
+                'desc': 'Shower, swim, and live freely without losing your golden glow.',
+            },
+            {
+                'id': 'reel-3',
+                'src': '/videos/3.mp4',
+                'title': 'Handcrafted Artistry',
+                'tag': 'Bespoke Design',
+                'desc': 'Delicate stone settings designed for effortless everyday layering.',
+            },
+            {
+                'id': 'reel-4',
+                'src': '/videos/4.mp4',
+                'title': 'Unboxing The Joy',
+                'tag': 'Luxury Boxed',
+                'desc': 'Delivered in our signature keepsake box, ready to gift or treasure.',
+            },
+            {
+                'id': 'reel-5',
+                'src': '/videos/5.mp4',
+                'title': 'Everyday Sparkle',
+                'tag': 'Daily Luxury',
+                'desc': 'Effortless elegance designed to seamlessly complement your daily style.',
+            },
+        ],
     },
 }
 

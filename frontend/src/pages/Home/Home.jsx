@@ -592,6 +592,7 @@ function ReelCard({ item }) {
     <div className="home-reel-card" onClick={togglePlay}>
       <video
         ref={videoRef}
+        key={item.src}
         src={item.src}
         className="home-reel-video"
         loop
@@ -635,22 +636,67 @@ function ReelCard({ item }) {
 }
 
 function VideoReelsSection() {
+  const [reelsConfig, setReelsConfig] = useState(() => {
+    try {
+      const cached = localStorage.getItem('jewels_store_customization');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.video_reels) return parsed.video_reels;
+      }
+    } catch {}
+    return null;
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadReels = () => {
+      customizationApi.getCustomization().then((data) => {
+        if (isMounted && data?.video_reels) {
+          setReelsConfig(data.video_reels);
+        }
+      }).catch(() => {});
+    };
+    loadReels();
+    const unsub = subscribeToCatalogUpdates(() => loadReels());
+    return () => {
+      isMounted = false;
+      unsub();
+    };
+  }, []);
+
+  if (reelsConfig && reelsConfig.enabled === false) {
+    return null;
+  }
+
+  const eyebrow = reelsConfig?.eyebrow || 'Jewellery in Motion';
+  const heading = reelsConfig?.heading || "See Jewels 'n' Joys in Real Life";
+  const description = reelsConfig?.description || "Witness the mirror-like polish, waterproof resistance, and subtle movement of our handcrafted pieces.";
+  const rawVideos = reelsConfig?.videos && Array.isArray(reelsConfig.videos) && reelsConfig.videos.length > 0
+    ? reelsConfig.videos
+    : REEL_VIDEOS;
+
+  const videos = rawVideos.map((item, idx) => ({
+    ...item,
+    id: item.id || `reel-${idx}`,
+    src: resolveStoragePath(item.src || item.video_url || item.url) || item.src,
+  }));
+
   return (
     <section className="section home-reels-section" aria-labelledby="reels-title">
       <div className="container">
         <div className="section-header">
-          <span className="eyebrow">Jewellery in Motion</span>
+          <span className="eyebrow">{eyebrow}</span>
           <h2 className="section-title" id="reels-title">
-            See Jewels &apos;n&apos; Joys in Real Life
+            {heading}
           </h2>
           <p className="section-desc">
-            Witness the mirror-like polish, waterproof resistance, and subtle movement of our handcrafted pieces.
+            {description}
           </p>
         </div>
 
         <div className="home-reels-grid">
-          {REEL_VIDEOS.map((item) => (
-            <ReelCard key={item.id} item={item} />
+          {videos.map((item) => (
+            <ReelCard key={item.id || item.src} item={item} />
           ))}
         </div>
       </div>

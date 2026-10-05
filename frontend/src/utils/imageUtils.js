@@ -87,6 +87,16 @@ export function resolveStoragePath(rawPath) {
     return `${SUPABASE_URL}/storage/v1/object/public/${PRODUCT_IMAGES_BUCKET}/${trimmed}`;
   }
 
+  // Video reels stored in Supabase Storage: "videos/..."
+  if (trimmed.startsWith('videos/')) {
+    return `${SUPABASE_URL}/storage/v1/object/public/${PRODUCT_IMAGES_BUCKET}/${trimmed}`;
+  }
+
+  // Static video asset path (served from frontend public/videos/)
+  if (trimmed.startsWith('/videos/')) {
+    return trimmed;
+  }
+
   // Legacy static asset path (served from frontend public/products/)
   // These are the original static photos bundled with the app
   if (trimmed.startsWith('/products/') || trimmed.startsWith('products/')) {

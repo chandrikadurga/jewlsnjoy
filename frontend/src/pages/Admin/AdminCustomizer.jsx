@@ -11,7 +11,11 @@ import {
   ArrowRight,
   ExternalLink,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Film,
+  Video,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 import { adminApi, customizationApi } from '../../services/api';
 import defaultHeroImg from '../../assets/hero-necklaces.png';
@@ -47,15 +51,59 @@ const DEFAULT_STATE = {
     secondary_image_url: '',
     secondary_image_alt: "Mystery Jewellery Box - Mini, Classic & Premium Boxes",
   },
+  video_reels: {
+    enabled: true,
+    eyebrow: 'Jewellery in Motion',
+    heading: "See Jewels 'n' Joys in Real Life",
+    description: "Witness the mirror-like polish, waterproof resistance, and subtle movement of our handcrafted pieces.",
+    videos: [
+      {
+        id: '1',
+        src: '/videos/1.mp4',
+        title: 'Signature Radiance',
+        tag: '18K Gold Plated',
+        desc: 'Crafted with premium PVD coating for everlasting warmth and brilliance.',
+      },
+      {
+        id: '2',
+        src: '/videos/2.mp4',
+        title: 'Waterproof Perfection',
+        tag: 'Anti-Tarnish',
+        desc: 'Shower, swim, and live freely without losing your golden glow.',
+      },
+      {
+        id: '3',
+        src: '/videos/3.mp4',
+        title: 'Handcrafted Artistry',
+        tag: 'Bespoke Design',
+        desc: 'Delicate stone settings designed for effortless everyday layering.',
+      },
+      {
+        id: '4',
+        src: '/videos/4.mp4',
+        title: 'Unboxing The Joy',
+        tag: 'Luxury Boxed',
+        desc: 'Delivered in our signature keepsake box, ready to gift or treasure.',
+      },
+      {
+        id: '5',
+        src: '/videos/5.mp4',
+        title: 'Everyday Sparkle',
+        tag: 'Daily Luxury',
+        desc: 'Effortless elegance designed to seamlessly complement your daily style.',
+      },
+    ],
+  },
 };
 
 export default function AdminCustomizer() {
-  const [activeTab, setActiveTab] = useState('hero'); // 'hero' | 'announcements'
+  const [activeTab, setActiveTab] = useState('hero'); // 'hero' | 'announcements' | 'reels'
   const [config, setConfig] = useState(DEFAULT_STATE);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingSecondaryImage, setUploadingSecondaryImage] = useState(false);
+  const [uploadingVideoId, setUploadingVideoId] = useState(null);
   const [previewSlideIdx, setPreviewSlideIdx] = useState(0);
   const [feedback, setFeedback] = useState(null);
 
@@ -75,6 +123,13 @@ export default function AdminCustomizer() {
             hero: {
               ...prev.hero,
               ...(data.hero || {}),
+            },
+            video_reels: {
+              ...prev.video_reels,
+              ...(data.video_reels || {}),
+              videos: (data.video_reels?.videos && Array.isArray(data.video_reels.videos) && data.video_reels.videos.length > 0)
+                ? data.video_reels.videos
+                : prev.video_reels.videos,
             },
           }));
         }
@@ -183,6 +238,123 @@ export default function AdminCustomizer() {
       setUploadingImage(false);
       setTimeout(() => setFeedback(null), 5000);
     }
+  };
+
+  // Video Reels Section Handlers
+  const handleReelsMetaChange = (field, value) => {
+    setConfig((prev) => ({
+      ...prev,
+      video_reels: {
+        ...prev.video_reels,
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleUpdateVideo = (id, field, value) => {
+    setConfig((prev) => ({
+      ...prev,
+      video_reels: {
+        ...prev.video_reels,
+        videos: (prev.video_reels?.videos || []).map((v) => (v.id === id ? { ...v, [field]: value } : v)),
+      },
+    }));
+  };
+
+  const handleAddVideo = () => {
+    const newId = `reel-${Date.now().toString(36)}`;
+    const newVideo = {
+      id: newId,
+      src: '',
+      title: 'Signature Elegance',
+      tag: 'New Reel',
+      desc: 'Handcrafted luxury piece designed for effortless elegance.',
+    };
+    setConfig((prev) => ({
+      ...prev,
+      video_reels: {
+        ...prev.video_reels,
+        videos: [...(prev.video_reels?.videos || []), newVideo],
+      },
+    }));
+  };
+
+  const handleDeleteVideo = (id) => {
+    if ((config.video_reels?.videos || []).length <= 1) {
+      setFeedback({ type: 'error', message: 'You must keep at least 1 video reel.' });
+      return;
+    }
+    setConfig((prev) => ({
+      ...prev,
+      video_reels: {
+        ...prev.video_reels,
+        videos: (prev.video_reels?.videos || []).filter((v) => v.id !== id),
+      },
+    }));
+  };
+
+  const handleMoveVideo = (idx, direction) => {
+    const videosList = config.video_reels?.videos || [];
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= videosList.length) return;
+    const newVideos = [...videosList];
+    const temp = newVideos[idx];
+    newVideos[idx] = newVideos[targetIdx];
+    newVideos[targetIdx] = temp;
+    setConfig((prev) => ({
+      ...prev,
+      video_reels: {
+        ...prev.video_reels,
+        videos: newVideos,
+      },
+    }));
+  };
+
+  const handleVideoUpload = async (id, file) => {
+    if (!file) return;
+
+    if (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|webm|mov|m4v|ogg)$/i)) {
+      setFeedback({ type: 'error', message: 'Please select a valid video file (MP4, WebM, MOV).' });
+      return;
+    }
+    if (file.size > 60 * 1024 * 1024) {
+      setFeedback({ type: 'error', message: 'Video exceeds the maximum 60MB limit.' });
+      return;
+    }
+
+    try {
+      setUploadingVideoId(id);
+      const formData = new FormData();
+      formData.append('video', file);
+      formData.append('title', `reel-${id}`);
+
+      const res = await adminApi.uploadVideo(formData);
+      if (res?.url) {
+        handleUpdateVideo(id, 'src', res.url);
+        setFeedback({ type: 'success', message: 'Video uploaded to Supabase Storage successfully!' });
+      } else {
+        throw new Error('No URL returned from server upload.');
+      }
+    } catch (err) {
+      console.error('Failed to upload video reel:', err);
+      const errMsg = err.response?.data?.error || err.message || 'Video upload failed.';
+      setFeedback({ type: 'error', message: errMsg });
+    } finally {
+      setUploadingVideoId(null);
+      setTimeout(() => setFeedback(null), 5000);
+    }
+  };
+
+  const handleResetDefaultVideos = () => {
+    setConfig((prev) => ({
+      ...prev,
+      video_reels: {
+        ...prev.video_reels,
+        videos: DEFAULT_STATE.video_reels.videos,
+      },
+    }));
+    setFeedback({ type: 'success', message: 'Reset video reels to signature defaults.' });
+    setTimeout(() => setFeedback(null), 4000);
   };
 
   // Secondary Image Upload handler (Slide 2: Mystery Jewellery Box)
@@ -342,6 +514,15 @@ export default function AdminCustomizer() {
         >
           <Megaphone size={16} />
           <span>Top Announcement Bar</span>
+        </button>
+
+        <button
+          type="button"
+          className={`admin-customizer-tab ${activeTab === 'reels' ? 'admin-customizer-tab--active' : ''}`}
+          onClick={() => setActiveTab('reels')}
+        >
+          <Film size={16} />
+          <span>Video Reels Section</span>
         </button>
       </div>
 
@@ -838,6 +1019,292 @@ export default function AdminCustomizer() {
                   }}
                 >
                   Announcement Bar is currently disabled. Toggle the switch above to display it.
+                </div>
+              )}
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Video Reels Section Tab Form */}
+      {activeTab === 'reels' && (
+        <div className="admin-customizer-card">
+          <form className="admin-customizer-form" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+            <h3 className="admin-customizer-section-title">
+              <Film size={18} />
+              Homepage Video Reels Showcase Settings
+            </h3>
+
+            {/* Enable/Disable Toggle */}
+            <div className="admin-customizer-toggle-row">
+              <div>
+                <span className="admin-customizer-toggle-label">Enable Video Reels Section</span>
+                <p className="admin-customizer-toggle-sub">
+                  Display the interactive short-form video reels grid on the homepage between Reviews and Store Perks.
+                </p>
+              </div>
+              <label className="admin-customizer-switch">
+                <input
+                  type="checkbox"
+                  checked={config.video_reels?.enabled ?? true}
+                  onChange={(e) => handleReelsMetaChange('enabled', e.target.checked)}
+                />
+                <span className="admin-customizer-slider round" />
+              </label>
+            </div>
+
+            {/* Section Heading & Copy */}
+            <div className="admin-customizer-grid">
+              <div className="admin-customizer-field">
+                <label>Section Eyebrow</label>
+                <input
+                  type="text"
+                  className="admin-customizer-input"
+                  value={config.video_reels?.eyebrow || ''}
+                  onChange={(e) => handleReelsMetaChange('eyebrow', e.target.value)}
+                  placeholder="e.g. Jewellery in Motion"
+                />
+              </div>
+
+              <div className="admin-customizer-field">
+                <label>Section Title</label>
+                <input
+                  type="text"
+                  className="admin-customizer-input"
+                  value={config.video_reels?.heading || ''}
+                  onChange={(e) => handleReelsMetaChange('heading', e.target.value)}
+                  placeholder="e.g. See Jewels 'n' Joys in Real Life"
+                />
+              </div>
+            </div>
+
+            <div className="admin-customizer-field">
+              <label>Section Subtitle / Description</label>
+              <textarea
+                className="admin-customizer-textarea"
+                rows={2}
+                value={config.video_reels?.description || ''}
+                onChange={(e) => handleReelsMetaChange('description', e.target.value)}
+                placeholder="Brief description explaining the beauty of handcrafted pieces in motion..."
+              />
+            </div>
+
+            {/* Videos List Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1rem' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'rgba(247,239,230,0.85)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Video Reels ({(config.video_reels?.videos || []).length})
+              </label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="admin-btn admin-btn--secondary"
+                  onClick={handleResetDefaultVideos}
+                  style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                  title="Reset to the 5 default signature video reels"
+                >
+                  <RotateCcw size={14} />
+                  <span>Reset Defaults</span>
+                </button>
+                <button
+                  type="button"
+                  className="admin-btn admin-btn--primary"
+                  onClick={handleAddVideo}
+                  style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                >
+                  <Plus size={14} />
+                  <span>Add Video Reel</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Videos List */}
+            <div className="admin-customizer-reels-list">
+              {(config.video_reels?.videos || []).map((video, idx) => (
+                <div key={video.id || idx} className="admin-customizer-reel-item">
+                  {/* Left: Video Preview Player */}
+                  <div className="admin-customizer-reel-thumb-col">
+                    <div className="admin-customizer-reel-video-box">
+                      {video.src ? (
+                        <video
+                          src={resolveStoragePath(video.src)}
+                          className="admin-customizer-reel-preview-video"
+                          muted
+                          playsInline
+                          controls
+                          preload="metadata"
+                        />
+                      ) : (
+                        <div className="admin-customizer-reel-placeholder">
+                          <Film size={28} />
+                          <span>No video yet</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Middle: Controls & Fields */}
+                  <div className="admin-customizer-reel-fields-col">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                      <span className="admin-customizer-reel-badge">Reel #{idx + 1}</span>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        <button
+                          type="button"
+                          className="admin-customizer-btn-icon"
+                          onClick={() => handleMoveVideo(idx, -1)}
+                          disabled={idx === 0}
+                          title="Move up"
+                        >
+                          <ArrowUp size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-customizer-btn-icon"
+                          onClick={() => handleMoveVideo(idx, 1)}
+                          disabled={idx === (config.video_reels?.videos || []).length - 1}
+                          title="Move down"
+                        >
+                          <ArrowDown size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-customizer-delete-btn"
+                          onClick={() => handleDeleteVideo(video.id)}
+                          title="Delete reel"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Upload Controls */}
+                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+                      <label className="admin-customizer-file-btn" style={{ padding: '0.4rem 0.85rem' }}>
+                        <Upload size={14} />
+                        <span>{uploadingVideoId === video.id ? 'Uploading to Supabase...' : 'Upload Video Reel'}</span>
+                        <input
+                          type="file"
+                          accept="video/mp4,video/webm,video/quicktime,video/m4v,video/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleVideoUpload(video.id, file);
+                          }}
+                          disabled={uploadingVideoId === video.id}
+                        />
+                      </label>
+                      <small style={{ color: 'rgba(247, 239, 230, 0.6)', fontSize: '0.74rem' }}>
+                        Upload MP4, WebM, or MOV up to 60MB from camera roll or files
+                      </small>
+                    </div>
+
+                    <div className="admin-customizer-field" style={{ marginBottom: '0.6rem' }}>
+                      <small style={{ color: 'rgba(247, 239, 230, 0.7)', fontSize: '0.75rem' }}>Video URL / Supabase CDN path:</small>
+                      <input
+                        type="text"
+                        className="admin-customizer-input"
+                        value={video.src || ''}
+                        onChange={(e) => handleUpdateVideo(video.id, 'src', e.target.value)}
+                        placeholder="e.g. https://...supabase.co/.../reel.mp4 or /videos/1.mp4"
+                        style={{ fontSize: '0.82rem' }}
+                      />
+                    </div>
+
+                    <div className="admin-customizer-grid" style={{ marginBottom: '0.6rem' }}>
+                      <div className="admin-customizer-field">
+                        <small style={{ color: 'rgba(247, 239, 230, 0.7)', fontSize: '0.75rem' }}>Reel Title:</small>
+                        <input
+                          type="text"
+                          className="admin-customizer-input"
+                          value={video.title || ''}
+                          onChange={(e) => handleUpdateVideo(video.id, 'title', e.target.value)}
+                          placeholder="e.g. Signature Radiance"
+                        />
+                      </div>
+                      <div className="admin-customizer-field">
+                        <small style={{ color: 'rgba(247, 239, 230, 0.7)', fontSize: '0.75rem' }}>Badge / Tag:</small>
+                        <input
+                          type="text"
+                          className="admin-customizer-input"
+                          value={video.tag || ''}
+                          onChange={(e) => handleUpdateVideo(video.id, 'tag', e.target.value)}
+                          placeholder="e.g. 18K Gold Plated"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="admin-customizer-field">
+                      <small style={{ color: 'rgba(247, 239, 230, 0.7)', fontSize: '0.75rem' }}>Description:</small>
+                      <textarea
+                        className="admin-customizer-textarea"
+                        rows={2}
+                        value={video.desc || ''}
+                        onChange={(e) => handleUpdateVideo(video.id, 'desc', e.target.value)}
+                        placeholder="e.g. Crafted with premium PVD coating for everlasting warmth..."
+                        style={{ fontSize: '0.82rem' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Live Reels Mockup Preview */}
+            <div className="admin-customizer-live-preview" style={{ marginTop: '1.5rem' }}>
+              <span className="admin-customizer-section-title" style={{ fontSize: '0.92rem', marginBottom: '0.5rem' }}>
+                <ExternalLink size={15} />
+                Live Storefront Showcase Preview
+              </span>
+
+              {config.video_reels?.enabled !== false ? (
+                <div style={{ background: '#f5ede2', padding: '1.25rem', borderRadius: '14px', border: '1px solid rgba(198, 161, 91, 0.3)' }}>
+                  <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                    <span style={{ fontSize: '0.72rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#c6934b', fontWeight: 600 }}>
+                      {config.video_reels?.eyebrow || 'Jewellery in Motion'}
+                    </span>
+                    <h4 style={{ margin: '4px 0', fontSize: '1.1rem', color: '#2B211D', fontFamily: 'serif' }}>
+                      {config.video_reels?.heading || "See Jewels 'n' Joys in Real Life"}
+                    </h4>
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: '#666', maxWidth: '420px', marginLeft: 'auto', marginRight: 'auto' }}>
+                      {config.video_reels?.description}
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
+                    {(config.video_reels?.videos || []).slice(0, 5).map((v, i) => (
+                      <div
+                        key={v.id || i}
+                        style={{
+                          aspectRatio: '9 / 16',
+                          borderRadius: '12px',
+                          overflow: 'hidden',
+                          background: '#0d0a09',
+                          position: 'relative',
+                          border: '1px solid rgba(198, 161, 91, 0.3)',
+                        }}
+                      >
+                        {v.src && (
+                          <video
+                            src={resolveStoragePath(v.src)}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            muted
+                            loop
+                            playsInline
+                            autoPlay
+                          />
+                        )}
+                        <div style={{ position: 'absolute', top: '6px', left: '6px', background: 'rgba(13, 10, 9, 0.7)', borderRadius: '10px', padding: '2px 6px', fontSize: '0.62rem', color: '#d4b475', fontWeight: 600 }}>
+                          {v.tag}
+                        </div>
+                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1.5rem 0.5rem 0.5rem', background: 'linear-gradient(to top, rgba(13,10,9,0.95), transparent)', color: '#fff' }}>
+                          <div style={{ fontSize: '0.75rem', fontWeight: 600, margin: 0 }}>{v.title}</div>
+                          <div style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.7)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{v.desc}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ padding: '0.8rem', textAlign: 'center', background: '#241c16', border: '1px dashed rgba(194, 163, 112, 0.3)', borderRadius: '8px', color: 'rgba(247, 239, 230, 0.5)', fontSize: '0.85rem' }}>
+                  Video Reels section is currently disabled. Toggle the switch above to display it on the storefront.
                 </div>
               )}
             </div>

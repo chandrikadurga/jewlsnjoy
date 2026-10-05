@@ -427,7 +427,6 @@ export default function ProductDetail() {
               {galleryImages.length > 1 && (
                 <div className="pd-gallery__mobile-badge">
                   <span>{selectedImage + 1} / {galleryImages.length}</span>
-                  <span className="pd-gallery__mobile-swipe-hint">Swipe &larr;&rarr;</span>
                 </div>
               )}
             </div>

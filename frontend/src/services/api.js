@@ -461,6 +461,13 @@ export const adminApi = {
     });
     return response.data;
   },
+  uploadVideo: async (formData) => {
+    const response = await api.post('/api/admin/upload-video/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 180000, // 3 minutes timeout for video files
+    });
+    return response.data;
+  },
   getImageHealth: async () => {
     const response = await api.get('/api/admin/system/image-health/', { params: { _t: Date.now() } });
     return response.data;

@@ -520,7 +520,7 @@ export default function AdminCustomizer() {
                   src={secondaryImageSrc}
                   alt="Secondary Hero Preview"
                   className="admin-customizer-preview-thumb"
-                  style={{ objectFit: 'contain', background: '#faf6f0' }}
+                  style={{ objectFit: 'cover' }}
                   onError={(e) => {
                     e.target.src = defaultMysteryBoxImg;
                   }}
@@ -616,12 +616,12 @@ export default function AdminCustomizer() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                  <div className="admin-customizer-preview-hero-img-wrap">
+                  <div className={`admin-customizer-preview-hero-img-wrap ${previewSlideIdx === 1 ? 'is-portrait' : ''}`}>
                     <img
                       src={previewSlideIdx === 0 ? heroImageSrc : secondaryImageSrc}
                       alt={config.hero.image_alt || 'Hero'}
                       className="admin-customizer-preview-hero-img"
-                      style={previewSlideIdx === 1 ? { objectFit: 'contain', background: '#faf6f0' } : {}}
+                      style={{ objectFit: 'cover' }}
                       onError={(e) => {
                         e.target.src = previewSlideIdx === 0 ? defaultHeroImg : defaultMysteryBoxImg;
                       }}

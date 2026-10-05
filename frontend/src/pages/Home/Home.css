@@ -69,6 +69,12 @@
   box-shadow: 0 20px 45px rgba(44, 36, 32, 0.12);
   border: 1px solid rgba(212, 175, 55, 0.28);
   background: var(--color-warm-white, #fdfbf7);
+  transition: aspect-ratio 0.45s cubic-bezier(0.22, 1, 0.36, 1), max-width 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform var(--transition-slow);
+}
+
+.hero__carousel-wrap--portrait {
+  aspect-ratio: 819 / 1114;
+  max-width: 440px;
 }
 
 .hero__image {
@@ -79,7 +85,7 @@
   transition: transform var(--transition-slow);
 }
 
-.hero__image-wrap:hover .hero__image:not(.hero__image--contain) {
+.hero__image-wrap:hover .hero__image:not(.hero__image--contain):not(.hero__carousel-slide--portrait .hero__image) {
   transform: scale(1.03);
 }
 
@@ -139,8 +145,8 @@
 
 .hero__image--contain {
   object-fit: contain !important;
-  background: #faf6f0;
-  padding: 10px 8px;
+  background: transparent;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -221,7 +227,7 @@
 
 @media (max-width: 640px) {
   .hero__image--contain {
-    padding: 14px 10px;
+    padding: 0;
   }
   .hero__carousel-arrow {
     width: 32px;
@@ -234,9 +240,16 @@
     right: 8px;
   }
   .hero__carousel-dots {
-    bottom: 10px;
-    padding: 4px 10px;
-    gap: 6px;
+    bottom: 8px;
+    padding: 3px 8px;
+    gap: 5px;
+  }
+  .hero__carousel-dot {
+    width: 6px;
+    height: 6px;
+  }
+  .hero__carousel-dot--active {
+    width: 18px;
   }
 }
 
@@ -517,6 +530,10 @@
     margin: 0 auto;
     aspect-ratio: 1 / 1;
   }
+  .hero__image-wrap.hero__carousel-wrap--portrait {
+    aspect-ratio: 819 / 1114;
+    max-width: 400px;
+  }
   .hero__desc {
     max-width: 100%;
     margin: 0 auto var(--space-8);
@@ -548,6 +565,11 @@
     aspect-ratio: 1 / 1;
     max-width: 360px;
   }
+  .hero__image-wrap.hero__carousel-wrap--portrait {
+    aspect-ratio: 819 / 1114;
+    max-width: 380px;
+    width: 100%;
+  }
   .brand-story__image-stack {
     height: 280px;
   }
@@ -559,6 +581,14 @@
   }
   .hero__heading {
     font-size: 1.875rem;
+  }
+  .hero__image-wrap {
+    max-width: 330px;
+  }
+  .hero__image-wrap.hero__carousel-wrap--portrait {
+    aspect-ratio: 819 / 1114;
+    max-width: 360px;
+    width: 100%;
   }
 }
 

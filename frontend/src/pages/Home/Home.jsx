@@ -74,7 +74,8 @@ function Hero() {
         id: item.id || `slide-${idx}`,
         src: resolveStoragePath(item.image_url || item.src) || (idx === 0 ? primaryImg : secondaryImg),
         alt: item.alt || (idx === 0 ? (heroData.image_alt || "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys") : "Mystery Jewellery Box - Jewels 'n' Joys"),
-        fit: item.fit || (idx === 1 ? 'contain' : 'cover'),
+        fit: item.fit || 'cover',
+        isPortrait: item.isPortrait ?? (idx === 1),
         link: item.link || (idx === 1 ? '/shop' : heroData.primary_cta_link || '/shop'),
       }))
     : [
@@ -83,13 +84,15 @@ function Hero() {
           src: primaryImg,
           alt: heroData.image_alt || "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys",
           fit: 'cover',
+          isPortrait: false,
           link: heroData.primary_cta_link || '/shop',
         },
         {
           id: 'slide-2',
           src: secondaryImg,
           alt: heroData.secondary_image_alt || "Mystery Jewellery Box - Mini, Classic & Premium Boxes",
-          fit: 'contain',
+          fit: 'cover',
+          isPortrait: true,
           link: '/shop',
         },
       ];
@@ -188,7 +191,7 @@ function Hero() {
           </div>
 
           <div
-            className="hero__image-wrap hero__carousel-wrap"
+            className={`hero__image-wrap hero__carousel-wrap ${slides[activeSlide]?.isPortrait ? 'hero__carousel-wrap--portrait' : ''}`}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
             onTouchStart={handleTouchStart}
@@ -203,7 +206,7 @@ function Hero() {
               style={{ transform: `translateX(-${activeSlide * 100}%)` }}
             >
               {slides.map((slide, idx) => (
-                <div key={slide.id || idx} className="hero__carousel-slide">
+                <div key={slide.id || idx} className={`hero__carousel-slide ${slide.isPortrait ? 'hero__carousel-slide--portrait' : ''}`}>
                   {slide.link ? (
                     <Link to={slide.link} className="hero__carousel-link" tabIndex={idx === activeSlide ? 0 : -1}>
                       <img

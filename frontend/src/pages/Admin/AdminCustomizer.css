@@ -418,6 +418,12 @@ input:checked + .admin-customizer-slider:before {
   box-shadow: 0 8px 24px rgba(43, 33, 29, 0.12);
   flex-shrink: 0;
   background: #fff;
+  transition: all 0.3s ease;
+}
+
+.admin-customizer-preview-hero-img-wrap.is-portrait {
+  width: 180px;
+  height: 245px;
 }
 
 .admin-customizer-preview-hero-img {

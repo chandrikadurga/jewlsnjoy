@@ -160,7 +160,7 @@ const TIERS = [
       'Travel Jewellery Box included',
       'Anti-Tarnish & Hypoallergenic daily wear pieces',
       'Freebie included in every box',
-      'Customize Available (Metal preference)',
+      'Customize Available (Style vibe & notes)',
     ],
     recommendedFor: 'First-time buyers, everyday dainty styling, budget gifts',
   },
@@ -190,7 +190,7 @@ const TIERS = [
       'Deluxe Travel Jewellery Box included',
       'Anti-Tarnish, Waterproof & 18K Gold PVD Plated',
       'Surprise Freebies included in every box',
-      'Full Customization Available (Metal & Vibe)',
+      'Full Customization Available (Style vibe & notes)',
     ],
     recommendedFor: 'Jewellery lovers, trendsetters, memorable anniversary/birthday gifts',
   },
@@ -225,12 +225,6 @@ const TIERS = [
   },
 ];
 
-const METAL_OPTIONS = [
-  { id: 'gold', label: '18K Gold Tone', icon: '✨' },
-  { id: 'silver', label: 'Silver / Platinum Tone', icon: '⚪' },
-  { id: 'mix', label: 'Surprise Me / Mix of Both', icon: '💫' },
-];
-
 const VIBE_OPTIONS = [
   { id: 'minimal', label: 'Dainty & Minimal', desc: 'Subtle daily wear pieces' },
   { id: 'trendy', label: 'Trendy & Chic', desc: 'Current viral & stylish designs' },
@@ -248,7 +242,7 @@ const FAQS = [
   },
   {
     q: 'Can I customize or mention my preferences?',
-    a: 'Yes, absolutely! You can choose your preferred jewellery metal tone (Gold, Silver, or Mix), your preferred box color (swipe or tap to pick), and your style vibe. If you have specific preferences (such as ring size or pierced ears), you can write them in the Customization Notes or message us on WhatsApp!',
+    a: 'Yes, absolutely! You can choose your preferred box color (swipe or tap to pick) and your style vibe. If you have specific preferences (such as ring size, pierced ears, or tone preference), you can write them in the Customization Notes or message us on WhatsApp!',
   },
   {
     q: 'Is the jewellery anti-tarnish and skin-safe?',
@@ -274,7 +268,6 @@ export default function MysteryBox() {
   // Active tier & slide selections
   const [selectedTierId, setSelectedTierId] = useState('classic');
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
-  const [selectedMetal, setSelectedMetal] = useState('gold');
   const [selectedVibe, setSelectedVibe] = useState('minimal');
   const [customNotes, setCustomNotes] = useState('');
   const [openFaq, setOpenFaq] = useState(null);
@@ -404,16 +397,15 @@ export default function MysteryBox() {
       image: activeSlide.image,
       in_stock: true,
       sku: `MB-${activeTier.id.toUpperCase()}-${activeSlide.colorId.toUpperCase()}`,
-      description: `${activeTier.name}: ${activeTier.tagline}. Box Color: ${activeSlide.colorName}. Contents: ${activeSlide.badge}. Metal Tone: ${selectedMetal}. Vibe: ${selectedVibe}. Notes: ${customNotes || 'None'}`,
+      description: `${activeTier.name}: ${activeTier.tagline}. Box Color: ${activeSlide.colorName}. Contents: ${activeSlide.badge}. Vibe: ${selectedVibe}. Notes: ${customNotes || 'None'}`,
     };
 
     const variant = {
-      id: `${activeTier.id}-${activeSlide.colorId}-${selectedMetal}`,
-      label: `${activeTier.name} (${activeSlide.colorName}, ${selectedMetal === 'gold' ? 'Gold Tone' : selectedMetal === 'silver' ? 'Silver Tone' : 'Mix Tone'})`,
+      id: `${activeTier.id}-${activeSlide.colorId}-${selectedVibe}`,
+      label: `${activeTier.name} (${activeSlide.colorName})`,
       tier: activeTier.name,
       boxColor: activeSlide.colorName,
       contents: activeSlide.badge,
-      metal: selectedMetal,
       vibe: selectedVibe,
       notes: customNotes,
     };
@@ -426,7 +418,6 @@ export default function MysteryBox() {
   // WhatsApp Order Link generator
   const getWhatsAppOrderUrl = () => {
     const phone = '917251070150';
-    const metalLabel = METAL_OPTIONS.find((m) => m.id === selectedMetal)?.label || selectedMetal;
     const vibeLabel = VIBE_OPTIONS.find((v) => v.id === selectedVibe)?.label || selectedVibe;
 
     const message = `✨ Hello Jewels 'n' Joys! I would like to order a Mystery Jewellery Box:
@@ -434,7 +425,6 @@ export default function MysteryBox() {
 🎁 Tier: ${activeTier.name} (₹${activeTier.price})
 📦 Contents: ${activeSlide.badge}
 🎨 Box Color: ${activeSlide.colorName}
-🌟 Metal Tone: ${metalLabel}
 💫 Style Vibe: ${vibeLabel}
 ${customNotes ? `📝 Note: ${customNotes}\n` : ''}
 Please confirm availability and let me know how to proceed with payment and shipping. Thank you!`;
@@ -804,7 +794,7 @@ Please confirm availability and let me know how to proceed with payment and ship
                   <span className="mystery-controls-subtitle">LIVE CUSTOMIZER &amp; ORDER</span>
                   <h3 className="mystery-controls-title">Personalize Your {activeTier.name}</h3>
                   <p className="mystery-controls-desc">
-                    Customized with love! Select your box size, preferred metal tone, and style vibe.
+                    Customized with love! Select your box size and style vibe.
                   </p>
                 </div>
 
@@ -830,31 +820,10 @@ Please confirm availability and let me know how to proceed with payment and ship
                   </div>
                 </div>
 
-                {/* Step 2: Metal Tone */}
+                {/* Step 2: Style Vibe */}
                 <div className="mystery-form-group">
                   <label className="mystery-form-label">
                     <span className="mystery-step-num">2</span>
-                    Preferred Jewellery Metal Tone
-                  </label>
-                  <div className="mystery-choice-grid">
-                    {METAL_OPTIONS.map((m) => (
-                      <button
-                        key={m.id}
-                        type="button"
-                        className={`mystery-choice-card ${selectedMetal === m.id ? 'is-active' : ''}`}
-                        onClick={() => setSelectedMetal(m.id)}
-                      >
-                        <span className="mystery-choice-icon">{m.icon}</span>
-                        <span className="mystery-choice-label">{m.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Step 3: Style Vibe */}
-                <div className="mystery-form-group">
-                  <label className="mystery-form-label">
-                    <span className="mystery-step-num">3</span>
                     Jewellery Aesthetic &amp; Vibe
                   </label>
                   <div className="mystery-vibe-grid">
@@ -872,10 +841,10 @@ Please confirm availability and let me know how to proceed with payment and ship
                   </div>
                 </div>
 
-                {/* Step 4: Notes & Requests */}
+                {/* Step 3: Notes & Requests */}
                 <div className="mystery-form-group">
                   <label className="mystery-form-label" htmlFor="custom-notes">
-                    <span className="mystery-step-num">4</span>
+                    <span className="mystery-step-num">3</span>
                     Special Requests or Gifting Notes (Optional)
                   </label>
                   <textarea
@@ -1057,7 +1026,7 @@ Please confirm availability and let me know how to proceed with payment and ship
                   <td>3 Pairs of Earrings</td>
                 </tr>
                 <tr>
-                  <td>Customization (Metal &amp; Aesthetic)</td>
+                  <td>Customization (Aesthetic &amp; Style)</td>
                   <td>Basic Options</td>
                   <td className="popular-cell">Full Customization</td>
                   <td>VIP Stylist Personalization</td>
@@ -1137,7 +1106,7 @@ Please confirm availability and let me know how to proceed with payment and ship
               <div className="mystery-step-badge">2</div>
               <h3 className="mystery-step-title">Swipe Colors &amp; Style</h3>
               <p className="mystery-step-desc">
-                Swipe through the organizer colors and select Gold or Silver tone preference.
+                Swipe through the organizer colors and select your style vibe preference.
               </p>
             </div>
 

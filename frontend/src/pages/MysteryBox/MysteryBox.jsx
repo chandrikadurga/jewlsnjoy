@@ -731,15 +731,9 @@ Please confirm availability and let me know how to proceed with payment and ship
                     </>
                   )}
 
-                  {/* Contents badge pill on current image */}
-                  <div className="mystery-carousel-floating-badge">
-                    <Sparkles size={13} />
-                    <span>{activeSlide.badge}</span>
-                  </div>
-
                   {/* Swipe hint chip */}
                   <div className="mystery-carousel-swipe-hint">
-                    <span>👈 Swipe for colors 👉</span>
+                    <span>Swipe ⇄</span>
                   </div>
                 </div>
 
@@ -760,19 +754,17 @@ Please confirm availability and let me know how to proceed with payment and ship
                 <div className="mystery-swatches-box">
                   <div className="mystery-swatches-header">
                     <span className="mystery-swatches-label">
-                      Select Box Color ({currentSlides.length} available):
+                      Box Color ({currentSlides.length} available):
                     </span>
                     <span className="mystery-swatches-active-name">
                       {activeSlide.colorName}
                     </span>
                   </div>
 
-                  <div 
-                    className="mystery-swatches-list"
-                    style={{ gridTemplateColumns: `repeat(${currentSlides.length}, 1fr)` }}
-                  >
+                  <div className="mystery-swatches-list">
                     {currentSlides.map((col, idx) => {
                       const isColActive = idx === safeSlideIndex;
+                      const shortName = col.colorName.replace('Lilac ', '').replace('Blush ', '').replace('Pearl ', '').replace('Ivory ', '');
                       return (
                         <button
                           key={col.colorId}
@@ -785,7 +777,7 @@ Please confirm availability and let me know how to proceed with payment and ship
                             className="mystery-swatch-circle"
                             style={{ backgroundColor: col.hex }}
                           />
-                          <span className="mystery-swatch-name">{col.colorName}</span>
+                          <span className="mystery-swatch-name">{shortName}</span>
                           {isColActive && <Check size={12} className="mystery-swatch-check" />}
                         </button>
                       );

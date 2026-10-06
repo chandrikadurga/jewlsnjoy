@@ -521,7 +521,7 @@ Please confirm availability and let me know how to proceed with payment and ship
             <span className="mystery-section-badge">CHOOSE YOUR TIER</span>
             <h2 className="mystery-section-title">Three Irresistible Mystery Editions</h2>
             <p className="mystery-section-desc">
-              Select between Mini (3 colors), Classic (3 colors), or Premium (2 colors). Click any tier to preview all real photos and swipe through color options!
+              Select between Mini (3 colors), Classic (3 colors), or Premium (3 colors). Click any tier to preview all real photos and swipe through color options!
             </p>
           </div>
 

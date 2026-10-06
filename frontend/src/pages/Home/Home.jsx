@@ -76,7 +76,7 @@ function Hero() {
         alt: item.alt || (idx === 0 ? (heroData.image_alt || "Handcrafted Gemstone Necklaces Collection - Jewels 'n' Joys") : "Mystery Jewellery Box - Jewels 'n' Joys"),
         fit: item.fit || 'cover',
         isPortrait: item.isPortrait ?? (idx === 1),
-        link: item.link || (idx === 1 ? '/shop' : heroData.primary_cta_link || '/shop'),
+        link: item.link || (idx === 1 ? '/mystery-box' : heroData.primary_cta_link || '/shop'),
       }))
     : [
         {
@@ -93,7 +93,7 @@ function Hero() {
           alt: heroData.secondary_image_alt || "Mystery Jewellery Box - Mini, Classic & Premium Boxes",
           fit: 'cover',
           isPortrait: true,
-          link: '/shop',
+          link: '/mystery-box',
         },
       ];
 

@@ -13,6 +13,7 @@ import Contact from './pages/Contact/Contact';
 import Checkout from './pages/Checkout/Checkout';
 import Policies from './pages/Policies/Policies';
 import FAQ from './pages/FAQ/FAQ';
+import MysteryBox from './pages/MysteryBox/MysteryBox';
 import NotFound from './pages/NotFound';
 
 // Customer Account & Wishlist Pages
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/"              element={<Home />} />
                 <Route path="/shop"          element={<Shop />} />
                 <Route path="/collections"   element={<Collections />} />
+                <Route path="/mystery-box"   element={<MysteryBox />} />
                 <Route path="/products/:id"  element={<ProductDetail />} />
                 <Route path="/about"         element={<About />} />
                 <Route path="/contact"       element={<Contact />} />

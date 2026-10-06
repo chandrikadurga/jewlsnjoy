@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { to: '/',            label: 'Home'        },
   { to: '/shop',        label: 'All Products' },
   { to: '/collections', label: 'Collections' },
+  { to: '/mystery-box', label: 'Mystery Box 🎁' },
   { to: '/about',       label: 'About Us'    },
   { to: '/contact',     label: 'Contact Us'  },
 ];

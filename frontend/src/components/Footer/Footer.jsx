@@ -89,6 +89,11 @@ export default function FooterGlow({
                 </Link>
               </li>
               <li>
+                <Link to="/mystery-box" className="footer-glow__link">
+                  Mystery Box ✨
+                </Link>
+              </li>
+              <li>
                 <Link to="/shop?featured=true" className="footer-glow__link">
                   New Arrivals
                 </Link>

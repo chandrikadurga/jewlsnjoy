@@ -35,9 +35,10 @@ import classicBoxPurpleImg from '../../assets/mystery-box/classic-box-purple.jpg
 import classicBoxPinkImg from '../../assets/mystery-box/classic-box-pink.jpg';
 import classicBoxWhiteImg from '../../assets/mystery-box/classic-box-white.jpg';
 
-// Premium Box Images (2 photos)
+// Premium Box Images (3 photos)
 import premiumBoxPurpleImg from '../../assets/mystery-box/premium-box-purple.jpg';
 import premiumBoxPinkImg from '../../assets/mystery-box/premium-box-pink.jpg';
+import premiumBoxWhiteImg from '../../assets/mystery-box/premium-box-white.jpg';
 
 import './MysteryBox.css';
 
@@ -120,6 +121,15 @@ const TIER_SLIDES = {
       alt: 'Premium Mystery Jewellery Box - Blush Peach (4 Necklaces, 3 Rings, 3 Earrings + Freebies)',
       badge: '4 Necklace • 3 Ring • 3 Earring + Freebies',
     },
+    {
+      id: 'white',
+      colorId: 'white',
+      colorName: 'Pearl White',
+      hex: '#F3EFEA',
+      image: premiumBoxWhiteImg,
+      alt: 'Premium Mystery Jewellery Box - Pearl White (4 Necklaces, 3 Rings, 3 Earrings + Freebies)',
+      badge: '4 Necklace • 3 Ring • 3 Earrings + Freebies',
+    },
   ],
 };
 
@@ -198,7 +208,7 @@ const TIERS = [
     chipBg: '#FEF3C7',
     defaultBoxColor: 'purple',
     itemsCount: 'Min. 10 Items',
-    photosCount: '2 Colors Available',
+    photosCount: '3 Colors Available',
     contents: [
       { count: '4', item: 'Necklaces (Statement & Layering)' },
       { count: '3', item: 'Rings (Cocktail & Daily Bands)' },
@@ -234,7 +244,7 @@ const FAQS = [
   },
   {
     q: 'How does the color selection and swipe carousel work?',
-    a: 'When you select any box tier (Mini, Classic, or Premium), the interactive carousel updates with the authentic photos of that exact tier! Mini Box has 3 color variants (Lilac Lavender, Blush Peach, Pearl White), Classic Box has 3 color variants (Lilac Lavender, Blush Peach, Pearl White), and Premium Box has 2 color variants (Lilac Lavender, Blush Peach). You can swipe left/right or tap the color swatches to switch colors!',
+    a: 'When you select any box tier (Mini, Classic, or Premium), the interactive carousel updates with the authentic photos of that exact tier! All three tiers (Mini, Classic, and Premium) each feature 3 gorgeous color variants (Lilac Lavender, Blush Peach, and Pearl White). You can swipe left/right or tap the color swatches to switch colors!',
   },
   {
     q: 'Can I customize or mention my preferences?',
@@ -1022,7 +1032,7 @@ Please confirm availability and let me know how to proceed with payment and ship
                   <td>Available Color Choices</td>
                   <td><strong>3 Colors</strong> (Lavender, Peach, White)</td>
                   <td className="popular-cell"><strong>3 Colors</strong> (Lavender, Peach, White)</td>
-                  <td><strong>2 Colors</strong> (Lavender, Peach)</td>
+                  <td><strong>3 Colors</strong> (Lavender, Peach, White)</td>
                 </tr>
                 <tr>
                   <td>Jewellery Organizer Box Included</td>

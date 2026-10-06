@@ -242,7 +242,7 @@ const FAQS = [
   },
   {
     q: 'Can I customize or mention my preferences?',
-    a: 'Yes, absolutely! You can choose your preferred box color (swipe or tap to pick) and your style vibe. If you have specific preferences (such as ring size, pierced ears, or tone preference), you can write them in the Customization Notes or message us on WhatsApp!',
+    a: 'Yes, absolutely! You can choose your preferred box color (swipe or tap to pick) and your style vibe. If you have specific preferences (such as ring size, pierced ears, or tone preference), you can write them in the Customization Notes or message us on Instagram!',
   },
   {
     q: 'Is the jewellery anti-tarnish and skin-safe?',
@@ -257,8 +257,8 @@ const FAQS = [
     a: 'Every mystery box is guaranteed to contain jewellery worth much more than what you pay. For example, our Mini Box (₹699) contains pieces worth ₹1,499+, the Classic Box (₹1299) contains pieces worth ₹2,799+, and the Premium Box (₹1699) contains items worth ₹3,999+! It is our best value offering.',
   },
   {
-    q: 'Can I order this directly on WhatsApp or as a gift for someone?',
-    a: 'Yes! You can order directly on the website with online payment / COD, or click "Order via WhatsApp" to chat with us directly. If you are gifting, let us know and we will include a complimentary handwritten gift card!',
+    q: 'Can I order this directly on Instagram or as a gift for someone?',
+    a: 'Yes! You can order directly on the website with online payment / COD, or message us on Instagram to chat with us directly. If you are gifting, let us know and we will include a complimentary handwritten gift card!',
   },
 ];
 
@@ -415,22 +415,7 @@ export default function MysteryBox() {
     setTimeout(() => setAddedToast(false), 3000);
   };
 
-  // WhatsApp Order Link generator
-  const getWhatsAppOrderUrl = () => {
-    const phone = '917251070150';
-    const vibeLabel = VIBE_OPTIONS.find((v) => v.id === selectedVibe)?.label || selectedVibe;
-
-    const message = `✨ Hello Jewels 'n' Joys! I would like to order a Mystery Jewellery Box:
-
-🎁 Tier: ${activeTier.name} (₹${activeTier.price})
-📦 Contents: ${activeSlide.badge}
-🎨 Box Color: ${activeSlide.colorName}
-💫 Style Vibe: ${vibeLabel}
-${customNotes ? `📝 Note: ${customNotes}\n` : ''}
-Please confirm availability and let me know how to proceed with payment and shipping. Thank you!`;
-
-    return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-  };
+  const instagramUrl = 'https://www.instagram.com/jewelsnjoys?stkn=MXV0eXZlODBkd3p2eg==';
 
   return (
     <div className="mystery-page">
@@ -869,7 +854,7 @@ Please confirm availability and let me know how to proceed with payment and ship
                   </div>
                 </div>
 
-                {/* Actions: Add to Cart & WhatsApp Order */}
+                {/* Actions: Add to Cart & Instagram Order */}
                 <div className="mystery-actions-row">
                   <button
                     type="button"
@@ -881,14 +866,18 @@ Please confirm availability and let me know how to proceed with payment and ship
                   </button>
 
                   <a
-                    href={getWhatsAppOrderUrl()}
+                    href={instagramUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mystery-btn-whatsapp"
-                    title="Order directly on WhatsApp"
+                    className="mystery-btn-instagram"
+                    title="Connect or order on Instagram"
                   >
-                    <MessageCircle size={18} />
-                    <span>Order via WhatsApp</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                    </svg>
+                    <span>DM on Instagram</span>
                   </a>
                 </div>
 
@@ -1168,13 +1157,17 @@ Please confirm availability and let me know how to proceed with payment and ship
           <div className="mystery-faq-footer">
             <p>Still have questions about our Mystery Boxes?</p>
             <a
-              href="https://wa.me/917251070150?text=Hi%20Jewels%20'n'%20Joys!%20I%20have%20a%20question%20about%20the%20Mystery%20Jewellery%20Box."
+              href={instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mystery-faq-chat-btn"
+              className="mystery-faq-chat-btn mystery-faq-chat-btn--instagram"
             >
-              <MessageCircle size={16} />
-              <span>Chat with us on WhatsApp</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+              <span>DM us on Instagram</span>
             </a>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import CartDrawer from '../components/CartDrawer/CartDrawer';
-import WhatsAppButton from '../components/WhatsAppButton';
+import InstagramButton from '../components/InstagramButton';
 import AuthModal from '../components/Auth/AuthModal';
 
 export default function MainLayout() {
@@ -22,7 +22,7 @@ export default function MainLayout() {
       </main>
       <Footer />
       <CartDrawer />
-      <WhatsAppButton />
+      <InstagramButton />
       <AuthModal />
     </div>
   );

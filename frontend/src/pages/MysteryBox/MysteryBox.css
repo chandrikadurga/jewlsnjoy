@@ -1267,25 +1267,28 @@
   box-shadow: 0 4px 14px rgba(43, 33, 29, 0.2);
 }
 
-.mystery-btn-whatsapp {
+.mystery-btn-whatsapp,
+.mystery-btn-instagram {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: #25D366;
-  color: #FFF;
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  color: #FFF !important;
   text-decoration: none;
   padding: 0.95rem 1.25rem;
   border-radius: var(--radius-md, 8px);
   font-weight: 600;
   font-size: 0.92rem;
   transition: all var(--transition-fast, 150ms ease);
+  box-shadow: 0 4px 14px rgba(214, 36, 159, 0.3);
 }
 
-.mystery-btn-whatsapp:hover {
-  background: #20BD5A;
+.mystery-btn-whatsapp:hover,
+.mystery-btn-instagram:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+  box-shadow: 0 6px 18px rgba(214, 36, 159, 0.45);
+  color: #FFF !important;
 }
 
 .mystery-toast {
@@ -1679,5 +1682,20 @@
   background: #25D366;
   color: #FFF;
   border-color: #25D366;
+  transform: translateY(-1px);
+}
+
+.mystery-faq-chat-btn--instagram {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  border: none;
+  color: #FFF !important;
+  box-shadow: 0 4px 14px rgba(214, 36, 159, 0.3);
+}
+
+.mystery-faq-chat-btn--instagram:hover {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  color: #FFF !important;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(214, 36, 159, 0.45);
   transform: translateY(-1px);
 }

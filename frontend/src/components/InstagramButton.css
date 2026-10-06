@@ -1,0 +1,44 @@
+.instagram-floating-btn {
+  position: fixed;
+  right: 22px;
+  bottom: 24px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 6px 22px rgba(214, 36, 159, 0.42);
+  z-index: 9999;
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.instagram-floating-btn:hover {
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 10px 28px rgba(214, 36, 159, 0.58);
+  color: #ffffff;
+}
+
+.instagram-floating-btn:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 480px) {
+  .instagram-floating-btn {
+    width: 52px;
+    height: 52px;
+    right: 18px;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .instagram-floating-btn svg {
+    width: 25px;
+    height: 25px;
+  }
+}

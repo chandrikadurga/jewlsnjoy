@@ -80,6 +80,33 @@ export default function PromotionalBanner({ customBanner, previewMode, onCtaClic
       {/* Top Promotional Ribbon Ticker */}
       <div className="promo-ticker promo-ticker--top" aria-hidden="true">
         <div className="promo-ticker__track">
+          {/* First copy */}
+          <span className="promo-ticker__item">
+            <Sparkles size={13} className="promo-ticker__icon" />
+            EXCLUSIVE PROMOTIONAL CAMPAIGN
+          </span>
+          <span className="promo-ticker__divider">✦</span>
+          <span className="promo-ticker__item">
+            <Tag size={13} className="promo-ticker__icon" />
+            {banner.name || 'LIMITED TIME LUXURY SPECIAL'}
+          </span>
+          <span className="promo-ticker__divider">✦</span>
+          <span className="promo-ticker__item">
+            <Truck size={13} className="promo-ticker__icon" />
+            FREE EXPRESS SHIPPING ALL INDIA
+          </span>
+          <span className="promo-ticker__divider">✦</span>
+          <span className="promo-ticker__item">
+            <Gift size={13} className="promo-ticker__icon" />
+            COMPLIMENTARY LUXURY GIFT WITH EVERY ORDER
+          </span>
+          <span className="promo-ticker__divider">✦</span>
+          <span className="promo-ticker__item">
+            <ShieldCheck size={13} className="promo-ticker__icon" />
+            18K PVD GOLD • WATERPROOF • ANTI-TARNISH
+          </span>
+          <span className="promo-ticker__divider">✦</span>
+          {/* Duplicate copy for seamless infinite loop */}
           <span className="promo-ticker__item">
             <Sparkles size={13} className="promo-ticker__icon" />
             EXCLUSIVE PROMOTIONAL CAMPAIGN
@@ -221,6 +248,13 @@ export default function PromotionalBanner({ customBanner, previewMode, onCtaClic
       {/* Bottom Promotional Ticker / Trust Strip */}
       <div className="promo-ticker promo-ticker--bottom" aria-hidden="true">
         <div className="promo-ticker__track promo-ticker__track--reverse">
+          {/* First copy */}
+          <span className="promo-ticker__item">✦ EASY RETURN & EXCHANGE</span>
+          <span className="promo-ticker__item">✦ CASH ON DELIVERY AVAILABLE</span>
+          <span className="promo-ticker__item">✦ 100% NICKEL & LEAD FREE</span>
+          <span className="promo-ticker__item">✦ LUXURY KEEPSAKE PACKAGING INCLUDED</span>
+          <span className="promo-ticker__item">✦ THOUSANDS OF 5-STAR VERIFIED REVIEWS</span>
+          {/* Duplicate copy for seamless infinite loop */}
           <span className="promo-ticker__item">✦ EASY RETURN & EXCHANGE</span>
           <span className="promo-ticker__item">✦ CASH ON DELIVERY AVAILABLE</span>
           <span className="promo-ticker__item">✦ 100% NICKEL & LEAD FREE</span>

@@ -555,18 +555,19 @@
   }
   .hero__gallery-col {
     order: 1;
-    max-width: 440px;
+    max-width: 100%;
     margin: 0 auto;
     width: 100%;
   }
   .hero__image-wrap {
-    max-width: 440px;
+    max-width: 100%;
     margin: 0 auto;
     aspect-ratio: var(--hero-aspect-ratio, 1 / 1);
   }
   .hero__image-wrap.hero__carousel-wrap--portrait {
     aspect-ratio: var(--hero-aspect-ratio, 1047 / 1280);
-    max-width: 400px;
+    max-width: 480px;
+    max-height: 580px;
   }
   .hero__desc {
     max-width: 100%;
@@ -596,15 +597,17 @@
   }
   .hero__br { display: none; }
   .hero__gallery-col {
-    max-width: 380px;
+    max-width: 100%;
   }
   .hero__image-wrap {
     aspect-ratio: var(--hero-aspect-ratio, 1 / 1);
-    max-width: 380px;
+    max-width: 100%;
+    border-radius: var(--radius-lg);
   }
   .hero__image-wrap.hero__carousel-wrap--portrait {
     aspect-ratio: var(--hero-aspect-ratio, 1047 / 1280);
-    max-width: 380px;
+    max-width: 420px;
+    max-height: 520px;
     width: 100%;
   }
   .brand-story__image-stack {
@@ -614,21 +617,23 @@
 
 @media (max-width: 480px) {
   .hero {
-    padding: var(--space-8) 0 var(--space-12);
+    padding: var(--space-8) 0 var(--space-10);
   }
   .hero__heading {
     font-size: 1.875rem;
   }
   .hero__gallery-col {
-    max-width: 340px;
+    max-width: 100%;
   }
   .hero__image-wrap {
-    max-width: 340px;
+    max-width: 100%;
     aspect-ratio: var(--hero-aspect-ratio, 1 / 1);
+    border-radius: var(--radius-md);
   }
   .hero__image-wrap.hero__carousel-wrap--portrait {
     aspect-ratio: var(--hero-aspect-ratio, 1047 / 1280);
-    max-width: 340px;
+    max-width: 360px;
+    max-height: 460px;
     width: 100%;
   }
 }

@@ -20,6 +20,7 @@
   padding: 8px 0;
   overflow: hidden;
   user-select: none;
+  width: 100%;
 }
 
 .promo-ticker--top {
@@ -42,6 +43,8 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--color-gold, #C6A15B);
+  /* Ensure it's wide enough so content always fills viewport */
+  min-width: 200%;
 }
 
 .promo-ticker__track--reverse {
@@ -54,6 +57,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  flex-shrink: 0;
 }
 
 .promo-ticker__icon {
@@ -62,6 +66,7 @@
 
 .promo-ticker__divider {
   color: rgba(198, 161, 91, 0.6);
+  flex-shrink: 0;
 }
 
 @keyframes promoTickerScroll {

@@ -140,7 +140,7 @@ export default function Checkout() {
     }
   }, [user, profile]);
 
-  const codFee = paymentMethod === 'cod' ? 25 : 0;
+  const codFee = paymentMethod === 'cod' ? 20 : 0;
   const shippingRates = { standard: 60, express: 80 };
   const rawShipping = cartTotal >= 999 ? 0 : (shippingRates[shippingMethod] || 60);
 
@@ -793,7 +793,7 @@ export default function Checkout() {
                 {paymentMethod === 'cod' && (
                   <div className="checkout-summary__row">
                     <span>COD Charges</span>
-                    <span>₹25</span>
+                    <span>₹20</span>
                   </div>
                 )}
                 <div className="checkout-summary__row checkout-summary__row--total">
@@ -1177,11 +1177,11 @@ export default function Checkout() {
                       <div className="checkout-pay-option__top">
                         <div className="checkout-pay-option__title-row">
                           <span className="checkout-pay-option__name">Cash on Delivery (COD)</span>
-                          <span className="checkout-pay-option__tag checkout-pay-option__tag--fee">+ ₹25 Charges</span>
+                          <span className="checkout-pay-option__tag checkout-pay-option__tag--fee">+ ₹20 Charges</span>
                         </div>
                       </div>
                       <p className="checkout-pay-option__desc">
-                        Pay cash or UPI directly to courier upon arrival at your doorstep. (₹25 COD handling charge applies)
+                        Pay cash or UPI directly to courier upon arrival at your doorstep. (₹20 COD handling charge applies)
                       </p>
                     </div>
                   </label>
@@ -1343,7 +1343,7 @@ export default function Checkout() {
               {paymentMethod === 'cod' && (
                 <div className="checkout-summary__row">
                   <span>COD Charges</span>
-                  <span>₹25</span>
+                  <span>₹20</span>
                 </div>
               )}
               <div className="checkout-summary__row checkout-summary__row--total">

@@ -328,13 +328,13 @@ class OrderCreateSerializer(serializers.Serializer):
             total = explicit_total
         else:
             subtotal = sum(parse_price(item.get('price', 0)) * int(item.get('quantity', 1)) for item in items_data)
-            # Server-side shipping cost: free above ₹999, else standard=₹60, express=₹80
+            # Server-side shipping cost: free above ₹999, else standard=₹40, express=₹60
             if subtotal >= 999:
                 shipping_cost = 0
             elif shipping_method == 'express':
-                shipping_cost = 80
-            else:
                 shipping_cost = 60
+            else:
+                shipping_cost = 40
             total = subtotal + shipping_cost
         
         # Append shipping method to notes

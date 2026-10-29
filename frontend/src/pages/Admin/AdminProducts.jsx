@@ -139,6 +139,7 @@ export default function AdminProducts() {
   });
 
   const [saveLoading, setSaveLoading] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [feedbackMsg, setFeedbackMsg] = useState('');
 
   // Image manager states
@@ -191,6 +192,7 @@ export default function AdminProducts() {
     setEditingProduct(null);
     setNewImageUrl('');
     setUploadError('');
+    setSaveError('');
     setActiveTab('details');
     setFormData({
       name: '',
@@ -227,6 +229,7 @@ export default function AdminProducts() {
     setEditingProduct(prod);
     setNewImageUrl('');
     setUploadError('');
+    setSaveError('');
     setActiveTab('details');
 
     const allImages = extractProductImageUrls(prod).filter((u) => u && !u.includes('placeholder'));
@@ -288,6 +291,7 @@ export default function AdminProducts() {
     setEditingProduct(null);
     setNewImageUrl('');
     setUploadError('');
+    setSaveError('');
   };
 
   const handleFormChange = (e) => {
@@ -532,6 +536,7 @@ export default function AdminProducts() {
 
   const handleSaveProduct = async (e) => {
     e.preventDefault();
+    setSaveError('');
     if (!formData.name || !formData.price) {
       setActiveTab('details');
       return;
@@ -629,70 +634,15 @@ export default function AdminProducts() {
       closeModal();
     } catch (err) {
       console.error('Error saving product:', err);
-      // Fallback local update
-      const qty = parseInt(formData.stock_quantity, 10);
-      const stockQty = isNaN(qty) ? 0 : Math.max(0, qty);
-      const isStock = stockQty > 0 ? Boolean(formData.in_stock) : false;
-
-      const rawImages =
-        formData.images && formData.images.length > 0
-          ? formData.images
-          : (formData.primary_image_url ? [formData.primary_image_url] : ['/products/1/1.jpeg']);
-      const primaryImg = formData.primary_image_url || rawImages[0] || '/products/1/1.jpeg';
-
-      const careList = formData.care_instructions
-        ? formData.care_instructions.split('\n').map((s) => s.trim()).filter(Boolean)
-        : [];
-      const styleTagsArray = formData.style_tags
-        ? formData.style_tags.split(',').map((s) => s.trim()).filter(Boolean)
-        : [];
-
-      const fallbackPayload = {
-        ...formData,
-        price: parseFloat(formData.price),
-        original_price: formData.original_price ? parseFloat(formData.original_price) : null,
-        stock_quantity: stockQty,
-        in_stock: isStock,
-        style_tags: styleTagsArray,
-        primary_image_url: primaryImg,
-        image: primaryImg,
-        images: rawImages,
-        image_urls: rawImages,
-        return_policy: formData.return_policy,
-        dispatch_timeline: formData.dispatch_timeline,
-        shipping: {
-          standard: formData.shipping_standard || '6 to 8 days',
-          express: formData.shipping_express || '3 to 4 days',
-          dispatch: formData.dispatch_timeline || 'Dispatch within 1–3 working days (Mon–Fri)',
-        },
-        care_instructions: careList,
-        specifications: {
-          Material: formData.spec_material || 'Titanium Stainless Steel',
-          Finish: formData.spec_finish || '18K Gold Color Plated',
-          Plating: formData.spec_plating || 'Long-lasting PVD Plated',
-          Features: formData.spec_features || 'Anti-tarnish, Waterproof, Quality Guarantee',
-        },
-        features: formData.features_list || ['Anti-tarnish', 'Waterproof', 'PVD Plated', '18K Gold Plated'],
-      };
-
-      if (editingProduct) {
-        const updatedLocal = { ...editingProduct, ...fallbackPayload };
-        cacheProduct(updatedLocal);
-        setProducts((prev) =>
-          prev.map((p) => (p.id === editingProduct.id ? updatedLocal : p))
-        );
-        showFeedback('Updated locally!');
-      } else {
-        const newProd = {
-          ...fallbackPayload,
-          id: Date.now(),
-        };
-        cacheProduct(newProd);
-        setProducts((prev) => [newProd, ...prev]);
-        showFeedback('Created locally!');
-      }
-      broadcastCatalogUpdate();
-      closeModal();
+      const responseData = err.response?.data;
+      const serverMessage = typeof responseData === 'string'
+        ? responseData
+        : responseData
+          ? Object.entries(responseData)
+              .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : typeof messages === 'object' ? JSON.stringify(messages) : messages}`)
+              .join(' ')
+          : '';
+      setSaveError(serverMessage || err.message || 'Could not save this product. Check your connection and try again.');
     } finally {
       setSaveLoading(false);
     }
@@ -1356,6 +1306,12 @@ export default function AdminProducts() {
             </div>
 
             <form onSubmit={handleSaveProduct} className="admin-modal__form">
+              {saveError && (
+                <div className="admin-save-error" role="alert">
+                  <AlertCircle size={16} />
+                  <span>{saveError}</span>
+                </div>
+              )}
               {/* TAB 1: DETAILS & PRICING */}
               {activeTab === 'details' && (
                 <div className="admin-modal-tab-pane">

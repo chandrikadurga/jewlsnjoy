@@ -141,8 +141,8 @@ export default function Checkout() {
   }, [user, profile]);
 
   const codFee = paymentMethod === 'cod' ? 20 : 0;
-  const shippingRates = { standard: 60, express: 80 };
-  const rawShipping = cartTotal >= 999 ? 0 : (shippingRates[shippingMethod] || 60);
+  const shippingRates = { standard: 40, express: 60 };
+  const rawShipping = cartTotal >= 999 ? 0 : (shippingRates[shippingMethod] ?? shippingRates.standard);
 
   let discountAmount = 0;
   if (appliedCoupon) {
@@ -1086,7 +1086,7 @@ export default function Checkout() {
                           {cartTotal >= 999 && <span className="checkout-shipping-option__tag checkout-shipping-option__tag--free">FREE</span>}
                         </div>
                         <span className="checkout-shipping-option__price">
-                          {cartTotal >= 999 ? <s style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>₹60</s> : '₹60'}
+                          {cartTotal >= 999 ? <s style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>₹40</s> : '₹40'}
                         </span>
                       </div>
                       <p className="checkout-shipping-option__desc">
@@ -1112,7 +1112,7 @@ export default function Checkout() {
                           {cartTotal >= 999 && <span className="checkout-shipping-option__tag checkout-shipping-option__tag--free">FREE</span>}
                         </div>
                         <span className="checkout-shipping-option__price">
-                          {cartTotal >= 999 ? <s style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>₹80</s> : '₹80'}
+                          {cartTotal >= 999 ? <s style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>₹60</s> : '₹60'}
                         </span>
                       </div>
                       <p className="checkout-shipping-option__desc">

@@ -531,15 +531,15 @@ class DelhiveryCodBugFixTestCase(TestCase):
             shipping_address='15 Mall Road',
             city='Shimla',
             postal_code='171001',
-            total_amount=Decimal('580.00'),  # 500 items + 80 shipping
+            total_amount=Decimal('540.00'),  # 500 items + 40 standard shipping
             payment_method='Cash on Delivery',
             payment_status='pending',
             status='confirmed'
         )
         self.assertTrue(is_cod_order(order))
         pay_details = get_delhivery_payment_details(order)
-        self.assertEqual(pay_details['cod_amount'], Decimal('580.00'))
-        self.assertEqual(pay_details['cod_amount_float'], 580.0)
+        self.assertEqual(pay_details['cod_amount'], Decimal('540.00'))
+        self.assertEqual(pay_details['cod_amount_float'], 540.0)
 
     def test_case_5_failed_or_pending_online_payment_never_cod(self):
         """TEST 5: Failed or pending online payments must NOT automatically become COD."""
